@@ -1,5 +1,7 @@
 {
+  "packagePath": "net.weichware.jbdao",
   "name": "Customer",
+  "database": true,
   "members": [
     {
       "name": "firstName",
@@ -10,7 +12,7 @@
       "type": "String"
     },
     {
-      "birthDate": "items",
+      "name": "birthDate",
       "type": "LocalDate",
       "nullable": true
     }

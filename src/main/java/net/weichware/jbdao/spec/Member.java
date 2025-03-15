@@ -28,25 +28,25 @@ public class Member {
         return nullable;
     }
 
-    public boolean getAcceptEmpty() {
+    public boolean getNotAcceptEmpty() {
         if (acceptEmpty == null) {
             acceptEmpty = false;
         }
-        return acceptEmpty;
+        return !acceptEmpty;
     }
 
     public String getDatabaseName() {
         if (databaseName == null) {
-            databaseName = NameUtil.camelToDisplay(name);
+            databaseName = NameUtil.camelToSnakeUpperCase(name);
         }
         return databaseName;
     }
 
     public String getDisplayName() {
-        if (databaseName == null) {
-            databaseName = NameUtil.camelToSnakeUpperCase(name);
+        if (displayName == null) {
+            displayName = NameUtil.camelToDisplay(name);
         }
-        return databaseName;
+        return displayName;
     }
 
     public String getCsvName() {
