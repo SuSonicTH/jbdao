@@ -25,12 +25,11 @@ public class ResultSetConstructor extends CodeWriter {
 
         eol();
         appendLine("private %s(ResultSet resultSet) throws SQLException {", specification.getName());
-        appendLines(members.stream().map(this::memberAssignment));
+        appendLines(members.stream().map(member ->
+                member.getName() + " = resultSet.getObject(" + quote(member.getDatabaseName()) + ", " + member.getType() + ".class);")
+        );
         appendLine("}");
 
     }
 
-    private String memberAssignment(Member member) {
-        return member.getName() + " = resultSet.getObject(" + quote(member.getDatabaseName()) + ", " + member.getType() + ".class);";
-    }
 }
