@@ -1,11 +1,9 @@
 package net.weichware.jbdao.spec;
 
-import lombok.Data;
 
-@Data
 public class Member {
-    private final String name;
-    private final String type;
+    private String name;
+    private String type;
     private String databaseName;
     private String csvName;
     private String jsonName;
@@ -13,6 +11,15 @@ public class Member {
     private Boolean immutable;
     private Boolean nullable;
     private Boolean acceptEmpty;
+    private Boolean with;
+
+    public String getName() {
+        return name;
+    }
+
+    public String getType() {
+        return type;
+    }
 
     public Boolean getImmutable() {
         if (immutable == null) {
@@ -33,6 +40,13 @@ public class Member {
             acceptEmpty = false;
         }
         return !acceptEmpty;
+    }
+
+    public boolean generateWith() {
+        if (with == null) {
+            with = true;
+        }
+        return with;
     }
 
     public String getDatabaseName() {

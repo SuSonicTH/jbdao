@@ -1,21 +1,13 @@
 package net.weichware.jbdao.generator;
 
-import net.weichware.jbdao.spec.Member;
 import net.weichware.jbdao.spec.Specification;
-import net.weichware.jbdao.writer.CodeWriter;
+import net.weichware.jbdao.writer.Generator;
 
-import java.util.List;
-
-public class ResultSetConstructor extends CodeWriter {
-    private final Specification specification;
-    private final List<Member> members;
-
+public class ResultSetConstructor extends Generator {
     public ResultSetConstructor(Specification specification) {
-        super(1);
-        this.specification = specification;
-        this.members = specification.getMembers();
+        super(specification);
 
-        if (specification.isDatabase()) {
+        if (specification.generateDatabase()) {
             generateCode();
         }
     }

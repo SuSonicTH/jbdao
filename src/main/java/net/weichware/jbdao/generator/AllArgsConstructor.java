@@ -2,20 +2,14 @@ package net.weichware.jbdao.generator;
 
 import net.weichware.jbdao.spec.Member;
 import net.weichware.jbdao.spec.Specification;
-import net.weichware.jbdao.writer.CodeWriter;
-
-import java.util.List;
+import net.weichware.jbdao.writer.Generator;
 
 import static java.util.stream.Collectors.joining;
 
-public class AllArgsConstructor extends CodeWriter {
-    private final List<Member> members;
-    private final Specification specification;
+public class AllArgsConstructor extends Generator {
 
     public AllArgsConstructor(Specification specification) {
-        super(1);
-        this.specification = specification;
-        this.members = specification.getMembers();
+        super(specification);
 
         if (specification.hasAllArgsConstructor()) {
             generateCode();

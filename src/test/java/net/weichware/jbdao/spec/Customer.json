@@ -2,6 +2,7 @@
   "packagePath": "net.weichware.jbdao",
   "name": "Customer",
   "database": true,
+  "with": true,
   "members": [
     {
       "name": "firstName",

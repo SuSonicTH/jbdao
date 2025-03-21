@@ -1,14 +1,12 @@
 package net.weichware.jbdao.spec;
 
 import com.google.gson.Gson;
-import lombok.Data;
 
 import java.util.List;
 
-@Data
 public class Specification {
-    private final String packagePath;
-    private final String name;
+    private String packagePath;
+    private String name;
 
     private List<Member> members;
 
@@ -25,6 +23,18 @@ public class Specification {
 
     public static Specification readSpec(String spec) {
         return new Gson().fromJson(spec, Specification.class);
+    }
+
+    public String getPackagePath() {
+        return packagePath;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public List<Member> getMembers() {
+        return members;
     }
 
     public boolean hasAllArgsConstructor() {
@@ -70,5 +80,13 @@ public class Specification {
         return members.stream()
                 .filter(member -> member.getType().equals("String"))
                 .anyMatch(Member::getNotAcceptEmpty);
+    }
+
+    public boolean generateWith() {
+        return with;
+    }
+
+    public boolean generateDatabase() {
+        return database;
     }
 }
