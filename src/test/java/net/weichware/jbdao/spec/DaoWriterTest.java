@@ -1,5 +1,6 @@
 package net.weichware.jbdao.spec;
 
+import net.weichware.jbdao.spec.writer.DaoWriter;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 

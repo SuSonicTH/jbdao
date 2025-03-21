@@ -1,4 +1,7 @@
-package net.weichware.jbdao.spec;
+package net.weichware.jbdao.spec.writer;
+
+import net.weichware.jbdao.spec.Member;
+import net.weichware.jbdao.spec.Specification;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -30,16 +33,16 @@ public class DaoWriter extends ClassWriter {
 
     private void appendAllArgsConstructors() {
         if (specification.hasAllArgsConstructor()) {
-            appendLine();
+            eol();
             appendLineFormatted(1, "public %s(%s) {", specification.getName(), constructorArgumentList());
             if (specification.hasNonNullable()) {
                 addImport("java.util.Objects");
                 appendLine(2, objectsNotNull());
-                appendLine();
+                eol();
             }
             if (specification.hasNonEmpty()) {
                 appendLine(2, stringEmpty());
-                appendLine();
+                eol();
             }
             appendLine(2, constructorAssignment());
             appendLine(1, "}");
@@ -49,7 +52,7 @@ public class DaoWriter extends ClassWriter {
     private void appendResultSetConstructor() {
         if (specification.isDatabase()) {
             addImport("java.sql.ResultSet", "java.sql.SQLException");
-            appendLine();
+            eol();
             appendLineFormatted(1, "private %s(ResultSet resultSet) throws SQLException {", specification.getName());
             appendLine(2, resultSetAssignment());
             appendLine(1, "}");
