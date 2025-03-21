@@ -7,8 +7,6 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 
-import static java.util.stream.Collectors.toList;
-
 public class DaoWriter extends ClassWriter {
     private final Specification specification;
     private final List<Member> members;
@@ -23,34 +21,19 @@ public class DaoWriter extends ClassWriter {
 
     public void generate() throws IOException {
         appendLine("public class %s {", specification.getName());
-        appendMembers();
+        appendLines(members.stream().map(this::memberDefinition));
         append(new AllArgsConstructorWriter(specification));
-        appendResultSetConstructor();
+        append(new ResultSetConstructorWriter(specification));
         appendLine("}");
         writeSource(outputPath);
     }
 
-    private void appendMembers() {
-        for (Member member : members) {
-            appendLine("private%s%s %s;", member.getImmutable() ? " final " : " ", member.getType(), member.getName());
-        }
+    private String memberDefinition(Member member) {
+        return String.format("private%s%s %s;",
+                member.getImmutable() ? " final " : " ",
+                member.getType(),
+                member.getName()
+        );
     }
-
-    private void appendResultSetConstructor() {
-        if (specification.isDatabase()) {
-            addImport("java.sql.ResultSet", "java.sql.SQLException");
-            eol();
-            appendLine("private %s(ResultSet resultSet) throws SQLException {", specification.getName());
-            appendLines(resultSetAssignment());
-            appendLine("}");
-        }
-    }
-
-    private List<String> resultSetAssignment() {
-        return members.stream()
-                .map(member -> member.getName() + " = resultSet.getObject(" + quote(member.getDatabaseName()) + ", " + member.getType() + ".class);")
-                .collect(toList());
-    }
-
 
 }
