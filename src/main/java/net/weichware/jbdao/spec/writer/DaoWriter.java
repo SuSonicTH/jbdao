@@ -6,6 +6,7 @@ import net.weichware.jbdao.spec.Specification;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
@@ -23,29 +24,29 @@ public class DaoWriter extends ClassWriter {
     }
 
     public void generate() throws IOException {
-        appendLineFormatted(0, "public class %s {", specification.getName());
+        appendLine("public class %s {", specification.getName());
         appendMembers();
         appendAllArgsConstructors();
         appendResultSetConstructor();
-        appendLine(0, "}");
+        appendLine("}");
         writeSource(outputPath);
     }
 
     private void appendAllArgsConstructors() {
         if (specification.hasAllArgsConstructor()) {
             eol();
-            appendLineFormatted(1, "public %s(%s) {", specification.getName(), constructorArgumentList());
+            appendLine("public %s(%s) {", specification.getName(), constructorArgumentList());
             if (specification.hasNonNullable()) {
                 addImport("java.util.Objects");
-                appendLine(2, objectsNotNull());
+                appendLines(objectsNotNull());
                 eol();
             }
             if (specification.hasNonEmpty()) {
-                appendLine(2, stringEmpty());
+                appendLines(stringEmpty());
                 eol();
             }
-            appendLine(2, constructorAssignment());
-            appendLine(1, "}");
+            appendLines(constructorAssignment());
+            appendLine("}");
         }
     }
 
@@ -53,9 +54,9 @@ public class DaoWriter extends ClassWriter {
         if (specification.isDatabase()) {
             addImport("java.sql.ResultSet", "java.sql.SQLException");
             eol();
-            appendLineFormatted(1, "private %s(ResultSet resultSet) throws SQLException {", specification.getName());
-            appendLine(2, resultSetAssignment());
-            appendLine(1, "}");
+            appendLine("private %s(ResultSet resultSet) throws SQLException {", specification.getName());
+            appendLines(resultSetAssignment());
+            appendLine("}");
         }
     }
 
@@ -65,29 +66,26 @@ public class DaoWriter extends ClassWriter {
                 .collect(toList());
     }
 
-    private List<String> stringEmpty() {
+    private Stream<String> stringEmpty() {
         return members.stream()
                 .filter(member -> member.getType().equals("String"))
                 .filter(Member::getNotAcceptEmpty)
                 .map(Member::getName)
-                .map(name -> "if (" + name + ".isEmpty()) throw new IllegalArgumentException(" + quote(name + " may not be empty") + ");")
-                .collect(toList());
+                .map(name -> "if (" + name + ".isEmpty()) throw new IllegalArgumentException(" + quote(name + " may not be empty") + ");");
 
     }
 
-    private List<String> objectsNotNull() {
+    private Stream<String> objectsNotNull() {
         return members.stream()
                 .filter(member -> !member.getNullable())
                 .map(Member::getName)
-                .map(name -> String.format("Objects.requireNonNull(%s,\"%s my not be null\");", name, name))
-                .collect(toList());
+                .map(name -> String.format("Objects.requireNonNull(%s,\"%s my not be null\");", name, name));
     }
 
-    private List<String> constructorAssignment() {
+    private Stream<String> constructorAssignment() {
         return members.stream()
                 .map(Member::getName)
-                .map(name -> String.format("this.%s = %s;", name, name))
-                .collect(toList());
+                .map(name -> String.format("this.%s = %s;", name, name));
     }
 
     private String constructorArgumentList() {
@@ -98,7 +96,7 @@ public class DaoWriter extends ClassWriter {
 
     private void appendMembers() {
         for (Member member : members) {
-            appendLineFormatted(1, "private%s%s %s;", member.getImmutable() ? " final " : " ", member.getType(), member.getName());
+            appendLine("private%s%s %s;", member.getImmutable() ? " final " : " ", member.getType(), member.getName());
         }
     }
 }
