@@ -1,6 +1,6 @@
 package net.weichware.jbdao.spec;
 
-import net.weichware.jbdao.spec.writer.DaoWriter;
+import net.weichware.jbdao.DaoGenerator;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -9,7 +9,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-class DaoWriterTest {
+class DaoGeneratorTest {
     private static final Path TEST_PATH = Paths.get("./src/test/java/net/weichware/jbdao/spec/");
     private static final Path OUTOUT_PATH = Paths.get("./target/test/DaoWriterTest");
     private static String CUSTOMER_JSON;
@@ -22,6 +22,6 @@ class DaoWriterTest {
 
     @Test
     void generateCustomer() throws IOException {
-        new DaoWriter(Specification.readSpec(CUSTOMER_JSON), OUTOUT_PATH).generate();
+        new DaoGenerator(Specification.readSpec(CUSTOMER_JSON), OUTOUT_PATH).generate();
     }
 }

@@ -1,4 +1,4 @@
-package net.weichware.jbdao.spec.writer;
+package net.weichware.jbdao.writer;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -11,7 +11,7 @@ public class ClassWriter extends CodeWriter {
     protected final String packagePath;
     protected final String name;
 
-    ClassWriter(String packagePath, String name) {
+    protected ClassWriter(String packagePath, String name) {
         this.packagePath = packagePath;
         this.name = name;
     }

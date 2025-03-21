@@ -1,18 +1,19 @@
-package net.weichware.jbdao.spec.writer;
+package net.weichware.jbdao.generator;
 
 import net.weichware.jbdao.spec.Member;
 import net.weichware.jbdao.spec.Specification;
+import net.weichware.jbdao.writer.CodeWriter;
 
 import java.util.List;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.joining;
 
-public class AllArgsConstructorWriter extends CodeWriter {
+public class AllArgsConstructor extends CodeWriter {
     private final List<Member> members;
     private final Specification specification;
 
-    public AllArgsConstructorWriter(Specification specification) {
+    public AllArgsConstructor(Specification specification) {
         super(1);
         this.specification = specification;
         this.members = specification.getMembers();

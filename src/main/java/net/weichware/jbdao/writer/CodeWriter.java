@@ -1,4 +1,4 @@
-package net.weichware.jbdao.spec.writer;
+package net.weichware.jbdao.writer;
 
 import java.util.*;
 import java.util.stream.Stream;

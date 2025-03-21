@@ -1,15 +1,16 @@
-package net.weichware.jbdao.spec.writer;
+package net.weichware.jbdao.generator;
 
 import net.weichware.jbdao.spec.Member;
 import net.weichware.jbdao.spec.Specification;
+import net.weichware.jbdao.writer.CodeWriter;
 
 import java.util.List;
 
-public class ResultSetConstructorWriter extends CodeWriter {
+public class ResultSetConstructor extends CodeWriter {
     private final Specification specification;
     private final List<Member> members;
 
-    public ResultSetConstructorWriter(Specification specification) {
+    public ResultSetConstructor(Specification specification) {
         super(1);
         this.specification = specification;
         this.members = specification.getMembers();
