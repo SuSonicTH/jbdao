@@ -1,21 +1,32 @@
 package net.weichware.jbdao.spec.writer;
 
-import java.util.Formatter;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Stream;
 
 public class CodeWriter {
     private static final HashMap<Integer, String> indentMap = new HashMap<>();
+    private final Set<String> importSet = new HashSet<>();
     private final StringBuilder code = new StringBuilder();
     private int indent;
 
-    public CodeWriter(int indent) {
+    protected CodeWriter(int indent) {
         this.indent = indent;
     }
 
-    public CodeWriter() {
+    protected CodeWriter() {
         this.indent = 0;
+    }
+
+    public String getCode() {
+        return code.toString();
+    }
+
+    public Set<String> getImports() {
+        return importSet;
+    }
+
+    protected void addImport(String... clazz) {
+        importSet.addAll(Arrays.asList(clazz));
     }
 
     protected void eol() {
@@ -24,6 +35,11 @@ public class CodeWriter {
 
     protected String quote(String string) {
         return "\"" + string + "\"";
+    }
+
+    protected void append(CodeWriter codeWriter) {
+        importSet.addAll(codeWriter.importSet);
+        code.append(codeWriter.getCode());
     }
 
     protected void append(String line) {
@@ -89,10 +105,6 @@ public class CodeWriter {
             }
             return stringBuilder.toString();
         });
-    }
-
-    public String getCode() {
-        return code.toString();
     }
 
     private void indentIfNeeded(String line) {
