@@ -12,6 +12,7 @@ public class Member {
     private Boolean nullable;
     private Boolean acceptEmpty;
     private Boolean with;
+    private Boolean getter;
 
     public String getName() {
         return name;
@@ -19,6 +20,13 @@ public class Member {
 
     public String getType() {
         return type;
+    }
+
+    public Boolean generateGetter() {
+        if (getter == null) {
+            getter = true;
+        }
+        return getter;
     }
 
     public Boolean getImmutable() {

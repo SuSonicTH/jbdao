@@ -17,7 +17,7 @@ public class AllArgsConstructor extends Generator {
     }
 
     private void generateCode() {
-        eol();
+        emptyLine();
         appendLine("public %s(%s) {", specification.getName(), constructorArgumentList());
         appendObjectsRequireNonNull();
         appendStringEmptyCheck();
@@ -39,7 +39,7 @@ public class AllArgsConstructor extends Generator {
                     .map(Member::getName)
                     .map(name -> String.format("Objects.requireNonNull(%s, \"%s my not be null\");", name, name))
             );
-            eol();
+            emptyLine();
         }
     }
 
@@ -51,7 +51,7 @@ public class AllArgsConstructor extends Generator {
                     .map(Member::getName)
                     .map(name -> "if (" + name + ".isEmpty()) throw new IllegalArgumentException(" + quote(name + " may not be empty") + ");")
             );
-            eol();
+            emptyLine();
         }
     }
 

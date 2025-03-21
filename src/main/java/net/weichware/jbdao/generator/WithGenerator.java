@@ -21,7 +21,7 @@ public class WithGenerator extends Generator {
     }
 
     private void appendWith(Member member) {
-        eol();
+        emptyLine();
         appendLine("public %s with%s(%s %s) {",
                 specification.getName(),
                 NameUtil.firstCharacterUpper(member.getName()),

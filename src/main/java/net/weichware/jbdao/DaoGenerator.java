@@ -1,6 +1,7 @@
 package net.weichware.jbdao;
 
 import net.weichware.jbdao.generator.AllArgsConstructor;
+import net.weichware.jbdao.generator.GetterGenerator;
 import net.weichware.jbdao.generator.ResultSetConstructor;
 import net.weichware.jbdao.generator.WithGenerator;
 import net.weichware.jbdao.spec.Member;
@@ -28,6 +29,7 @@ public class DaoGenerator extends ClassWriter {
         appendLines(members.stream().map(this::memberDefinition));
         append(new AllArgsConstructor(specification));
         append(new ResultSetConstructor(specification));
+        append(new GetterGenerator(specification));
         append(new WithGenerator(specification));
         appendLine("}");
         writeSource(outputPath);

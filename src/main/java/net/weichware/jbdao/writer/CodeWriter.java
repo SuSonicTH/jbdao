@@ -29,7 +29,7 @@ public class CodeWriter {
         importSet.addAll(Arrays.asList(clazz));
     }
 
-    protected void eol() {
+    protected void emptyLine() {
         code.append("\n");
     }
 
