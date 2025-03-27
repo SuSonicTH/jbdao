@@ -31,6 +31,7 @@ public class DaoGenerator extends ClassWriter {
         append(new GetterGenerator(specification));
         append(new WithGenerator(specification));
         append(new ToStringGenerator(specification));
+        append(new HashEqualsGenerator(specification));
         appendLine("}");
         writeSource(outputPath);
     }

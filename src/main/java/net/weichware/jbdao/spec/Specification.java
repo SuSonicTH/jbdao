@@ -22,6 +22,7 @@ public class Specification {
     private boolean with;
     private Boolean allArgsConstructor;
     private Boolean toString;
+    private Boolean hashEquals;
 
     public static Specification readSpec(String spec) {
         return new Gson().fromJson(spec, Specification.class);
@@ -97,5 +98,12 @@ public class Specification {
             toString = true;
         }
         return toString;
+    }
+
+    public Boolean generateHashEquals() {
+        if (hashEquals == null) {
+            hashEquals = true;
+        }
+        return hashEquals;
     }
 }

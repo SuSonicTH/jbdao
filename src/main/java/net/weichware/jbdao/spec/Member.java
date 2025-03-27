@@ -16,6 +16,7 @@ public class Member {
     private Boolean with;
     private Boolean getter;
     private Boolean toString;
+    private Boolean hashEquals;
 
     public String getName() {
         return name;
@@ -30,6 +31,13 @@ public class Member {
             toString = true;
         }
         return toString;
+    }
+
+    public Boolean generateHashEquals() {
+        if (hashEquals == null) {
+            hashEquals = true;
+        }
+        return hashEquals;
     }
 
     public Boolean generateGetter() {
