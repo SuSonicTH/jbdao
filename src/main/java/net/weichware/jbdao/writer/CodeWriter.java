@@ -63,8 +63,6 @@ public class CodeWriter {
         code.append(getIndent());
         append(line);
         code.append("\n");
-
-        indentIfNeeded(line);
     }
 
     protected void appendLine(String format, Object... args) {
@@ -93,8 +91,16 @@ public class CodeWriter {
         indent++;
     }
 
+    protected void indent(int level) {
+        indent += level;
+    }
+
     protected void outdent() {
         indent--;
+    }
+
+    protected void outdent(int level) {
+        indent -= level;
     }
 
     protected String getIndent() {

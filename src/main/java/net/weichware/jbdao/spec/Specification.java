@@ -21,6 +21,7 @@ public class Specification {
     private boolean csv;
     private boolean with;
     private Boolean allArgsConstructor;
+    private Boolean toString;
 
     public static Specification readSpec(String spec) {
         return new Gson().fromJson(spec, Specification.class);
@@ -89,5 +90,12 @@ public class Specification {
 
     public boolean generateDatabase() {
         return database;
+    }
+
+    public Boolean generateToString() {
+        if (toString == null) {
+            toString = true;
+        }
+        return toString;
     }
 }

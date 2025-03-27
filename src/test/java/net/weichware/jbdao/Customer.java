@@ -51,4 +51,13 @@ public class Customer {
     public Customer withBirthDate(LocalDate birthDate) {
         return new Customer(firstName, lastName, birthDate);
     }
+
+    @Override
+    public String toString() {
+        return "Customer{" +
+                "firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", birthDate=" + birthDate +
+                '}';
+    }
 }

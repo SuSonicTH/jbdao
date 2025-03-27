@@ -3,6 +3,7 @@
   "name": "Customer",
   "database": true,
   "with": true,
+  "toString": true,
   "members": [
     {
       "name": "firstName",

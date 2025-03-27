@@ -15,6 +15,7 @@ public class Member {
     private Boolean acceptEmpty;
     private Boolean with;
     private Boolean getter;
+    private Boolean toString;
 
     public String getName() {
         return name;
@@ -22,6 +23,13 @@ public class Member {
 
     public String getType() {
         return type;
+    }
+
+    public Boolean generateToString() {
+        if (toString == null) {
+            toString = true;
+        }
+        return toString;
     }
 
     public Boolean generateGetter() {
