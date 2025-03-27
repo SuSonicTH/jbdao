@@ -1,8 +1,8 @@
 package net.weichware.jbdao.generator;
 
 import net.weichware.jbdao.spec.Member;
-import net.weichware.jbdao.spec.NameUtil;
 import net.weichware.jbdao.spec.Specification;
+import net.weichware.jbdao.util.NameUtil;
 import net.weichware.jbdao.writer.Generator;
 
 import static java.util.stream.Collectors.joining;

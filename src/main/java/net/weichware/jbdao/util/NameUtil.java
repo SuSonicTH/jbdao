@@ -1,4 +1,4 @@
-package net.weichware.jbdao.spec;
+package net.weichware.jbdao.util;
 
 import java.util.ArrayList;
 import java.util.List;

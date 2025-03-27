@@ -6,6 +6,7 @@ import net.weichware.jbdao.generator.ResultSetConstructor;
 import net.weichware.jbdao.generator.WithGenerator;
 import net.weichware.jbdao.spec.Member;
 import net.weichware.jbdao.spec.Specification;
+import net.weichware.jbdao.util.ClassUtil;
 import net.weichware.jbdao.writer.ClassWriter;
 
 import java.io.IOException;
@@ -27,12 +28,26 @@ public class DaoGenerator extends ClassWriter {
     public void generate() throws IOException {
         appendLine("public class %s {", specification.getName());
         appendLines(members.stream().map(this::memberDefinition));
+        memberImports();
         append(new AllArgsConstructor(specification));
         append(new ResultSetConstructor(specification));
         append(new GetterGenerator(specification));
         append(new WithGenerator(specification));
         appendLine("}");
         writeSource(outputPath);
+    }
+
+    private void memberImports() {
+        for (Member member : members) {
+            if (!ClassUtil.javaBuildIn.contains(member.getType())) {
+                String clazz = ClassUtil.knownClasses.get(member.getType());
+                if (clazz != null) {
+                    addImport(clazz);
+                } else {
+                    throw new IllegalArgumentException("type '" + member.getType() + " for member variable '" + member.getName() + "' is unknown");
+                }
+            }
+        }
     }
 
     private String memberDefinition(Member member) {

@@ -1,6 +1,7 @@
 package net.weichware.jbdao.spec;
 
 import com.google.gson.Gson;
+import net.weichware.jbdao.util.NameUtil;
 
 import java.util.List;
 

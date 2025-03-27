@@ -1,6 +1,8 @@
 package net.weichware.jbdao.spec;
 
 
+import net.weichware.jbdao.util.NameUtil;
+
 public class Member {
     private String name;
     private String type;
