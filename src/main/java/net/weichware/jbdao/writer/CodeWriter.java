@@ -1,6 +1,12 @@
 package net.weichware.jbdao.writer;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Formatter;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Stream;
 
 public class CodeWriter {
@@ -8,6 +14,7 @@ public class CodeWriter {
     private final Set<String> importSet = new HashSet<>();
     private final StringBuilder code = new StringBuilder();
     private int indent;
+    private final List<String> privateClasses = new ArrayList<>();
 
     protected CodeWriter(int indent) {
         this.indent = indent;
@@ -25,6 +32,14 @@ public class CodeWriter {
         return importSet;
     }
 
+    protected void addPrivateClass(String text) {
+        privateClasses.add(text);
+    }
+
+    public List<String> getPrivateClasses() {
+        return privateClasses;
+    }
+
     protected void addImport(String... clazz) {
         importSet.addAll(Arrays.asList(clazz));
     }
@@ -39,6 +54,7 @@ public class CodeWriter {
 
     protected void append(CodeWriter codeWriter) {
         importSet.addAll(codeWriter.importSet);
+        privateClasses.addAll(codeWriter.getPrivateClasses());
         code.append(codeWriter.getCode());
     }
 

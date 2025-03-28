@@ -2,6 +2,7 @@ package net.weichware.jbdao.generator;
 
 import net.weichware.jbdao.spec.Member;
 import net.weichware.jbdao.spec.Specification;
+import net.weichware.jbdao.util.ClassUtil;
 import net.weichware.jbdao.writer.Generator;
 
 import static java.util.stream.Collectors.joining;
@@ -36,6 +37,7 @@ public class AllArgsConstructor extends Generator {
             addImport("java.util.Objects");
             appendLines(members.stream()
                     .filter(member -> !member.getNullable())
+                    .filter(member -> !ClassUtil.primitiveToObjectMap.containsKey(member.getType()))
                     .map(Member::getName)
                     .map(name -> String.format("Objects.requireNonNull(%s, \"%s my not be null\");", name, name))
             );

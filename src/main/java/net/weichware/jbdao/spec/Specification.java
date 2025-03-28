@@ -4,6 +4,8 @@ import com.google.gson.Gson;
 import net.weichware.jbdao.util.NameUtil;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class Specification {
     private String packagePath;
@@ -105,5 +107,16 @@ public class Specification {
             hashEquals = true;
         }
         return hashEquals;
+    }
+
+    public Optional<Member> getPrimary() {
+        List<Member> primaries = members.stream().filter(Member::isPrimary).collect(Collectors.toList());
+        if (primaries.isEmpty()) {
+            return Optional.empty();
+        } else if (primaries.size() == 1) {
+            return Optional.of(primaries.get(0));
+        } else {
+            throw new SpecificationException("More then one primary columns are not supported, members in " + getName() + " with primary flag :" + members.stream().map(Member::getName).collect(Collectors.joining(",")));
+        }
     }
 }

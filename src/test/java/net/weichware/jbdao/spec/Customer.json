@@ -6,6 +6,11 @@
   "toString": true,
   "members": [
     {
+      "name": "id",
+      "type": "long",
+      "primary": true
+    },
+    {
       "name": "firstName",
       "type": "String"
     },

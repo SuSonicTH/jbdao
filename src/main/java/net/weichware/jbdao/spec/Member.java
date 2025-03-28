@@ -17,6 +17,7 @@ public class Member {
     private Boolean getter;
     private Boolean toString;
     private Boolean hashEquals;
+    private boolean primary;
 
     public String getName() {
         return name;
@@ -24,6 +25,10 @@ public class Member {
 
     public String getType() {
         return type;
+    }
+
+    public boolean isPrimary() {
+        return primary;
     }
 
     public Boolean generateToString() {
@@ -102,4 +107,5 @@ public class Member {
         }
         return jsonName;
     }
+
 }

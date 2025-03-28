@@ -1,6 +1,12 @@
 package net.weichware.jbdao;
 
-import net.weichware.jbdao.generator.*;
+import net.weichware.jbdao.generator.AllArgsConstructor;
+import net.weichware.jbdao.generator.DatabaseGetGenerator;
+import net.weichware.jbdao.generator.GetterGenerator;
+import net.weichware.jbdao.generator.HashEqualsGenerator;
+import net.weichware.jbdao.generator.ResultSetConstructor;
+import net.weichware.jbdao.generator.ToStringGenerator;
+import net.weichware.jbdao.generator.WithGenerator;
 import net.weichware.jbdao.spec.Member;
 import net.weichware.jbdao.spec.Specification;
 import net.weichware.jbdao.util.ClassUtil;
@@ -30,8 +36,10 @@ public class DaoGenerator extends ClassWriter {
         append(new ResultSetConstructor(specification));
         append(new GetterGenerator(specification));
         append(new WithGenerator(specification));
+        append(new DatabaseGetGenerator(specification));
         append(new ToStringGenerator(specification));
         append(new HashEqualsGenerator(specification));
+        append(getPrivateClasses());
         appendLine("}");
         writeSource(outputPath);
     }
