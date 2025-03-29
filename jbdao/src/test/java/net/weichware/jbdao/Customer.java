@@ -41,16 +41,8 @@ public class Customer {
         birthDate = resultSet.getObject("BIRTH_DATE", LocalDate.class);
     }
 
-    public static Optional<Customer> get(Connection connection, long id) throws SQLException {
-        try (PreparedStatement preparedStatement = connection.prepareStatement("select ID, FIRST_NAME, LAST_NAME, BIRTH_DATE from CUSTOMER where id = ?")) {
-            preparedStatement.setObject(1, id);
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                if (resultSet.next()) {
-                    return Optional.of(new Customer(resultSet));
-                }
-            }
-        }
-        return Optional.empty();
+    public long getId() {
+        return id;
     }
 
     public String getFirstName() {
@@ -63,6 +55,34 @@ public class Customer {
 
     public LocalDate getBirthDate() {
         return birthDate;
+    }
+
+    public Customer withId(long id) {
+        return new Customer(id, firstName, lastName, birthDate);
+    }
+
+    public Customer withFirstName(String firstName) {
+        return new Customer(id, firstName, lastName, birthDate);
+    }
+
+    public Customer withLastName(String lastName) {
+        return new Customer(id, firstName, lastName, birthDate);
+    }
+
+    public Customer withBirthDate(LocalDate birthDate) {
+        return new Customer(id, firstName, lastName, birthDate);
+    }
+
+    public static Optional<Customer> get(Connection connection, long id) throws SQLException {
+        try (PreparedStatement preparedStatement = connection.prepareStatement("select ID, FIRST_NAME, LAST_NAME, BIRTH_DATE from CUSTOMER where id = ?")) {
+            preparedStatement.setObject(1, id);
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    return Optional.of(new Customer(resultSet));
+                }
+            }
+        }
+        return Optional.empty();
     }
 
     public static List<Customer> getList(Connection connection) throws SQLException {
@@ -92,26 +112,6 @@ public class Customer {
 
     public static Stream<Customer> stream(Connection connection, String sql, Object... args) throws SQLException {
         return StreamSupport.stream(new ResultSetSpliterator(connection, sql, args), false);
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public Customer withId(long id) {
-        return new Customer(id, firstName, lastName, birthDate);
-    }
-
-    public Customer withFirstName(String firstName) {
-        return new Customer(id, firstName, lastName, birthDate);
-    }
-
-    public Customer withLastName(String lastName) {
-        return new Customer(id, firstName, lastName, birthDate);
-    }
-
-    public Customer withBirthDate(LocalDate birthDate) {
-        return new Customer(id, firstName, lastName, birthDate);
     }
 
     @Override

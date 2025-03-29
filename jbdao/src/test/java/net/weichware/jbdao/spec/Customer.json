@@ -1,0 +1,27 @@
+{
+  "packagePath": "net.weichware.jbdao",
+  "name": "Customer",
+  "database": true,
+  "with": true,
+  "toString": true,
+  "members": [
+    {
+      "name": "id",
+      "type": "long",
+      "primary": true
+    },
+    {
+      "name": "firstName",
+      "type": "String"
+    },
+    {
+      "name": "lastName",
+      "type": "String"
+    },
+    {
+      "name": "birthDate",
+      "type": "LocalDate",
+      "nullable": true
+    }
+  ]
+}

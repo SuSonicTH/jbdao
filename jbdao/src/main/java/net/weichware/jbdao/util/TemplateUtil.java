@@ -17,7 +17,7 @@ public class TemplateUtil {
     }
 
     public static String getResourceFileAsString(String fileName) throws IOException {
-        ClassLoader classLoader = ClassLoader.getSystemClassLoader();
+        ClassLoader classLoader = TemplateUtil.class.getClassLoader();
         try (InputStream inputStream = classLoader.getResourceAsStream(fileName)) {
             if (inputStream == null) {
                 throw new IOException("Could not load resource " + fileName);

@@ -11,12 +11,17 @@ import net.weichware.jbdao.spec.Member;
 import net.weichware.jbdao.spec.Specification;
 import net.weichware.jbdao.util.ClassUtil;
 import net.weichware.jbdao.writer.ClassWriter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 public class DaoGenerator extends ClassWriter {
+    private static final Logger log = LoggerFactory.getLogger(DaoGenerator.class);
     private final Specification specification;
     private final List<Member> members;
     private final Path outputPath;
@@ -26,6 +31,14 @@ public class DaoGenerator extends ClassWriter {
         this.specification = specification;
         this.members = specification.getMembers();
         this.outputPath = outputPath;
+    }
+
+    public static void main(String[] args) throws IOException {
+        log.info("Starting jbdao godegen " + Paths.get("./").toAbsolutePath());
+        String spec = new String(Files.readAllBytes(Paths.get(args[0])));
+        Specification specification = Specification.readSpec(spec);
+        new DaoGenerator(specification, Paths.get(args[1])).generate();
+        log.info("Finished jbdao godegen");
     }
 
     public void generate() throws IOException {

@@ -24,10 +24,6 @@ public class ClassWriter extends CodeWriter {
         Files.write(outputFile, getCode().getBytes());
     }
 
-    public void writeSource(OutputStream outputStream) throws IOException {
-        outputStream.write(getCode().getBytes());
-    }
-
     public String getCode() {
         StringBuilder code = new StringBuilder();
 
