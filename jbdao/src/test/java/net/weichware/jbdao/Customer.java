@@ -73,8 +73,37 @@ public class Customer {
         return new Customer(id, firstName, lastName, birthDate);
     }
 
+    public Customer insert(Connection connection) throws SQLException {
+        try (PreparedStatement preparedStatement = connection.prepareStatement("insert into CUSTOMER (ID, FIRST_NAME, LAST_NAME, BIRTH_DATE) values(?, ?, ?, ?)")) {
+            preparedStatement.setObject(1, id);
+            preparedStatement.setObject(2, firstName);
+            preparedStatement.setObject(3, lastName);
+            preparedStatement.setObject(4, birthDate);
+            preparedStatement.execute();
+        }
+        return this;
+    }
+
+    public Customer update(Connection connection) throws SQLException {
+        try (PreparedStatement preparedStatement = connection.prepareStatement("update CUSTOMER set FIRST_NAME = ?, LAST_NAME = ?, BIRTH_DATE = ? where ID = ?")) {
+            preparedStatement.setObject(1, firstName);
+            preparedStatement.setObject(2, lastName);
+            preparedStatement.setObject(3, birthDate);
+            preparedStatement.setObject(4, id);
+            preparedStatement.execute();
+        }
+        return this;
+    }
+
+    public void delete(Connection connection) throws SQLException {
+        try (PreparedStatement preparedStatement = connection.prepareStatement("delete from CUSTOMER where ID = ?")) {
+            preparedStatement.setObject(1, id);
+            preparedStatement.execute();
+        }
+    }
+
     public static Optional<Customer> get(Connection connection, long id) throws SQLException {
-        try (PreparedStatement preparedStatement = connection.prepareStatement("select ID, FIRST_NAME, LAST_NAME, BIRTH_DATE from CUSTOMER where id = ?")) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement("select ID, FIRST_NAME, LAST_NAME, BIRTH_DATE from CUSTOMER where ID = ?")) {
             preparedStatement.setObject(1, id);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 if (resultSet.next()) {

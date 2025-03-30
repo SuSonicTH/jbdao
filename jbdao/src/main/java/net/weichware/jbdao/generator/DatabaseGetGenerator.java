@@ -46,8 +46,8 @@ public class DatabaseGetGenerator extends Generator {
         addImport("java.util.Optional");
         emptyLine();
         appendLine("public static Optional<Customer> get(Connection connection, long id) throws SQLException {");
-        appendLine("try (PreparedStatement preparedStatement = connection.prepareStatement(\"select ID, FIRST_NAME, LAST_NAME, BIRTH_DATE from CUSTOMER where id = ?\")) {");
-        appendLine("preparedStatement.setObject(1, id);");
+        appendLine("try (PreparedStatement preparedStatement = connection.prepareStatement(\"select %s from CUSTOMER where ID = ?\")) {", getColumns(), primary.getDatabaseName());
+        appendLine("preparedStatement.setObject(1, %s);", primary.getName());
         appendLine("try (ResultSet resultSet = preparedStatement.executeQuery()) {");
         appendLine("if (resultSet.next()) {");
         appendLine("return Optional.of(new Customer(resultSet));");
