@@ -5,6 +5,7 @@ import net.weichware.jbdao.generator.DatabaseGetGenerator;
 import net.weichware.jbdao.generator.DatabasePersistenceGenerator;
 import net.weichware.jbdao.generator.GetterGenerator;
 import net.weichware.jbdao.generator.HashEqualsGenerator;
+import net.weichware.jbdao.generator.JsonGenerator;
 import net.weichware.jbdao.generator.ResultSetConstructor;
 import net.weichware.jbdao.generator.ToStringGenerator;
 import net.weichware.jbdao.generator.WithGenerator;
@@ -52,6 +53,7 @@ public class DaoGenerator extends ClassWriter {
         append(new WithGenerator(specification));
         append(new DatabasePersistenceGenerator(specification));
         append(new DatabaseGetGenerator(specification));
+        append(new JsonGenerator(specification));
         append(new ToStringGenerator(specification));
         append(new HashEqualsGenerator(specification));
         append(getPrivateClasses());

@@ -109,6 +109,14 @@ public class Specification {
         return hashEquals;
     }
 
+    public boolean generateCsv() {
+        return csv;
+    }
+
+    public boolean generateJson() {
+        return json;
+    }
+
     public Optional<Member> getPrimary() {
         List<Member> primaries = members.stream().filter(Member::isPrimary).collect(Collectors.toList());
         if (primaries.isEmpty()) {

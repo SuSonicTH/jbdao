@@ -1,5 +1,16 @@
 package net.weichware.jbdao;
 
+import com.google.gson.Gson;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.Reader;
+import java.io.Writer;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -141,6 +152,38 @@ public class Customer {
 
     public static Stream<Customer> stream(Connection connection, String sql, Object... args) throws SQLException {
         return StreamSupport.stream(new ResultSetSpliterator(connection, sql, args), false);
+    }
+
+    public static Customer fromJson(String json) {
+        return new Gson().fromJson(json, Customer.class);
+    }
+
+    public static Customer fromJson(Reader jsonReader) {
+        return new Gson().fromJson(jsonReader, Customer.class);
+    }
+
+    public static Customer fromJson(InputStream jsonStream) throws IOException {
+        try (Reader jsonReader = new InputStreamReader(jsonStream)) {
+            return new Gson().fromJson(jsonReader, Customer.class);
+        }
+    }
+
+    public static Customer fromJson(Path jsonFile) throws IOException {
+        try (Reader jsonReader = new InputStreamReader(Files.newInputStream(jsonFile))) {
+            return new Gson().fromJson(jsonReader, Customer.class);
+        }
+    }
+
+    public String toJson() {
+        return new Gson().toJson(this);
+    }
+
+    public void writeJson(Writer writer) throws IOException {
+        writer.write(toJson());
+    }
+
+    public void writeJson(OutputStream outputStream) throws IOException {
+        outputStream.write(toJson().getBytes(StandardCharsets.UTF_8));
     }
 
     @Override
