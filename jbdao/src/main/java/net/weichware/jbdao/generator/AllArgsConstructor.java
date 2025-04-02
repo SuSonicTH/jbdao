@@ -39,7 +39,7 @@ public class AllArgsConstructor extends Generator {
                     .filter(member -> !member.getNullable())
                     .filter(member -> !ClassUtil.primitiveToObjectMap.containsKey(member.getType()))
                     .map(Member::getName)
-                    .map(name -> String.format("Objects.requireNonNull(%s, \"%s my not be null\");", name, name))
+                    .map(name -> String.format("Objects.requireNonNull(%s, \"%s may not be null\");", name, name))
             );
             emptyLine();
         }

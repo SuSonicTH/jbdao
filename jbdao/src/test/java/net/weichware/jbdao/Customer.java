@@ -33,8 +33,8 @@ public class Customer {
     private final LocalDate birthDate;
 
     public Customer(long id, String firstName, String lastName, LocalDate birthDate) {
-        Objects.requireNonNull(firstName, "firstName my not be null");
-        Objects.requireNonNull(lastName, "lastName my not be null");
+        Objects.requireNonNull(firstName, "firstName may not be null");
+        Objects.requireNonNull(lastName, "lastName may not be null");
 
         if (firstName.isEmpty()) throw new IllegalArgumentException("firstName may not be empty");
         if (lastName.isEmpty()) throw new IllegalArgumentException("lastName may not be empty");
@@ -46,7 +46,7 @@ public class Customer {
     }
 
     private Customer(ResultSet resultSet) throws SQLException {
-        id = resultSet.getObject("ID", long.class);
+        id = resultSet.getObject("ID", Long.class);
         firstName = resultSet.getObject("FIRST_NAME", String.class);
         lastName = resultSet.getObject("LAST_NAME", String.class);
         birthDate = resultSet.getObject("BIRTH_DATE", LocalDate.class);

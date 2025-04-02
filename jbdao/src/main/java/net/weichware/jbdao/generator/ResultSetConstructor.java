@@ -1,6 +1,7 @@
 package net.weichware.jbdao.generator;
 
 import net.weichware.jbdao.spec.Specification;
+import net.weichware.jbdao.util.ClassUtil;
 import net.weichware.jbdao.writer.Generator;
 
 public class ResultSetConstructor extends Generator {
@@ -18,7 +19,7 @@ public class ResultSetConstructor extends Generator {
         emptyLine();
         appendLine("private %s(ResultSet resultSet) throws SQLException {", specification.getName());
         appendLines(members.stream().map(member ->
-                member.getName() + " = resultSet.getObject(" + quote(member.getDatabaseName()) + ", " + member.getType() + ".class);")
+                member.getName() + " = resultSet.getObject(" + quote(member.getDatabaseName()) + ", " + ClassUtil.primitiveToObjectMap.getOrDefault(member.getType(), member.getType()) + ".class);")
         );
         appendLine("}");
 
