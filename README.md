@@ -8,3 +8,10 @@ a Java library to generate DAO classes at compile time
 * automatically convert primitive to object types for members if non-nullable (needs refactor in resultSetGenerator)
 * implement member default values (to be used in builder and fromJson)
 * update checks nr of updated rows and throws if zero
+* implement builder
+* implement from/to csv (inkl. read csv file as list and write list as csv file)
+
+## TBD
+
+* implement servlet for put/get/patch ?
+* implement validations? (min/max,pattern) 
