@@ -11,6 +11,14 @@ import java.util.Objects;
 public class TestDatabase implements AutoCloseable {
     private final Connection connection;
 
+    static {
+        try {
+            Class.forName("org.h2.Driver");
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public TestDatabase(TestInfo testInfo) throws SQLException {
         Objects.requireNonNull(testInfo, "testInfo may not be null");
         String dbName = testInfo.getTestClass().get().getSimpleName() + "_" + testInfo.getTestMethod().get().getName();

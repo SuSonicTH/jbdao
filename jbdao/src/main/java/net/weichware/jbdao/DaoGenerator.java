@@ -12,11 +12,13 @@ import net.weichware.jbdao.generator.WithGenerator;
 import net.weichware.jbdao.spec.Member;
 import net.weichware.jbdao.spec.Specification;
 import net.weichware.jbdao.util.ClassUtil;
+import net.weichware.jbdao.util.TemplateUtil;
 import net.weichware.jbdao.writer.ClassWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -27,6 +29,7 @@ public class DaoGenerator extends ClassWriter {
     private final Specification specification;
     private final List<Member> members;
     private final Path outputPath;
+    private static boolean gsonUtilWhrtitten;
 
     public DaoGenerator(Specification specification, Path outputPath) {
         super(specification.getPackagePath(), specification.getName());
@@ -59,6 +62,17 @@ public class DaoGenerator extends ClassWriter {
         append(getPrivateClasses());
         appendLine("}");
         writeSource(outputPath);
+        writeUtils();
+    }
+
+    private void writeUtils() throws IOException {
+        if (!gsonUtilWhrtitten) {
+            Path path = outputPath.resolve("net/weichware/jbdao");
+            Path outputFile = path.resolve("GsonUtil.java");
+            Files.createDirectories(outputPath);
+            Files.write(outputFile, TemplateUtil.getResourceFileAsString("GsonUtil.java").getBytes(StandardCharsets.UTF_8));
+            gsonUtilWhrtitten = true;
+        }
     }
 
     private void memberImports() {

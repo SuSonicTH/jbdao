@@ -1,8 +1,9 @@
 {
   "packagePath": "net.weichware.jbdao",
   "name": "Customer",
-  "database": true,
   "with": true,
+  "database": true,
+  "json": true,
   "toString": true,
   "members": [
     {

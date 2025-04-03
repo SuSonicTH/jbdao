@@ -1,8 +1,20 @@
 package net.weichware.jbdao;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -13,8 +25,17 @@ import java.util.stream.Collectors;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class CustomerTest {
+    private static final Path TEST_PATH = Paths.get("./target/test");
+    private static final String CUSTOMER_JSON = "{\"id\":1,\"firstName\":\"Michael\",\"lastName\":\"Wolf\",\"birthDate\":\"1980-03-20\"}";
     private final Customer customer = new Customer(1, "Michael", "Wolf", LocalDate.of(1980, 3, 20));
     private final Customer customer2 = new Customer(2, "Michaela", "Gruber", LocalDate.of(1985, 5, 23));
+
+    @BeforeAll
+    static void beforeAll() throws IOException {
+        if (!Files.exists(TEST_PATH)) {
+            Files.createDirectories(TEST_PATH);
+        }
+    }
 
     @Test
     void firstNameNullThrows() {
@@ -225,6 +246,62 @@ public class CustomerTest {
             assertEquals(1, actual.size());
         }
     }
+
+    @Test
+    void fromJson() {
+        assertEquals(customer, Customer.fromJson(CUSTOMER_JSON));
+    }
+
+    @Test
+    void fromJsonReader() throws IOException {
+        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(CUSTOMER_JSON.getBytes());
+        try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(byteArrayInputStream))) {
+            assertEquals(customer, Customer.fromJson(bufferedReader));
+        }
+    }
+
+    @Test
+    void fromJsonInputStream() throws IOException {
+        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(CUSTOMER_JSON.getBytes());
+        assertEquals(customer, Customer.fromJson(byteArrayInputStream));
+    }
+
+    @Test
+    void fromJsonFile() throws IOException {
+        Path file = TEST_PATH.resolve("customer.json");
+        Files.write(file, CUSTOMER_JSON.getBytes(StandardCharsets.UTF_8));
+
+        assertEquals(customer, Customer.fromJson(file));
+    }
+
+    @Test
+    void toJson() {
+        assertEquals(CUSTOMER_JSON, customer.toJson());
+    }
+
+    @Test
+    void toJsonWriter() throws IOException {
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        try (BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(byteArrayOutputStream))) {
+            customer.toJson(bufferedWriter);
+        }
+        assertEquals(CUSTOMER_JSON, byteArrayOutputStream.toString());
+    }
+
+    @Test
+    void toJsonOutputStream() throws IOException {
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        customer.toJson(byteArrayOutputStream);
+        assertEquals(CUSTOMER_JSON, byteArrayOutputStream.toString());
+    }
+
+    @Test
+    void toJsonFile() throws IOException {
+        Path file = TEST_PATH.resolve("newCustomer.json");
+        customer.toJson(file);
+        assertEquals(CUSTOMER_JSON, new String(Files.readAllBytes(file)));
+    }
+
 
     private TestDatabase setupTestDatabase(TestInfo testInfo) throws SQLException {
         TestDatabase testDatabase = new TestDatabase(testInfo);

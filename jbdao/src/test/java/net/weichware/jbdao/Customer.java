@@ -1,6 +1,6 @@
 package net.weichware.jbdao;
 
-import com.google.gson.Gson;
+import net.weichware.jbdao.GsonUtil;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -155,35 +155,39 @@ public class Customer {
     }
 
     public static Customer fromJson(String json) {
-        return new Gson().fromJson(json, Customer.class);
+        return GsonUtil.gson.fromJson(json, Customer.class);
     }
 
     public static Customer fromJson(Reader jsonReader) {
-        return new Gson().fromJson(jsonReader, Customer.class);
+        return GsonUtil.gson.fromJson(jsonReader, Customer.class);
     }
 
     public static Customer fromJson(InputStream jsonStream) throws IOException {
         try (Reader jsonReader = new InputStreamReader(jsonStream)) {
-            return new Gson().fromJson(jsonReader, Customer.class);
+            return GsonUtil.gson.fromJson(jsonReader, Customer.class);
         }
     }
 
     public static Customer fromJson(Path jsonFile) throws IOException {
         try (Reader jsonReader = new InputStreamReader(Files.newInputStream(jsonFile))) {
-            return new Gson().fromJson(jsonReader, Customer.class);
+            return GsonUtil.gson.fromJson(jsonReader, Customer.class);
         }
     }
 
     public String toJson() {
-        return new Gson().toJson(this);
+        return GsonUtil.gson.toJson(this);
     }
 
-    public void writeJson(Writer writer) throws IOException {
+    public void toJson(Writer writer) throws IOException {
         writer.write(toJson());
     }
 
-    public void writeJson(OutputStream outputStream) throws IOException {
+    public void toJson(OutputStream outputStream) throws IOException {
         outputStream.write(toJson().getBytes(StandardCharsets.UTF_8));
+    }
+
+    public void toJson(Path jsonFile) throws IOException {
+        Files.write(jsonFile, toJson().getBytes(StandardCharsets.UTF_8));
     }
 
     @Override
