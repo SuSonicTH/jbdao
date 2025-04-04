@@ -6,6 +6,7 @@ import net.weichware.jbdao.generator.DatabasePersistenceGenerator;
 import net.weichware.jbdao.generator.GetterGenerator;
 import net.weichware.jbdao.generator.HashEqualsGenerator;
 import net.weichware.jbdao.generator.JsonGenerator;
+import net.weichware.jbdao.generator.NoArgsConstructor;
 import net.weichware.jbdao.generator.ResultSetConstructor;
 import net.weichware.jbdao.generator.ToStringGenerator;
 import net.weichware.jbdao.generator.WithGenerator;
@@ -50,6 +51,7 @@ public class DaoGenerator extends ClassWriter {
         appendLine("public class %s {", specification.getName());
         appendLines(members.stream().map(this::memberDefinition));
         memberImports();
+        append(new NoArgsConstructor(specification));
         append(new AllArgsConstructor(specification));
         append(new ResultSetConstructor(specification));
         append(new GetterGenerator(specification));

@@ -23,6 +23,7 @@ public class Specification {
     private boolean csv;
     private boolean with;
     private Boolean allArgsConstructor;
+    private boolean noArgsConstructor;
     private Boolean toString;
     private Boolean hashEquals;
 
@@ -47,6 +48,10 @@ public class Specification {
             allArgsConstructor = true;
         }
         return allArgsConstructor;
+    }
+
+    public boolean hasNoArgsConstructor() {
+        return noArgsConstructor;
     }
 
     public String getDatabaseName() {
