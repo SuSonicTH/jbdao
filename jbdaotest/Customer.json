@@ -5,6 +5,7 @@
   "database": true,
   "json": true,
   "toString": true,
+  "builder": true,
   "members": [
     {
       "name": "id",
@@ -22,6 +23,21 @@
     {
       "name": "birthDate",
       "type": "LocalDate",
+      "nullable": true
+    },
+    {
+      "name": "address",
+      "type": "String",
+      "nullable": true
+    },
+    {
+      "name": "country",
+      "type": "String",
+      "nullable": true
+    },
+    {
+      "name": "postalCode",
+      "type": "String",
       "nullable": true
     }
   ]

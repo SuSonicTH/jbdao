@@ -18,12 +18,15 @@ public class Specification {
     private String csvName;
     private String jsonName;
 
+    private Boolean allArgsConstructor;
+    private boolean noArgsConstructor;
+
+    private boolean with;
     private boolean database;
     private boolean json;
     private boolean csv;
-    private boolean with;
-    private Boolean allArgsConstructor;
-    private boolean noArgsConstructor;
+    private boolean builder;
+
     private Boolean toString;
     private Boolean hashEquals;
 
@@ -83,13 +86,13 @@ public class Specification {
     }
 
     public boolean hasNonNullable() {
-        return members.stream().anyMatch(member -> !member.getNullable());
+        return members.stream().anyMatch(member -> !member.isNullable());
     }
 
     public boolean hasNonEmpty() {
         return members.stream()
                 .filter(member -> member.getType().equals("String"))
-                .anyMatch(Member::getNotAcceptEmpty);
+                .anyMatch(Member::acceptsEmpty);
     }
 
     public boolean generateWith() {
@@ -131,5 +134,9 @@ public class Specification {
         } else {
             throw new SpecificationException("More then one primary columns are not supported, members in " + getName() + " with primary flag :" + members.stream().map(Member::getName).collect(Collectors.joining(",")));
         }
+    }
+
+    public boolean hasBuilder() {
+        return builder;
     }
 }

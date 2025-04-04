@@ -36,7 +36,7 @@ public class AllArgsConstructor extends Generator {
         if (specification.hasNonNullable()) {
             addImport("java.util.Objects");
             appendLines(members.stream()
-                    .filter(member -> !member.getNullable())
+                    .filter(member -> !member.isNullable())
                     .filter(member -> !ClassUtil.primitiveToObjectMap.containsKey(member.getType()))
                     .map(Member::getName)
                     .map(name -> String.format("Objects.requireNonNull(%s, \"%s may not be null\");", name, name))
@@ -49,7 +49,7 @@ public class AllArgsConstructor extends Generator {
         if (specification.hasNonEmpty()) {
             appendLines(members.stream()
                     .filter(member -> member.getType().equals("String"))
-                    .filter(Member::getNotAcceptEmpty)
+                    .filter(Member::acceptsEmpty)
                     .map(Member::getName)
                     .map(name -> "if (" + name + ".isEmpty()) throw new IllegalArgumentException(" + quote(name + " may not be empty") + ");")
             );

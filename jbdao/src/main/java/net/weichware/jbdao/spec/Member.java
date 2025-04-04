@@ -6,10 +6,13 @@ import net.weichware.jbdao.util.NameUtil;
 public class Member {
     private String name;
     private String type;
+
     private String databaseName;
     private String csvName;
     private String jsonName;
     private String displayName;
+
+    private boolean primary;
     private Boolean immutable;
     private Boolean nullable;
     private Boolean acceptEmpty;
@@ -17,7 +20,6 @@ public class Member {
     private Boolean getter;
     private Boolean toString;
     private Boolean hashEquals;
-    private boolean primary;
 
     public String getName() {
         return name;
@@ -52,23 +54,27 @@ public class Member {
         return getter;
     }
 
-    public Boolean getImmutable() {
+    public Boolean isImmutable() {
         if (immutable == null) {
             immutable = true;
         }
         return immutable;
     }
 
-    public Boolean getNullable() {
+    public Boolean isNullable() {
         if (nullable == null) {
             nullable = false;
         }
         return nullable;
     }
 
-    public boolean getNotAcceptEmpty() {
+    public Boolean isNotNullable() {
+        return !isNullable();
+    }
+
+    public boolean acceptsEmpty() {
         if (acceptEmpty == null) {
-            acceptEmpty = false;
+            acceptEmpty = isNullable();
         }
         return !acceptEmpty;
     }

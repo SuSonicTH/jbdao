@@ -1,6 +1,7 @@
 package net.weichware.jbdao;
 
 import net.weichware.jbdao.generator.AllArgsConstructor;
+import net.weichware.jbdao.generator.BuilderGenerator;
 import net.weichware.jbdao.generator.DatabaseGetGenerator;
 import net.weichware.jbdao.generator.DatabasePersistenceGenerator;
 import net.weichware.jbdao.generator.GetterGenerator;
@@ -59,6 +60,7 @@ public class DaoGenerator extends ClassWriter {
         append(new DatabasePersistenceGenerator(specification));
         append(new DatabaseGetGenerator(specification));
         append(new JsonGenerator(specification));
+        append(new BuilderGenerator(specification));
         append(new ToStringGenerator(specification));
         append(new HashEqualsGenerator(specification));
         append(getPrivateClasses());
@@ -92,7 +94,7 @@ public class DaoGenerator extends ClassWriter {
 
     private String memberDefinition(Member member) {
         return String.format("private%s%s %s;",
-                member.getImmutable() ? " final " : " ",
+                member.isImmutable() ? " final " : " ",
                 member.getType(),
                 member.getName()
         );

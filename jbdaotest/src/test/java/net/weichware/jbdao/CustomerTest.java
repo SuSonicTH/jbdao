@@ -27,8 +27,8 @@ import static org.junit.jupiter.api.Assertions.*;
 public class CustomerTest {
     private static final Path TEST_PATH = Paths.get("./target/test");
     private static final String CUSTOMER_JSON = "{\"id\":1,\"firstName\":\"Michael\",\"lastName\":\"Wolf\",\"birthDate\":\"1980-03-20\"}";
-    private final Customer customer = new Customer(1, "Michael", "Wolf", LocalDate.of(1980, 3, 20));
-    private final Customer customer2 = new Customer(2, "Michaela", "Gruber", LocalDate.of(1985, 5, 23));
+    private final Customer customer = new Customer(1, "Michael", "Wolf", LocalDate.of(1980, 3, 20), null, null, null);
+    private final Customer customer2 = new Customer(2, "Michaela", "Gruber", LocalDate.of(1985, 5, 23), "Somestreet 20", "Austria", "1010");
 
     @BeforeAll
     static void beforeAll() throws IOException {
@@ -40,34 +40,35 @@ public class CustomerTest {
     @Test
     void firstNameNullThrows() {
         assertEquals("firstName may not be null",
-                assertThrows(NullPointerException.class, () -> new Customer(1, null, "Wolf", LocalDate.of(1980, 3, 20))).getMessage()
+                assertThrows(NullPointerException.class, () -> new Customer(1, null, "Wolf", LocalDate.of(1980, 3, 20), null, null, null)).getMessage()
         );
     }
 
     @Test
     void emptyNameThrows() {
         assertEquals("firstName may not be empty",
-                assertThrows(IllegalArgumentException.class, () -> new Customer(1, "", "Wolf", LocalDate.of(1980, 3, 20))).getMessage()
+                assertThrows(IllegalArgumentException.class, () -> new Customer(1, "", "Wolf", LocalDate.of(1980, 3, 20), null, null, null)).getMessage()
         );
     }
 
     @Test
     void lastNameNullThrows() {
         assertEquals("lastName may not be null",
-                assertThrows(NullPointerException.class, () -> new Customer(1, "Michael", null, LocalDate.of(1980, 3, 20))).getMessage()
+                assertThrows(NullPointerException.class, () -> new Customer(1, "Michael", null, LocalDate.of(1980, 3, 20), null, null, null)).getMessage()
         );
     }
 
     @Test
     void lastNameEmptyThrows() {
         assertEquals("lastName may not be empty",
-                assertThrows(IllegalArgumentException.class, () -> new Customer(1, "Michael", "", LocalDate.of(1980, 3, 20))).getMessage()
+                assertThrows(IllegalArgumentException.class, () -> new Customer(1, "Michael", "", LocalDate.of(1980, 3, 20), null, null, null)).getMessage()
         );
     }
 
     @Test
     void toStringTest() {
-        assertEquals("Customer{id=1, firstName='Michael', lastName='Wolf', birthDate=1980-03-20}", customer.toString());
+        assertEquals("Customer{id=1, firstName='Michael', lastName='Wolf', birthDate=1980-03-20, address='null', country='null', postalCode='null'}", customer.toString());
+        assertEquals("Customer{id=2, firstName='Michaela', lastName='Gruber', birthDate=1985-05-23, address='Somestreet 20', country='Austria', postalCode='1010'}", customer2.toString());
     }
 
     @Test
@@ -76,6 +77,12 @@ public class CustomerTest {
         assertEquals("Michael", customer.getFirstName());
         assertEquals("Wolf", customer.getLastName());
         assertEquals(LocalDate.of(1980, 3, 20), customer.getBirthDate());
+        assertNull(customer.getAddress());
+        assertNull(customer.getCountry());
+        assertNull(customer.getPostalCode());
+        assertEquals("Somestreet 20", customer2.getAddress());
+        assertEquals("Austria", customer2.getCountry());
+        assertEquals("1010", customer2.getPostalCode());
     }
 
     @Test
@@ -84,38 +91,45 @@ public class CustomerTest {
                 .withId(2)
                 .withFirstName("Michaela")
                 .withLastName("Gruber")
-                .withBirthDate(LocalDate.of(1985, 5, 23));
+                .withBirthDate(LocalDate.of(1985, 5, 23))
+                .withAddress("A-street 10")
+                .withCountry("Germany")
+                .withPostalCode("12345");
+
 
         assertEquals(2, withCustomer.getId());
         assertEquals("Michaela", withCustomer.getFirstName());
         assertEquals("Gruber", withCustomer.getLastName());
         assertEquals(LocalDate.of(1985, 5, 23), withCustomer.getBirthDate());
+        assertEquals("A-street 10", withCustomer.getAddress());
+        assertEquals("Germany", withCustomer.getCountry());
+        assertEquals("12345", withCustomer.getPostalCode());
     }
 
     @Test
     void hashCodeTest() {
         assertEquals(customer.hashCode(), customer.hashCode());
-        assertEquals(customer.hashCode(), new Customer(1, "Michael", "Wolf", LocalDate.of(1980, 3, 20)).hashCode());
+        assertEquals(customer.hashCode(), new Customer(1, "Michael", "Wolf", LocalDate.of(1980, 3, 20), null, null, null).hashCode());
         assertNotEquals(customer, customer2);
 
-        assertEquals(customer2.hashCode(), new Customer(2, "Michaela", "Gruber", LocalDate.of(1985, 5, 23)).hashCode());
+        assertEquals(customer2.hashCode(), new Customer(2, "Michaela", "Gruber", LocalDate.of(1985, 5, 23), "Somestreet 20", "Austria", "1010").hashCode());
     }
 
     @Test
     void equalsTest() {
-        assertTrue(customer.equals(customer));
+        assertEquals(customer, customer);
 
-        Customer equalCustomer = new Customer(1, "Michael", "Wolf", LocalDate.of(1980, 3, 20));
-        assertTrue(customer.equals(equalCustomer));
+        Customer equalCustomer = new Customer(1, "Michael", "Wolf", LocalDate.of(1980, 3, 20), null, null, null);
+        assertEquals(customer, equalCustomer);
 
-        assertFalse(customer.equals(customer2));
+        assertNotEquals(customer, customer2);
 
-        assertFalse(customer.equals(new Object()));
+        assertNotEquals(customer, new Object());
 
-        assertFalse(customer.equals(customer.withId(2)));
-        assertFalse(customer.equals(customer.withFirstName("Test")));
-        assertFalse(customer.equals(customer.withLastName("Test")));
-        assertFalse(customer.equals(customer.withBirthDate(LocalDate.of(1981, 4, 21))));
+        assertNotEquals(customer, customer.withId(2));
+        assertNotEquals(customer, customer.withFirstName("Test"));
+        assertNotEquals(customer, customer.withLastName("Test"));
+        assertNotEquals(customer, customer.withBirthDate(LocalDate.of(1981, 4, 21)));
     }
 
     @Test
@@ -302,6 +316,36 @@ public class CustomerTest {
         assertEquals(CUSTOMER_JSON, new String(Files.readAllBytes(file)));
     }
 
+    @Test
+    void builderTestOnlyNotNullable() {
+        Customer build = Customer.builder(1, "Michael", "Wolf").build();
+        assertEquals(new Customer(1, "Michael", "Wolf", null, null, null, null), build);
+    }
+
+    @Test
+    void builderTestSetters() {
+        Customer build = Customer.builder(1, "Michael", "Wolf")
+                .setBirthDate(LocalDate.of(1980, 3, 20))
+                .build();
+        assertEquals(customer, build);
+
+        Customer build2 = Customer.builder(2, "Michaela", "Gruber")
+                .setBirthDate(LocalDate.of(1985, 5, 23))
+                .setAddress("Somestreet 20")
+                .setCountry("Austria")
+                .setPostalCode("1010")
+                .build();
+
+        assertEquals(customer2, build2);
+    }
+
+    @Test
+    void builderThrowsOnBuildWithEmptyStringForNonEmptyMember() {
+        Customer.Builder builder = Customer.builder(0, "Mike", "");
+        assertEquals("lastName may not be empty",
+                assertThrows(IllegalArgumentException.class, builder::build).getMessage()
+        );
+    }
 
     private TestDatabase setupTestDatabase(TestInfo testInfo) throws SQLException {
         TestDatabase testDatabase = new TestDatabase(testInfo);
@@ -309,7 +353,10 @@ public class CustomerTest {
                 "id number not null," +
                 "FIRST_NAME varchar2 not null," +
                 "LAST_NAME varchar2 not null," +
-                "BIRTH_DATE date" +
+                "BIRTH_DATE date," +
+                "ADDRESS varchar2," +
+                "COUNTRY varchar2," +
+                "POSTAL_CODE varchar2" +
                 ")");
         return testDatabase;
     }

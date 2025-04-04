@@ -31,8 +31,11 @@ public class Customer {
     private final String firstName;
     private final String lastName;
     private final LocalDate birthDate;
+    private final String address;
+    private final String country;
+    private final String postalCode;
 
-    public Customer(long id, String firstName, String lastName, LocalDate birthDate) {
+    public Customer(long id, String firstName, String lastName, LocalDate birthDate, String address, String country, String postalCode) {
         Objects.requireNonNull(firstName, "firstName may not be null");
         Objects.requireNonNull(lastName, "lastName may not be null");
 
@@ -43,6 +46,9 @@ public class Customer {
         this.firstName = firstName;
         this.lastName = lastName;
         this.birthDate = birthDate;
+        this.address = address;
+        this.country = country;
+        this.postalCode = postalCode;
     }
 
     private Customer(ResultSet resultSet) throws SQLException {
@@ -50,6 +56,9 @@ public class Customer {
         firstName = resultSet.getObject("FIRST_NAME", String.class);
         lastName = resultSet.getObject("LAST_NAME", String.class);
         birthDate = resultSet.getObject("BIRTH_DATE", LocalDate.class);
+        address = resultSet.getObject("ADDRESS", String.class);
+        country = resultSet.getObject("COUNTRY", String.class);
+        postalCode = resultSet.getObject("POSTAL_CODE", String.class);
     }
 
     public long getId() {
@@ -68,39 +77,69 @@ public class Customer {
         return birthDate;
     }
 
+    public String getAddress() {
+        return address;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public String getPostalCode() {
+        return postalCode;
+    }
+
     public Customer withId(long id) {
-        return new Customer(id, firstName, lastName, birthDate);
+        return new Customer(id, firstName, lastName, birthDate, address, country, postalCode);
     }
 
     public Customer withFirstName(String firstName) {
-        return new Customer(id, firstName, lastName, birthDate);
+        return new Customer(id, firstName, lastName, birthDate, address, country, postalCode);
     }
 
     public Customer withLastName(String lastName) {
-        return new Customer(id, firstName, lastName, birthDate);
+        return new Customer(id, firstName, lastName, birthDate, address, country, postalCode);
     }
 
     public Customer withBirthDate(LocalDate birthDate) {
-        return new Customer(id, firstName, lastName, birthDate);
+        return new Customer(id, firstName, lastName, birthDate, address, country, postalCode);
+    }
+
+    public Customer withAddress(String address) {
+        return new Customer(id, firstName, lastName, birthDate, address, country, postalCode);
+    }
+
+    public Customer withCountry(String country) {
+        return new Customer(id, firstName, lastName, birthDate, address, country, postalCode);
+    }
+
+    public Customer withPostalCode(String postalCode) {
+        return new Customer(id, firstName, lastName, birthDate, address, country, postalCode);
     }
 
     public Customer insert(Connection connection) throws SQLException {
-        try (PreparedStatement preparedStatement = connection.prepareStatement("insert into CUSTOMER (ID, FIRST_NAME, LAST_NAME, BIRTH_DATE) values(?, ?, ?, ?)")) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement("insert into CUSTOMER (ID, FIRST_NAME, LAST_NAME, BIRTH_DATE, ADDRESS, COUNTRY, POSTAL_CODE) values(?, ?, ?, ?, ?, ?, ?)")) {
             preparedStatement.setObject(1, id);
             preparedStatement.setObject(2, firstName);
             preparedStatement.setObject(3, lastName);
             preparedStatement.setObject(4, birthDate);
+            preparedStatement.setObject(5, address);
+            preparedStatement.setObject(6, country);
+            preparedStatement.setObject(7, postalCode);
             preparedStatement.execute();
         }
         return this;
     }
 
     public Customer update(Connection connection) throws SQLException {
-        try (PreparedStatement preparedStatement = connection.prepareStatement("update CUSTOMER set FIRST_NAME = ?, LAST_NAME = ?, BIRTH_DATE = ? where ID = ?")) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement("update CUSTOMER set FIRST_NAME = ?, LAST_NAME = ?, BIRTH_DATE = ?, ADDRESS = ?, COUNTRY = ?, POSTAL_CODE = ? where ID = ?")) {
             preparedStatement.setObject(1, firstName);
             preparedStatement.setObject(2, lastName);
             preparedStatement.setObject(3, birthDate);
-            preparedStatement.setObject(4, id);
+            preparedStatement.setObject(4, address);
+            preparedStatement.setObject(5, country);
+            preparedStatement.setObject(6, postalCode);
+            preparedStatement.setObject(7, id);
             preparedStatement.execute();
         }
         return this;
@@ -114,7 +153,7 @@ public class Customer {
     }
 
     public static Optional<Customer> get(Connection connection, long id) throws SQLException {
-        try (PreparedStatement preparedStatement = connection.prepareStatement("select ID, FIRST_NAME, LAST_NAME, BIRTH_DATE from CUSTOMER where ID = ?")) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement("select ID, FIRST_NAME, LAST_NAME, BIRTH_DATE, ADDRESS, COUNTRY, POSTAL_CODE from CUSTOMER where ID = ?")) {
             preparedStatement.setObject(1, id);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 if (resultSet.next()) {
@@ -126,7 +165,7 @@ public class Customer {
     }
 
     public static List<Customer> getList(Connection connection) throws SQLException {
-        return getList(connection, "select ID, FIRST_NAME, LAST_NAME, BIRTH_DATE from CUSTOMER");
+        return getList(connection, "select ID, FIRST_NAME, LAST_NAME, BIRTH_DATE, ADDRESS, COUNTRY, POSTAL_CODE from CUSTOMER");
     }
 
     public static List<Customer> getList(Connection connection, String sql, Object... args) throws SQLException {
@@ -147,7 +186,7 @@ public class Customer {
     }
 
     public static Stream<Customer> stream(Connection connection) throws SQLException {
-        return stream(connection, "select ID, FIRST_NAME, LAST_NAME, BIRTH_DATE from CUSTOMER ");
+        return stream(connection, "select ID, FIRST_NAME, LAST_NAME, BIRTH_DATE, ADDRESS, COUNTRY, POSTAL_CODE from CUSTOMER ");
     }
 
     public static Stream<Customer> stream(Connection connection, String sql, Object... args) throws SQLException {
@@ -190,6 +229,10 @@ public class Customer {
         Files.write(jsonFile, toJson().getBytes(StandardCharsets.UTF_8));
     }
 
+    public static Builder builder(long id, String firstName, String lastName) {
+        return new Builder(id, firstName, lastName);
+    }
+
     @Override
     public String toString() {
         return "Customer{" +
@@ -197,6 +240,9 @@ public class Customer {
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", birthDate=" + birthDate +
+                ", address='" + address + '\'' +
+                ", country='" + country + '\'' +
+                ", postalCode='" + postalCode + '\'' +
                 '}';
     }
 
@@ -205,12 +251,12 @@ public class Customer {
         if (this == o) return true;
         if (!(o instanceof Customer)) return false;
         Customer customer = (Customer) o;
-        return Objects.equals(id, customer.id) && Objects.equals(firstName, customer.firstName) && Objects.equals(lastName, customer.lastName) && Objects.equals(birthDate, customer.birthDate);
+        return Objects.equals(id, customer.id) && Objects.equals(firstName, customer.firstName) && Objects.equals(lastName, customer.lastName) && Objects.equals(birthDate, customer.birthDate) && Objects.equals(address, customer.address) && Objects.equals(country, customer.country) && Objects.equals(postalCode, customer.postalCode);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, firstName, lastName, birthDate);
+        return Objects.hash(id, firstName, lastName, birthDate, address, country, postalCode);
     }
 
     private static class ResultSetSpliterator extends Spliterators.AbstractSpliterator<Customer> implements AutoCloseable {
@@ -266,6 +312,46 @@ public class Customer {
             public ResultSetSpliteratorException(String message, Throwable cause) {
                 super(message, cause);
             }
+        }
+    }
+
+    public static class Builder {
+        private final long id;
+        private final String firstName;
+        private final String lastName;
+        private LocalDate birthDate;
+        private String address;
+        private String country;
+        private String postalCode;
+
+        public Builder(long id, String firstName, String lastName) {
+            this.id = id;
+            this.firstName = firstName;
+            this.lastName = lastName;
+        }
+
+        public Builder setBirthDate(LocalDate birthDate) {
+            this.birthDate = birthDate;
+            return this;
+        }
+
+        public Builder setAddress(String address) {
+            this.address = address;
+            return this;
+        }
+
+        public Builder setCountry(String country) {
+            this.country = country;
+            return this;
+        }
+
+        public Builder setPostalCode(String postalCode) {
+            this.postalCode = postalCode;
+            return this;
+        }
+
+        public Customer build() {
+            return new Customer(id, firstName, lastName, birthDate, address, country, postalCode);
         }
     }
 }
