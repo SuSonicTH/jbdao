@@ -250,6 +250,41 @@ public class CustomerTest {
     }
 
     @Test
+    void existsReturnsCorrectSate(TestInfo testInfo) throws Exception {
+        try (TestDatabase testDatabase = setupTestDatabase(testInfo)) {
+            assertFalse(Customer.exists(testDatabase.getConnection(), 1));
+
+            customer.insert(testDatabase.getConnection());
+
+            assertTrue(Customer.exists(testDatabase.getConnection(), 1));
+        }
+    }
+
+    @Test
+    void isInDatabaseReturnsCorrectSate(TestInfo testInfo) throws Exception {
+        try (TestDatabase testDatabase = setupTestDatabase(testInfo)) {
+            assertFalse(customer.isInDatabase(testDatabase.getConnection()));
+
+            customer.insert(testDatabase.getConnection());
+
+            assertTrue(customer.isInDatabase(testDatabase.getConnection()));
+        }
+    }
+
+    @Test
+    void persistInsertsOrUpdates(TestInfo testInfo) throws Exception {
+        try (TestDatabase testDatabase = setupTestDatabase(testInfo)) {
+            customer.persist(testDatabase.getConnection());
+            assertTrue(customer.isInDatabase(testDatabase.getConnection()));
+
+            Customer changedCustomer = customer.withCountry("Test").persist(testDatabase.getConnection());
+
+            Optional<Customer> changedCustomerFromDb = Customer.get(testDatabase.getConnection(), 1);
+            assertEquals(changedCustomer, changedCustomerFromDb.get());
+        }
+    }
+
+    @Test
     void getListReturnsAllRowsFromDatabase(TestInfo testInfo) throws Exception {
         try (TestDatabase testDatabase = setupTestDatabase(testInfo)) {
             customer.insert(testDatabase.getConnection());

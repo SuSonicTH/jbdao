@@ -18,7 +18,10 @@ public class DatabaseGetGenerator extends Generator {
 
         if (specification.generateDatabase()) {
             addImports();
-            specification.getPrimary().ifPresent(this::appendGet);
+            specification.getPrimary().ifPresent(primary -> {
+                appendGet(primary);
+                appendExists(primary);
+            });
             appendGetList();
             appendGetListStatement();
             appendStream();
@@ -45,8 +48,8 @@ public class DatabaseGetGenerator extends Generator {
     private void appendGet(Member primary) {
         addImport("java.util.Optional");
         emptyLine();
-        appendLine("public static Optional<Customer> get(Connection connection, long id) throws SQLException {");
-        appendLine("try (PreparedStatement preparedStatement = connection.prepareStatement(\"select %s from CUSTOMER where ID = ?\")) {", getColumns(), primary.getDatabaseName());
+        appendLine("public static Optional<Customer> get(Connection connection, long %s) throws SQLException {", primary.getName());
+        appendLine("try (PreparedStatement preparedStatement = connection.prepareStatement(\"select %s from %s where %s = ?\")) {", getColumns(), specification.getDatabaseName(), primary.getDatabaseName());
         appendLine("preparedStatement.setObject(1, %s);", primary.getName());
         appendLine("try (ResultSet resultSet = preparedStatement.executeQuery()) {");
         appendLine("if (resultSet.next()) {");
@@ -55,6 +58,21 @@ public class DatabaseGetGenerator extends Generator {
         appendLine("}");
         appendLine("}");
         appendLine("return Optional.empty();");
+        appendLine("}");
+    }
+
+    private void appendExists(Member primary) {
+        emptyLine();
+        appendLine("public static boolean exists(Connection connection, long %s) throws SQLException {", primary.getName());
+        appendLine("try (PreparedStatement preparedStatement = connection.prepareStatement(\"select %s from %s where %s = ?\")) {", primary.getDatabaseName(), specification.getDatabaseName(), primary.getDatabaseName());
+        appendLine("preparedStatement.setObject(1, %s);", primary.getName());
+        appendLine("try (ResultSet resultSet = preparedStatement.executeQuery()) {");
+        appendLine("if (resultSet.next()) {");
+        appendLine("return true;");
+        appendLine("}");
+        appendLine("}");
+        appendLine("}");
+        appendLine("return false;");
         appendLine("}");
     }
 

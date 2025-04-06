@@ -19,6 +19,8 @@ public class DatabasePersistenceGenerator extends Generator {
                 appendInsert();
                 appendUpdate();
                 appendDelete();
+                appendIsInDatabase();
+                appendPersist();
             }
         }
     }
@@ -85,5 +87,28 @@ public class DatabasePersistenceGenerator extends Generator {
         appendLine("}");
     }
 
+    private void appendIsInDatabase() {
+        emptyLine();
+        appendLine("public boolean isInDatabase(Connection connection) throws SQLException {");
+        appendLine("try (PreparedStatement preparedStatement = connection.prepareStatement(\"select %s from %s where %s = ?\")) {", primary.getDatabaseName(), specification.getDatabaseName(), primary.getDatabaseName());
+        appendLine("preparedStatement.setObject(1, %s);", primary.getName());
+        appendLine("try (ResultSet resultSet = preparedStatement.executeQuery()) {");
+        appendLine("if (resultSet.next()) {");
+        appendLine("return true;");
+        appendLine("}");
+        appendLine("}");
+        appendLine("}");
+        appendLine("return false;");
+        appendLine("}");
+    }
 
+    private void appendPersist() {
+        emptyLine();
+        appendLine("public Customer persist(Connection connection) throws SQLException {");
+        appendLine("if (isInDatabase(connection)) {");
+        appendLine("return update(connection);");
+        appendLine("}");
+        appendLine("return insert(connection);");
+        appendLine("}");
+    }
 }

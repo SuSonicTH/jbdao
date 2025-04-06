@@ -180,6 +180,25 @@ public class Customer {
         }
     }
 
+    public boolean isInDatabase(Connection connection) throws SQLException {
+        try (PreparedStatement preparedStatement = connection.prepareStatement("select ID from CUSTOMER where ID = ?")) {
+            preparedStatement.setObject(1, id);
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public Customer persist(Connection connection) throws SQLException {
+        if (isInDatabase(connection)) {
+            return update(connection);
+        }
+        return insert(connection);
+    }
+
     public static Optional<Customer> get(Connection connection, long id) throws SQLException {
         try (PreparedStatement preparedStatement = connection.prepareStatement("select ID, FIRST_NAME, LAST_NAME, BIRTH_DATE, ADDRESS, COUNTRY, POSTAL_CODE from CUSTOMER where ID = ?")) {
             preparedStatement.setObject(1, id);
@@ -190,6 +209,18 @@ public class Customer {
             }
         }
         return Optional.empty();
+    }
+
+    public static boolean exists(Connection connection, long id) throws SQLException {
+        try (PreparedStatement preparedStatement = connection.prepareStatement("select ID from CUSTOMER where ID = ?")) {
+            preparedStatement.setObject(1, id);
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     public static List<Customer> getList(Connection connection) throws SQLException {
