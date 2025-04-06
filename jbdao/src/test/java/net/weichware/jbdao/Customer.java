@@ -33,9 +33,35 @@ public class Customer {
     private final LocalDate birthDate;
     private final String address;
     private final String country;
-    private final String postalCode;
+    private final Integer postalCode;
 
-    public Customer(long id, String firstName, String lastName, LocalDate birthDate, String address, String country, String postalCode) {
+    public Customer() {
+        id = 0;
+        firstName = null;
+        lastName = null;
+        birthDate = null;
+        address = "Unknown";
+        country = null;
+        postalCode = 9999;
+    }
+
+    public Customer(long id, String firstName, String lastName) {
+        Objects.requireNonNull(firstName, "firstName may not be null");
+        Objects.requireNonNull(lastName, "lastName may not be null");
+
+        if (firstName.isEmpty()) throw new IllegalArgumentException("firstName may not be empty");
+        if (lastName.isEmpty()) throw new IllegalArgumentException("lastName may not be empty");
+
+        this.id = id;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        birthDate = null;
+        address = "Unknown";
+        country = null;
+        postalCode = 9999;
+    }
+
+    public Customer(long id, String firstName, String lastName, LocalDate birthDate, String address, String country, Integer postalCode) {
         Objects.requireNonNull(firstName, "firstName may not be null");
         Objects.requireNonNull(lastName, "lastName may not be null");
 
@@ -58,7 +84,7 @@ public class Customer {
         birthDate = resultSet.getObject("BIRTH_DATE", LocalDate.class);
         address = resultSet.getObject("ADDRESS", String.class);
         country = resultSet.getObject("COUNTRY", String.class);
-        postalCode = resultSet.getObject("POSTAL_CODE", String.class);
+        postalCode = resultSet.getObject("POSTAL_CODE", Integer.class);
     }
 
     public long getId() {
@@ -85,7 +111,7 @@ public class Customer {
         return country;
     }
 
-    public String getPostalCode() {
+    public Integer getPostalCode() {
         return postalCode;
     }
 
@@ -113,7 +139,7 @@ public class Customer {
         return new Customer(id, firstName, lastName, birthDate, address, country, postalCode);
     }
 
-    public Customer withPostalCode(String postalCode) {
+    public Customer withPostalCode(Integer postalCode) {
         return new Customer(id, firstName, lastName, birthDate, address, country, postalCode);
     }
 
@@ -194,23 +220,33 @@ public class Customer {
     }
 
     public static Customer fromJson(String json) {
-        return GsonUtil.gson.fromJson(json, Customer.class);
+        return setDefaults(GsonUtil.gson.fromJson(json, Customer.class));
     }
 
     public static Customer fromJson(Reader jsonReader) {
-        return GsonUtil.gson.fromJson(jsonReader, Customer.class);
+        return setDefaults(GsonUtil.gson.fromJson(jsonReader, Customer.class));
     }
 
     public static Customer fromJson(InputStream jsonStream) throws IOException {
         try (Reader jsonReader = new InputStreamReader(jsonStream)) {
-            return GsonUtil.gson.fromJson(jsonReader, Customer.class);
+            return setDefaults(GsonUtil.gson.fromJson(jsonReader, Customer.class));
         }
     }
 
     public static Customer fromJson(Path jsonFile) throws IOException {
         try (Reader jsonReader = new InputStreamReader(Files.newInputStream(jsonFile))) {
-            return GsonUtil.gson.fromJson(jsonReader, Customer.class);
+            return setDefaults(GsonUtil.gson.fromJson(jsonReader, Customer.class));
         }
+    }
+
+    private static Customer setDefaults(Customer customer) {
+        if (customer.address == null) {
+            customer = customer.withAddress("Unknown");
+        }
+        if (customer.postalCode == null) {
+            customer = customer.withPostalCode(9999);
+        }
+        return customer;
     }
 
     public String toJson() {
@@ -242,7 +278,7 @@ public class Customer {
                 ", birthDate=" + birthDate +
                 ", address='" + address + '\'' +
                 ", country='" + country + '\'' +
-                ", postalCode='" + postalCode + '\'' +
+                ", postalCode=" + postalCode +
                 '}';
     }
 
@@ -320,9 +356,9 @@ public class Customer {
         private final String firstName;
         private final String lastName;
         private LocalDate birthDate;
-        private String address;
+        private String address = "Unknown";
         private String country;
-        private String postalCode;
+        private Integer postalCode = 9999;
 
         public Builder(long id, String firstName, String lastName) {
             this.id = id;
@@ -345,7 +381,7 @@ public class Customer {
             return this;
         }
 
-        public Builder setPostalCode(String postalCode) {
+        public Builder setPostalCode(Integer postalCode) {
             this.postalCode = postalCode;
             return this;
         }

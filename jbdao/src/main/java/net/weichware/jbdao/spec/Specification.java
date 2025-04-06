@@ -18,8 +18,9 @@ public class Specification {
     private String csvName;
     private String jsonName;
 
-    private Boolean allArgsConstructor;
+    private boolean allArgsConstructor;
     private boolean noArgsConstructor;
+    private Boolean nonNullConstructor;
 
     private boolean with;
     private boolean database;
@@ -46,15 +47,16 @@ public class Specification {
         return members;
     }
 
-    public boolean hasAllArgsConstructor() {
-        if (allArgsConstructor == null) {
-            allArgsConstructor = true;
-        }
-        return allArgsConstructor;
+    public boolean hasNonNullConstructor() {
+        return nonNullConstructor;
     }
 
     public boolean hasNoArgsConstructor() {
         return noArgsConstructor;
+    }
+
+    public boolean hasAllArgsConstructor() {
+        return allArgsConstructor;
     }
 
     public String getDatabaseName() {
@@ -139,4 +141,5 @@ public class Specification {
     public boolean hasBuilder() {
         return builder;
     }
+
 }

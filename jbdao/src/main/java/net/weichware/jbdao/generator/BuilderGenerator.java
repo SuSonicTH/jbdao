@@ -42,7 +42,7 @@ public class BuilderGenerator extends Generator {
 
         private void appendMembers() {
             members.forEach(member ->
-                    appendLine("private %s%s %s;", member.isNotNullable() ? "final " : "", member.getType(), member.getName())
+                    appendLine("private %s%s %s%s;", member.isNotNullable() ? "final " : "", member.getType(), member.getName(), member.getDefaultValue(" = "))
             );
         }
 

@@ -6,6 +6,8 @@
   "json": true,
   "toString": true,
   "builder": true,
+  "noArgsConstructor": true,
+  "allArgsConstructor": true,
   "members": [
     {
       "name": "id",
@@ -28,7 +30,8 @@
     {
       "name": "address",
       "type": "String",
-      "nullable": true
+      "nullable": true,
+      "default": "Unknown"
     },
     {
       "name": "country",
@@ -37,8 +40,9 @@
     },
     {
       "name": "postalCode",
-      "type": "String",
-      "nullable": true
+      "type": "Integer",
+      "nullable": true,
+      "default": 9999
     }
   ]
 }

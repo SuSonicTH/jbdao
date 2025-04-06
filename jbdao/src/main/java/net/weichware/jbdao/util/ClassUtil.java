@@ -10,6 +10,8 @@ public class ClassUtil {
     public static final HashMap<String, String> primitiveToObjectMap = new HashMap<>();
     public static final HashSet<String> javaBuildIn = new HashSet<>();
     public static final HashMap<String, String> knownClasses = new HashMap<>();
+    public static final HashSet<String> numericClasses = new HashSet<>();
+    public static final HashSet<String> primitive = new HashSet<>();
 
     static {
         addPrimitiveToClass(int.class, Integer.class);
@@ -42,6 +44,17 @@ public class ClassUtil {
         addBuildIn(Byte.class);
         addBuildIn(Void.class);
         addBuildIn(Short.class);
+
+        numericClasses.add("int");
+        numericClasses.add("long");
+        numericClasses.add("double");
+        numericClasses.add("float");
+        numericClasses.add("short");
+        numericClasses.add("Integer");
+        numericClasses.add("Long");
+        numericClasses.add("Double");
+        numericClasses.add("Float");
+        numericClasses.add("Short");
 
         addKnownClass(LocalDate.class);
         addKnownClass(LocalDateTime.class);

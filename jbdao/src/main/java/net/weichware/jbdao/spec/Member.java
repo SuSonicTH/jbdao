@@ -1,6 +1,8 @@
 package net.weichware.jbdao.spec;
 
 
+import com.google.gson.annotations.SerializedName;
+import net.weichware.jbdao.util.ClassUtil;
 import net.weichware.jbdao.util.NameUtil;
 
 public class Member {
@@ -20,6 +22,8 @@ public class Member {
     private Boolean getter;
     private Boolean toString;
     private Boolean hashEquals;
+    @SerializedName("default")
+    private String defaultValue;
 
     public String getName() {
         return name;
@@ -114,4 +118,43 @@ public class Member {
         return jsonName;
     }
 
+    public String getDefaultValue() {
+        return getDefaultValue("");
+    }
+
+    public String getDefaultValue(String prefix) {
+        if (defaultValue == null) {
+            return "";
+        }
+        if (getType().equals("String")) {
+            return prefix + "\"" + defaultValue + "\"";
+        } else {
+            return prefix + defaultValue;
+        }
+    }
+
+    @Override
+    public String toString() {
+        return "Member{" +
+                "name='" + name + '\'' +
+                ", type='" + type + '\'' +
+                ", databaseName='" + databaseName + '\'' +
+                ", csvName='" + csvName + '\'' +
+                ", jsonName='" + jsonName + '\'' +
+                ", displayName='" + displayName + '\'' +
+                ", primary=" + primary +
+                ", immutable=" + immutable +
+                ", nullable=" + nullable +
+                ", acceptEmpty=" + acceptEmpty +
+                ", with=" + with +
+                ", getter=" + getter +
+                ", toString=" + toString +
+                ", hashEquals=" + hashEquals +
+                ", defaultValue='" + defaultValue + '\'' +
+                '}';
+    }
+
+    public boolean hasDefault() {
+        return defaultValue != null;
+    }
 }

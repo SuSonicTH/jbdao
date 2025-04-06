@@ -1,6 +1,8 @@
 package net.weichware.jbdao.generator;
 
+import net.weichware.jbdao.spec.Member;
 import net.weichware.jbdao.spec.Specification;
+import net.weichware.jbdao.util.ClassUtil;
 import net.weichware.jbdao.writer.Generator;
 
 public class NoArgsConstructor extends Generator {
@@ -16,7 +18,17 @@ public class NoArgsConstructor extends Generator {
     private void generateCode() {
         emptyLine();
         appendLine("public %s() {", specification.getName());
-        //todo: set defaults once implemented
+        for (Member member : members) {
+            if (member.hasDefault()) {
+                appendLine("%s = %s;", member.getName(), member.getDefaultValue());
+            } else if (member.getType().equals("boolean")) {
+                appendLine("%s = false;", member.getName());
+            } else if (ClassUtil.primitiveToObjectMap.get(member.getType()) != null) {
+                appendLine("%s = 0;", member.getName());
+            } else {
+                appendLine("%s = null;", member.getName());
+            }
+        }
         appendLine("}");
     }
 }

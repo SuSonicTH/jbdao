@@ -28,13 +28,25 @@ public class CustomerTest {
     private static final Path TEST_PATH = Paths.get("./target/test");
     private static final String CUSTOMER_JSON = "{\"id\":1,\"firstName\":\"Michael\",\"lastName\":\"Wolf\",\"birthDate\":\"1980-03-20\"}";
     private final Customer customer = new Customer(1, "Michael", "Wolf", LocalDate.of(1980, 3, 20), null, null, null);
-    private final Customer customer2 = new Customer(2, "Michaela", "Gruber", LocalDate.of(1985, 5, 23), "Somestreet 20", "Austria", "1010");
+    private final Customer customerWithDefaults = customer.withAddress("Unknown").withPostalCode(9999);
+    private final Customer customer2 = new Customer(2, "Michaela", "Gruber", LocalDate.of(1985, 5, 23), "Somestreet 20", "Austria", 1010);
 
     @BeforeAll
     static void beforeAll() throws IOException {
         if (!Files.exists(TEST_PATH)) {
             Files.createDirectories(TEST_PATH);
         }
+    }
+
+    @Test
+    void NonNullArgsConstructorTest() {
+        Customer customer = new Customer(1, "Michael", "Wolf");
+        assertEquals("Michael", customer.getFirstName());
+        assertEquals("Wolf", customer.getLastName());
+        assertNull(customer.getBirthDate());
+        assertEquals("Unknown", customer.getAddress());
+        assertNull(customer.getCountry());
+        assertEquals(9999, customer.getPostalCode());
     }
 
     @Test
@@ -67,8 +79,8 @@ public class CustomerTest {
 
     @Test
     void toStringTest() {
-        assertEquals("Customer{id=1, firstName='Michael', lastName='Wolf', birthDate=1980-03-20, address='null', country='null', postalCode='null'}", customer.toString());
-        assertEquals("Customer{id=2, firstName='Michaela', lastName='Gruber', birthDate=1985-05-23, address='Somestreet 20', country='Austria', postalCode='1010'}", customer2.toString());
+        assertEquals("Customer{id=1, firstName='Michael', lastName='Wolf', birthDate=1980-03-20, address='null', country='null', postalCode=null}", customer.toString());
+        assertEquals("Customer{id=2, firstName='Michaela', lastName='Gruber', birthDate=1985-05-23, address='Somestreet 20', country='Austria', postalCode=1010}", customer2.toString());
     }
 
     @Test
@@ -82,7 +94,7 @@ public class CustomerTest {
         assertNull(customer.getPostalCode());
         assertEquals("Somestreet 20", customer2.getAddress());
         assertEquals("Austria", customer2.getCountry());
-        assertEquals("1010", customer2.getPostalCode());
+        assertEquals(1010, customer2.getPostalCode());
     }
 
     @Test
@@ -94,7 +106,7 @@ public class CustomerTest {
                 .withBirthDate(LocalDate.of(1985, 5, 23))
                 .withAddress("A-street 10")
                 .withCountry("Germany")
-                .withPostalCode("12345");
+                .withPostalCode(12345);
 
 
         assertEquals(2, withCustomer.getId());
@@ -103,7 +115,7 @@ public class CustomerTest {
         assertEquals(LocalDate.of(1985, 5, 23), withCustomer.getBirthDate());
         assertEquals("A-street 10", withCustomer.getAddress());
         assertEquals("Germany", withCustomer.getCountry());
-        assertEquals("12345", withCustomer.getPostalCode());
+        assertEquals(12345, withCustomer.getPostalCode());
     }
 
     @Test
@@ -112,7 +124,7 @@ public class CustomerTest {
         assertEquals(customer.hashCode(), new Customer(1, "Michael", "Wolf", LocalDate.of(1980, 3, 20), null, null, null).hashCode());
         assertNotEquals(customer, customer2);
 
-        assertEquals(customer2.hashCode(), new Customer(2, "Michaela", "Gruber", LocalDate.of(1985, 5, 23), "Somestreet 20", "Austria", "1010").hashCode());
+        assertEquals(customer2.hashCode(), new Customer(2, "Michaela", "Gruber", LocalDate.of(1985, 5, 23), "Somestreet 20", "Austria", 1010).hashCode());
     }
 
     @Test
@@ -263,21 +275,21 @@ public class CustomerTest {
 
     @Test
     void fromJson() {
-        assertEquals(customer, Customer.fromJson(CUSTOMER_JSON));
+        assertEquals(customerWithDefaults, Customer.fromJson(CUSTOMER_JSON));
     }
 
     @Test
     void fromJsonReader() throws IOException {
         ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(CUSTOMER_JSON.getBytes());
         try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(byteArrayInputStream))) {
-            assertEquals(customer, Customer.fromJson(bufferedReader));
+            assertEquals(customerWithDefaults, Customer.fromJson(bufferedReader));
         }
     }
 
     @Test
     void fromJsonInputStream() throws IOException {
         ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(CUSTOMER_JSON.getBytes());
-        assertEquals(customer, Customer.fromJson(byteArrayInputStream));
+        assertEquals(customerWithDefaults, Customer.fromJson(byteArrayInputStream));
     }
 
     @Test
@@ -285,7 +297,7 @@ public class CustomerTest {
         Path file = TEST_PATH.resolve("customer.json");
         Files.write(file, CUSTOMER_JSON.getBytes(StandardCharsets.UTF_8));
 
-        assertEquals(customer, Customer.fromJson(file));
+        assertEquals(customerWithDefaults, Customer.fromJson(file));
     }
 
     @Test
@@ -319,7 +331,7 @@ public class CustomerTest {
     @Test
     void builderTestOnlyNotNullable() {
         Customer build = Customer.builder(1, "Michael", "Wolf").build();
-        assertEquals(new Customer(1, "Michael", "Wolf", null, null, null, null), build);
+        assertEquals(new Customer(1, "Michael", "Wolf", null, "Unknown", null, 9999), build);
     }
 
     @Test
@@ -327,13 +339,13 @@ public class CustomerTest {
         Customer build = Customer.builder(1, "Michael", "Wolf")
                 .setBirthDate(LocalDate.of(1980, 3, 20))
                 .build();
-        assertEquals(customer, build);
+        assertEquals(customerWithDefaults, build);
 
         Customer build2 = Customer.builder(2, "Michaela", "Gruber")
                 .setBirthDate(LocalDate.of(1985, 5, 23))
                 .setAddress("Somestreet 20")
                 .setCountry("Austria")
-                .setPostalCode("1010")
+                .setPostalCode(1010)
                 .build();
 
         assertEquals(customer2, build2);

@@ -1,6 +1,8 @@
 package net.weichware.jbdao.generator;
 
+import net.weichware.jbdao.spec.Member;
 import net.weichware.jbdao.spec.Specification;
+import net.weichware.jbdao.util.NameUtil;
 import net.weichware.jbdao.writer.Generator;
 
 public class JsonGenerator extends Generator {
@@ -30,30 +32,48 @@ public class JsonGenerator extends Generator {
 
     private void appendFromJson() {
         String className = specification.getName();
-
+        String setDefaultPrefix = "";
+        String setDefaultSuffix = "";
+        if (dasDefaults()) {
+            setDefaultPrefix = "setDefaults(";
+            setDefaultSuffix = ")";
+        }
         emptyLine();
         appendLine("public static %s fromJson(String json) {", className);
-        appendLine("return GsonUtil.gson.fromJson(json, %s.class);", className);
+        appendLine("return %sGsonUtil.gson.fromJson(json, %s.class)%s;", setDefaultPrefix, className, setDefaultSuffix);
         appendLine("}");
 
         emptyLine();
         appendLine("public static %s fromJson(Reader jsonReader) {", className);
-        appendLine("return GsonUtil.gson.fromJson(jsonReader, %s.class);", className);
+        appendLine("return %sGsonUtil.gson.fromJson(jsonReader, %s.class)%s;", setDefaultPrefix, className, setDefaultSuffix);
         appendLine("}");
 
         emptyLine();
         appendLine("public static %s fromJson(InputStream jsonStream) throws IOException {", className);
         appendLine("try (Reader jsonReader = new InputStreamReader(jsonStream)) {");
-        appendLine("return GsonUtil.gson.fromJson(jsonReader, %s.class);", className);
+        appendLine("return %sGsonUtil.gson.fromJson(jsonReader, %s.class)%s;", setDefaultPrefix, className, setDefaultSuffix);
         appendLine("}");
         appendLine("}");
 
         emptyLine();
         appendLine("public static %s fromJson(Path jsonFile) throws IOException {", className);
         appendLine("try (Reader jsonReader = new InputStreamReader(Files.newInputStream(jsonFile))) {");
-        appendLine("return GsonUtil.gson.fromJson(jsonReader, %s.class);", className);
+        appendLine("return %sGsonUtil.gson.fromJson(jsonReader, %s.class)%s;", setDefaultPrefix, className, setDefaultSuffix);
         appendLine("}");
         appendLine("}");
+
+        if (dasDefaults()) {
+            emptyLine();
+            String varName = NameUtil.firstCharacterLower(specification.getName());
+            appendLine("private static %s setDefaults(%s %s) {", className, className, varName);
+            members.stream().filter(Member::hasDefault).forEach(member -> {
+                appendLine("if (%s.%s == null) {", varName, member.getName());
+                appendLine("%s = %s.with%s(%s);", varName, varName, NameUtil.firstCharacterUpper(member.getName()), member.getDefaultValue());
+                appendLine("}");
+            });
+            appendLine("return %s;", varName);
+            appendLine("}");
+        }
     }
 
     private void appendToJson() {
@@ -78,4 +98,7 @@ public class JsonGenerator extends Generator {
         appendLine("}");
     }
 
+    private boolean dasDefaults() {
+        return members.stream().anyMatch(Member::hasDefault);
+    }
 }
