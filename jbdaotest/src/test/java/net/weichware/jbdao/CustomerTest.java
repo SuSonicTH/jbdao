@@ -41,8 +41,21 @@ public class CustomerTest {
     @Test
     void NonNullArgsConstructorTest() {
         Customer customer = new Customer(1, "Michael", "Wolf");
+        assertEquals(1, customer.getId());
         assertEquals("Michael", customer.getFirstName());
         assertEquals("Wolf", customer.getLastName());
+        assertNull(customer.getBirthDate());
+        assertEquals("Unknown", customer.getAddress());
+        assertNull(customer.getCountry());
+        assertEquals(9999, customer.getPostalCode());
+    }
+
+    @Test
+    void noArgsConstructorTest() {
+        Customer customer = new Customer();
+        assertEquals(0, customer.getId());
+        assertNull(customer.getFirstName());
+        assertNull(customer.getLastName());
         assertNull(customer.getBirthDate());
         assertEquals("Unknown", customer.getAddress());
         assertNull(customer.getCountry());
@@ -54,12 +67,18 @@ public class CustomerTest {
         assertEquals("firstName may not be null",
                 assertThrows(NullPointerException.class, () -> new Customer(1, null, "Wolf", LocalDate.of(1980, 3, 20), null, null, null)).getMessage()
         );
+        assertEquals("firstName may not be null",
+                assertThrows(NullPointerException.class, () -> new Customer(1, null, "Wolf")).getMessage()
+        );
     }
 
     @Test
     void emptyNameThrows() {
         assertEquals("firstName may not be empty",
                 assertThrows(IllegalArgumentException.class, () -> new Customer(1, "", "Wolf", LocalDate.of(1980, 3, 20), null, null, null)).getMessage()
+        );
+        assertEquals("firstName may not be empty",
+                assertThrows(IllegalArgumentException.class, () -> new Customer(1, "", "Wolf")).getMessage()
         );
     }
 
@@ -68,12 +87,18 @@ public class CustomerTest {
         assertEquals("lastName may not be null",
                 assertThrows(NullPointerException.class, () -> new Customer(1, "Michael", null, LocalDate.of(1980, 3, 20), null, null, null)).getMessage()
         );
+        assertEquals("lastName may not be null",
+                assertThrows(NullPointerException.class, () -> new Customer(1, "Michael", null)).getMessage()
+        );
     }
 
     @Test
     void lastNameEmptyThrows() {
         assertEquals("lastName may not be empty",
                 assertThrows(IllegalArgumentException.class, () -> new Customer(1, "Michael", "", LocalDate.of(1980, 3, 20), null, null, null)).getMessage()
+        );
+        assertEquals("lastName may not be empty",
+                assertThrows(IllegalArgumentException.class, () -> new Customer(1, "Michael", "")).getMessage()
         );
     }
 
@@ -177,6 +202,15 @@ public class CustomerTest {
     void insertReturnsSameObject(TestInfo testInfo) throws Exception {
         try (TestDatabase testDatabase = setupTestDatabase(testInfo)) {
             assertSame(customer, customer.insert(testDatabase.getConnection()));
+        }
+    }
+
+    @Test
+    void updateThrowsForNonExistingPrimaryKey(TestInfo testInfo) throws Exception {
+        try (TestDatabase testDatabase = setupTestDatabase(testInfo)) {
+            assertEquals("CUSTOMER table not updated for primary key ID = '1'",
+                    assertThrows(SQLException.class, () -> customer.update(testDatabase.getConnection())).getMessage()
+            );
         }
     }
 

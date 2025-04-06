@@ -166,7 +166,9 @@ public class Customer {
             preparedStatement.setObject(5, country);
             preparedStatement.setObject(6, postalCode);
             preparedStatement.setObject(7, id);
-            preparedStatement.execute();
+            if (preparedStatement.executeUpdate() != 1) {
+                throw new SQLException("CUSTOMER table not updated for primary key ID = '" + id + "'");
+            }
         }
         return this;
     }
@@ -220,33 +222,23 @@ public class Customer {
     }
 
     public static Customer fromJson(String json) {
-        return setDefaults(GsonUtil.gson.fromJson(json, Customer.class));
+        return GsonUtil.gson.fromJson(json, Customer.class);
     }
 
     public static Customer fromJson(Reader jsonReader) {
-        return setDefaults(GsonUtil.gson.fromJson(jsonReader, Customer.class));
+        return GsonUtil.gson.fromJson(jsonReader, Customer.class);
     }
 
     public static Customer fromJson(InputStream jsonStream) throws IOException {
         try (Reader jsonReader = new InputStreamReader(jsonStream)) {
-            return setDefaults(GsonUtil.gson.fromJson(jsonReader, Customer.class));
+            return GsonUtil.gson.fromJson(jsonReader, Customer.class);
         }
     }
 
     public static Customer fromJson(Path jsonFile) throws IOException {
         try (Reader jsonReader = new InputStreamReader(Files.newInputStream(jsonFile))) {
-            return setDefaults(GsonUtil.gson.fromJson(jsonReader, Customer.class));
+            return GsonUtil.gson.fromJson(jsonReader, Customer.class);
         }
-    }
-
-    private static Customer setDefaults(Customer customer) {
-        if (customer.address == null) {
-            customer = customer.withAddress("Unknown");
-        }
-        if (customer.postalCode == null) {
-            customer = customer.withPostalCode(9999);
-        }
-        return customer;
     }
 
     public String toJson() {

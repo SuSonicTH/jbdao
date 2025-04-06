@@ -12,7 +12,7 @@ public class NonNullConstructor extends Generator {
     public NonNullConstructor(Specification specification) {
         super(specification);
 
-        if (specification.hasAllArgsConstructor()) {
+        if (specification.hasNonNullConstructor()) {
             generateCode();
         }
     }

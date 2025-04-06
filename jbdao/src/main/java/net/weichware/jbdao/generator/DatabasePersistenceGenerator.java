@@ -60,7 +60,9 @@ public class DatabasePersistenceGenerator extends Generator {
             }
         }
         appendLine("preparedStatement.setObject(%d, %s);", i, primary.getName());
-        appendLine("preparedStatement.execute();");
+        appendLine("if (preparedStatement.executeUpdate() != 1) {");
+        appendLine("throw new SQLException(\"%s table not updated for primary key %s = '\" + %s + \"'\");", specification.getDatabaseName(), specification.getPrimary().get().getDatabaseName(), specification.getPrimary().get().getName());
+        appendLine("}");
         appendLine("}");
         appendLine("return this;");
         appendLine("}");

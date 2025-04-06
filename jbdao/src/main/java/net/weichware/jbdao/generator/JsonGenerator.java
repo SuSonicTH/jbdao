@@ -34,46 +34,30 @@ public class JsonGenerator extends Generator {
         String className = specification.getName();
         String setDefaultPrefix = "";
         String setDefaultSuffix = "";
-        if (dasDefaults()) {
-            setDefaultPrefix = "setDefaults(";
-            setDefaultSuffix = ")";
-        }
+
         emptyLine();
         appendLine("public static %s fromJson(String json) {", className);
-        appendLine("return %sGsonUtil.gson.fromJson(json, %s.class)%s;", setDefaultPrefix, className, setDefaultSuffix);
+        appendLine("return GsonUtil.gson.fromJson(json, %s.class);", className);
         appendLine("}");
 
         emptyLine();
         appendLine("public static %s fromJson(Reader jsonReader) {", className);
-        appendLine("return %sGsonUtil.gson.fromJson(jsonReader, %s.class)%s;", setDefaultPrefix, className, setDefaultSuffix);
+        appendLine("return GsonUtil.gson.fromJson(jsonReader, %s.class);", className);
         appendLine("}");
 
         emptyLine();
         appendLine("public static %s fromJson(InputStream jsonStream) throws IOException {", className);
         appendLine("try (Reader jsonReader = new InputStreamReader(jsonStream)) {");
-        appendLine("return %sGsonUtil.gson.fromJson(jsonReader, %s.class)%s;", setDefaultPrefix, className, setDefaultSuffix);
+        appendLine("return GsonUtil.gson.fromJson(jsonReader, %s.class);", className);
         appendLine("}");
         appendLine("}");
 
         emptyLine();
         appendLine("public static %s fromJson(Path jsonFile) throws IOException {", className);
         appendLine("try (Reader jsonReader = new InputStreamReader(Files.newInputStream(jsonFile))) {");
-        appendLine("return %sGsonUtil.gson.fromJson(jsonReader, %s.class)%s;", setDefaultPrefix, className, setDefaultSuffix);
+        appendLine("return GsonUtil.gson.fromJson(jsonReader, %s.class);", className);
         appendLine("}");
         appendLine("}");
-
-        if (dasDefaults()) {
-            emptyLine();
-            String varName = NameUtil.firstCharacterLower(specification.getName());
-            appendLine("private static %s setDefaults(%s %s) {", className, className, varName);
-            members.stream().filter(Member::hasDefault).forEach(member -> {
-                appendLine("if (%s.%s == null) {", varName, member.getName());
-                appendLine("%s = %s.with%s(%s);", varName, varName, NameUtil.firstCharacterUpper(member.getName()), member.getDefaultValue());
-                appendLine("}");
-            });
-            appendLine("return %s;", varName);
-            appendLine("}");
-        }
     }
 
     private void appendToJson() {

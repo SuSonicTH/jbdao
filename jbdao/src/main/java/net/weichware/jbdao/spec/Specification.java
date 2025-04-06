@@ -19,7 +19,7 @@ public class Specification {
     private String jsonName;
 
     private boolean allArgsConstructor;
-    private boolean noArgsConstructor;
+    private Boolean noArgsConstructor;
     private Boolean nonNullConstructor;
 
     private boolean with;
@@ -48,10 +48,16 @@ public class Specification {
     }
 
     public boolean hasNonNullConstructor() {
+        if (nonNullConstructor == null) {
+            nonNullConstructor = true;
+        }
         return nonNullConstructor;
     }
 
     public boolean hasNoArgsConstructor() {
+        if (noArgsConstructor == null) {
+            noArgsConstructor = generateJson();
+        }
         return noArgsConstructor;
     }
 
