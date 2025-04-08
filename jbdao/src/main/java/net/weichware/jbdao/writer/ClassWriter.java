@@ -1,9 +1,14 @@
 package net.weichware.jbdao.writer;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 
@@ -17,11 +22,41 @@ public class ClassWriter extends CodeWriter {
     }
 
     protected void writeSource(Path basePath) throws IOException {
-        Path outputPath = basePath.resolve(packagePath.replace(".", "/"));
-        Path outputFile = outputPath.resolve(name + ".java");
-        Files.createDirectories(outputPath);
+        writeSource(basePath, packagePath, name + ".java", getCode());
+        getExtraClassSet().forEach(fileName -> writeExtraClass(basePath, fileName));
+    }
 
-        Files.write(outputFile, getCode().getBytes());
+    private void writeSource(Path basePath, String packageName, String fileName, String source) throws IOException {
+        Path outputPath = basePath.resolve(packagePath.replace(".", "/"));
+        Path outputFile = outputPath.resolve(fileName);
+        Files.createDirectories(outputPath);
+        Files.write(outputFile, source.getBytes());
+    }
+
+    private void writeExtraClass(Path basePath, String fileName) {
+        try {
+            String source = getResourceFileAsString(fileName);
+            String packageName = Arrays.stream(source.split("\r?\n"))
+                    .map(String::trim)
+                    .filter(line -> line.startsWith("package"))
+                    .findFirst()
+                    .orElseThrow(() -> new DaoGeneratorException("Package not found for utility class " + fileName));
+            writeSource(basePath, packageName, fileName, source);
+        } catch (IOException e) {
+            throw new DaoGeneratorException("Could not write support class " + fileName, e);
+        }
+    }
+
+    private String getResourceFileAsString(String fileName) throws IOException {
+        ClassLoader classLoader = ClassWriter.class.getClassLoader();
+        try (InputStream inputStream = classLoader.getResourceAsStream(fileName)) {
+            if (inputStream == null) {
+                throw new IOException("Could not load resource " + fileName);
+            }
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
+                return reader.lines().collect(Collectors.joining("\n"));
+            }
+        }
     }
 
     public String getCode() {
@@ -44,6 +79,16 @@ public class ClassWriter extends CodeWriter {
             for (String className : classes) {
                 code.append("import ").append(className).append(";\n");
             }
+        }
+    }
+
+    private static class DaoGeneratorException extends RuntimeException {
+        public DaoGeneratorException(String message, IOException exception) {
+            super(message, exception);
+        }
+
+        public DaoGeneratorException(String message) {
+            super(message);
         }
     }
 }

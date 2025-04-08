@@ -11,6 +11,7 @@ import java.util.stream.Stream;
 
 public class CodeWriter {
     private static final HashMap<Integer, String> indentMap = new HashMap<>();
+    private final Set<String> extraClassSet = new HashSet<>();
     private final Set<String> importSet = new HashSet<>();
     private final StringBuilder code = new StringBuilder();
     private int indent;
@@ -28,12 +29,34 @@ public class CodeWriter {
         return code.toString();
     }
 
+    public void addExtraClass(String... fileName) {
+        extraClassSet.addAll(Arrays.asList(fileName));
+    }
+
+    public void addExtraClass(Set<String> fileNames) {
+        extraClassSet.addAll(fileNames);
+    }
+
+    public Set<String> getExtraClassSet() {
+        return extraClassSet;
+    }
+
     public Set<String> getImports() {
         return importSet;
     }
 
     protected void addPrivateClass(String text) {
         privateClasses.add(text);
+    }
+
+    protected void addPrivateClass(Generator generator) {
+        privateClasses.add(generator.getCode());
+        addImport(generator.getImports());
+        addExtraClass(generator.getExtraClassSet());
+    }
+
+    private void addImport(Set<String> imports) {
+        importSet.addAll(imports);
     }
 
     public List<String> getPrivateClasses() {
@@ -54,6 +77,7 @@ public class CodeWriter {
 
     protected void append(CodeWriter codeWriter) {
         importSet.addAll(codeWriter.importSet);
+        extraClassSet.addAll(codeWriter.getExtraClassSet());
         privateClasses.addAll(codeWriter.getPrivateClasses());
         code.append(codeWriter.getCode());
     }

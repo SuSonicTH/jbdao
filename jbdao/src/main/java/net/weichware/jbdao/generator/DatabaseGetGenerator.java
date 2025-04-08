@@ -2,12 +2,9 @@ package net.weichware.jbdao.generator;
 
 import net.weichware.jbdao.spec.Member;
 import net.weichware.jbdao.spec.Specification;
-import net.weichware.jbdao.util.TemplateUtil;
 import net.weichware.jbdao.writer.Generator;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 public class DatabaseGetGenerator extends Generator {
@@ -25,7 +22,7 @@ public class DatabaseGetGenerator extends Generator {
             appendGetList();
             appendGetListStatement();
             appendStream();
-            appendResultSetSpliterator();
+            addPrivateClass(new ResultSetSpliteratorGenerator(specification));
         }
     }
 
@@ -37,9 +34,6 @@ public class DatabaseGetGenerator extends Generator {
                 "java.sql.SQLException",
                 "java.util.ArrayList",
                 "java.util.List",
-                "java.util.Spliterator",
-                "java.util.Spliterators",
-                "java.util.function.Consumer",
                 "java.util.stream.Stream",
                 "java.util.stream.StreamSupport"
         );
@@ -124,9 +118,24 @@ public class DatabaseGetGenerator extends Generator {
         appendLine("}");
     }
 
-    private void appendResultSetSpliterator() throws IOException {
-        Map<String, String> classMap = new HashMap<>();
-        classMap.put("CLASS", specification.getName());
-        addPrivateClass(TemplateUtil.getTemplate("ResultSetSpliterator.template", classMap));
+
+    private static class ResultSetSpliteratorGenerator extends Generator {
+        protected ResultSetSpliteratorGenerator(Specification specification) {
+            super(specification);
+            addExtraClass("AbstractResultSetSpliterator.java");
+
+            emptyLine();
+            appendLine("private static class ResultSetSpliterator extends AbstractResultSetSpliterator<%s> implements AutoCloseable {", specification.getName());
+            emptyLine();
+            appendLine("public ResultSetSpliterator(Connection connection, String sql, Object... args) {");
+            appendLine("super(connection, sql, args);");
+            appendLine("}");
+            emptyLine();
+            appendLine("@Override");
+            appendLine("protected %s create(ResultSet resultSet) throws SQLException {", specification.getName());
+            appendLine("return new %s(resultSet);", specification.getName());
+            appendLine("}");
+            appendLine("}");
+        }
     }
 }

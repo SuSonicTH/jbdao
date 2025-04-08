@@ -20,9 +20,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Spliterator;
-import java.util.Spliterators;
-import java.util.function.Consumer;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -318,59 +315,15 @@ public class Customer {
         return Objects.hash(id, firstName, lastName, birthDate, address, country, postalCode);
     }
 
-    private static class ResultSetSpliterator extends Spliterators.AbstractSpliterator<Customer> implements AutoCloseable {
-        private final PreparedStatement preparedStatement;
-        private final ResultSet resultSet;
+    private static class ResultSetSpliterator extends AbstractResultSetSpliterator<Customer> implements AutoCloseable {
 
-        ResultSetSpliterator(Connection connection, String sql, Object... args) throws SQLException {
-            super(Long.MAX_VALUE, Spliterator.ORDERED);
-            try {
-                preparedStatement = connection.prepareStatement(sql);
-                int i = 1;
-                for (Object arg : args) {
-                    preparedStatement.setObject(i++, arg);
-                }
-
-                resultSet = preparedStatement.executeQuery();
-                resultSet.setFetchSize(1000);
-            } catch (SQLException sqlException) {
-                try {
-                    close();
-                } catch (SQLException ex) {
-                    //intentionally left blank
-                }
-                throw new ResultSetSpliteratorException("Could not create ResultSetSpliterator", sqlException);
-            }
+        public ResultSetSpliterator(Connection connection, String sql, Object... args) {
+            super(connection, sql, args);
         }
 
         @Override
-        public boolean tryAdvance(Consumer<? super Customer> action) {
-            try {
-                if (resultSet.next()) {
-                    action.accept(new Customer(resultSet));
-                    return true;
-                } else {
-                    close();
-                    return false;
-                }
-            } catch (SQLException e) {
-                throw new ResultSetSpliteratorException("Could not advance to next record", e);
-            }
-        }
-
-        public void close() throws SQLException {
-            if (resultSet != null) {
-                resultSet.close();
-            }
-            if (preparedStatement != null) {
-                preparedStatement.close();
-            }
-        }
-
-        public static class ResultSetSpliteratorException extends RuntimeException {
-            public ResultSetSpliteratorException(String message, Throwable cause) {
-                super(message, cause);
-            }
+        protected Customer create(ResultSet resultSet) throws SQLException {
+            return new Customer(resultSet);
         }
     }
 

@@ -9,6 +9,7 @@ public class JsonGenerator extends Generator {
     public JsonGenerator(Specification specification) {
         super(specification);
         if (specification.generateJson()) {
+            addExtraClass("GsonUtil.java");
             addImports();
             appendFromJson();
             appendToJson();
