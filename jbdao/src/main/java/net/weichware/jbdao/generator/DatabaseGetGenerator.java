@@ -4,13 +4,12 @@ import net.weichware.jbdao.spec.Member;
 import net.weichware.jbdao.spec.Specification;
 import net.weichware.jbdao.writer.Generator;
 
-import java.io.IOException;
 import java.util.stream.Collectors;
 
 public class DatabaseGetGenerator extends Generator {
     private String columns;
 
-    public DatabaseGetGenerator(Specification specification) throws IOException {
+    public DatabaseGetGenerator(Specification specification) {
         super(specification);
 
         if (specification.generateDatabase()) {
@@ -123,6 +122,7 @@ public class DatabaseGetGenerator extends Generator {
         protected ResultSetSpliteratorGenerator(Specification specification) {
             super(specification);
             addExtraClass("AbstractResultSetSpliterator.java");
+            addExtraClass("ResultSetSpliteratorException.java");
 
             emptyLine();
             appendLine("private static class ResultSetSpliterator extends AbstractResultSetSpliterator<%s> implements AutoCloseable {", specification.getName());

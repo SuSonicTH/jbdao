@@ -11,6 +11,7 @@ import net.weichware.jbdao.generator.NoArgsConstructor;
 import net.weichware.jbdao.generator.NonNullConstructor;
 import net.weichware.jbdao.generator.ResultSetConstructor;
 import net.weichware.jbdao.generator.ToStringGenerator;
+import net.weichware.jbdao.generator.ValidationGenerator;
 import net.weichware.jbdao.generator.WithGenerator;
 import net.weichware.jbdao.spec.Member;
 import net.weichware.jbdao.spec.Specification;
@@ -54,6 +55,7 @@ public class DaoGenerator extends ClassWriter {
         append(new NonNullConstructor(specification));
         append(new AllArgsConstructor(specification));
         append(new ResultSetConstructor(specification));
+        append(new ValidationGenerator(specification));
         append(new GetterGenerator(specification));
         append(new WithGenerator(specification));
         append(new DatabasePersistenceGenerator(specification));

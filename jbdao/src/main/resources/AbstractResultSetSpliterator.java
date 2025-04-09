@@ -58,10 +58,4 @@ public abstract class AbstractResultSetSpliterator<T> extends Spliterators.Abstr
             preparedStatement.close();
         }
     }
-
-    public static class ResultSetSpliteratorException extends RuntimeException {
-        public ResultSetSpliteratorException(String message, Throwable cause) {
-            super(message, cause);
-        }
-    }
 }

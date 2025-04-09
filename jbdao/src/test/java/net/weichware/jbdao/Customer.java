@@ -1,6 +1,7 @@
 package net.weichware.jbdao;
 
 import net.weichware.jbdao.GsonUtil;
+import net.weichware.jbdao.ValidationException;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -31,6 +32,8 @@ public class Customer {
     private final String address;
     private final String country;
     private final Integer postalCode;
+    private final String phoneNumber;
+    private final int kids;
 
     public Customer() {
         id = 0;
@@ -40,15 +43,11 @@ public class Customer {
         address = "Unknown";
         country = null;
         postalCode = 9999;
+        phoneNumber = null;
+        kids = 0;
     }
 
     public Customer(long id, String firstName, String lastName) {
-        Objects.requireNonNull(firstName, "firstName may not be null");
-        Objects.requireNonNull(lastName, "lastName may not be null");
-
-        if (firstName.isEmpty()) throw new IllegalArgumentException("firstName may not be empty");
-        if (lastName.isEmpty()) throw new IllegalArgumentException("lastName may not be empty");
-
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -56,15 +55,12 @@ public class Customer {
         address = "Unknown";
         country = null;
         postalCode = 9999;
+        phoneNumber = null;
+        kids = 0;
+        validate();
     }
 
-    public Customer(long id, String firstName, String lastName, LocalDate birthDate, String address, String country, Integer postalCode) {
-        Objects.requireNonNull(firstName, "firstName may not be null");
-        Objects.requireNonNull(lastName, "lastName may not be null");
-
-        if (firstName.isEmpty()) throw new IllegalArgumentException("firstName may not be empty");
-        if (lastName.isEmpty()) throw new IllegalArgumentException("lastName may not be empty");
-
+    public Customer(long id, String firstName, String lastName, LocalDate birthDate, String address, String country, Integer postalCode, String phoneNumber, int kids) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -72,6 +68,9 @@ public class Customer {
         this.address = address;
         this.country = country;
         this.postalCode = postalCode;
+        this.phoneNumber = phoneNumber;
+        this.kids = kids;
+        validate();
     }
 
     private Customer(ResultSet resultSet) throws SQLException {
@@ -82,6 +81,26 @@ public class Customer {
         address = resultSet.getObject("ADDRESS", String.class);
         country = resultSet.getObject("COUNTRY", String.class);
         postalCode = resultSet.getObject("POSTAL_CODE", Integer.class);
+        phoneNumber = resultSet.getObject("PHONE_NUMBER", String.class);
+        kids = resultSet.getObject("KIDS", Integer.class);
+        validate();
+    }
+
+    public Customer validate() {
+        if (firstName == null) throw new ValidationException("firstName may not be null");
+        if (lastName == null) throw new ValidationException("lastName may not be null");
+
+        if (firstName.isEmpty()) throw new ValidationException("firstName may not be empty");
+        if (lastName.isEmpty()) throw new ValidationException("lastName may not be empty");
+
+        if (phoneNumber != null && !phoneNumber.matches("\\+[1-9][0-9]+")) throw new ValidationException("phoneNumber does not match pattern '\\+[1-9][0-9]+'");
+
+        if (address != null && address.length() < 3) throw new ValidationException("address is shorter than min 3");
+        if (address != null && address.length() > 50) throw new ValidationException("address is longer than max 50");
+        if (kids < 0) throw new ValidationException("kids is lower then min 0");
+        if (kids > 10) throw new ValidationException("kids is higher then max 10");
+
+        return this;
     }
 
     public long getId() {
@@ -112,36 +131,52 @@ public class Customer {
         return postalCode;
     }
 
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public int getKids() {
+        return kids;
+    }
+
     public Customer withId(long id) {
-        return new Customer(id, firstName, lastName, birthDate, address, country, postalCode);
+        return new Customer(id, firstName, lastName, birthDate, address, country, postalCode, phoneNumber, kids);
     }
 
     public Customer withFirstName(String firstName) {
-        return new Customer(id, firstName, lastName, birthDate, address, country, postalCode);
+        return new Customer(id, firstName, lastName, birthDate, address, country, postalCode, phoneNumber, kids);
     }
 
     public Customer withLastName(String lastName) {
-        return new Customer(id, firstName, lastName, birthDate, address, country, postalCode);
+        return new Customer(id, firstName, lastName, birthDate, address, country, postalCode, phoneNumber, kids);
     }
 
     public Customer withBirthDate(LocalDate birthDate) {
-        return new Customer(id, firstName, lastName, birthDate, address, country, postalCode);
+        return new Customer(id, firstName, lastName, birthDate, address, country, postalCode, phoneNumber, kids);
     }
 
     public Customer withAddress(String address) {
-        return new Customer(id, firstName, lastName, birthDate, address, country, postalCode);
+        return new Customer(id, firstName, lastName, birthDate, address, country, postalCode, phoneNumber, kids);
     }
 
     public Customer withCountry(String country) {
-        return new Customer(id, firstName, lastName, birthDate, address, country, postalCode);
+        return new Customer(id, firstName, lastName, birthDate, address, country, postalCode, phoneNumber, kids);
     }
 
     public Customer withPostalCode(Integer postalCode) {
-        return new Customer(id, firstName, lastName, birthDate, address, country, postalCode);
+        return new Customer(id, firstName, lastName, birthDate, address, country, postalCode, phoneNumber, kids);
+    }
+
+    public Customer withPhoneNumber(String phoneNumber) {
+        return new Customer(id, firstName, lastName, birthDate, address, country, postalCode, phoneNumber, kids);
+    }
+
+    public Customer withKids(int kids) {
+        return new Customer(id, firstName, lastName, birthDate, address, country, postalCode, phoneNumber, kids);
     }
 
     public Customer insert(Connection connection) throws SQLException {
-        try (PreparedStatement preparedStatement = connection.prepareStatement("insert into CUSTOMER (ID, FIRST_NAME, LAST_NAME, BIRTH_DATE, ADDRESS, COUNTRY, POSTAL_CODE) values(?, ?, ?, ?, ?, ?, ?)")) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement("insert into CUSTOMER (ID, FIRST_NAME, LAST_NAME, BIRTH_DATE, ADDRESS, COUNTRY, POSTAL_CODE, PHONE_NUMBER, KIDS) values(?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
             preparedStatement.setObject(1, id);
             preparedStatement.setObject(2, firstName);
             preparedStatement.setObject(3, lastName);
@@ -149,20 +184,24 @@ public class Customer {
             preparedStatement.setObject(5, address);
             preparedStatement.setObject(6, country);
             preparedStatement.setObject(7, postalCode);
+            preparedStatement.setObject(8, phoneNumber);
+            preparedStatement.setObject(9, kids);
             preparedStatement.execute();
         }
         return this;
     }
 
     public Customer update(Connection connection) throws SQLException {
-        try (PreparedStatement preparedStatement = connection.prepareStatement("update CUSTOMER set FIRST_NAME = ?, LAST_NAME = ?, BIRTH_DATE = ?, ADDRESS = ?, COUNTRY = ?, POSTAL_CODE = ? where ID = ?")) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement("update CUSTOMER set FIRST_NAME = ?, LAST_NAME = ?, BIRTH_DATE = ?, ADDRESS = ?, COUNTRY = ?, POSTAL_CODE = ?, PHONE_NUMBER = ?, KIDS = ? where ID = ?")) {
             preparedStatement.setObject(1, firstName);
             preparedStatement.setObject(2, lastName);
             preparedStatement.setObject(3, birthDate);
             preparedStatement.setObject(4, address);
             preparedStatement.setObject(5, country);
             preparedStatement.setObject(6, postalCode);
-            preparedStatement.setObject(7, id);
+            preparedStatement.setObject(7, phoneNumber);
+            preparedStatement.setObject(8, kids);
+            preparedStatement.setObject(9, id);
             if (preparedStatement.executeUpdate() != 1) {
                 throw new SQLException("CUSTOMER table not updated for primary key ID = '" + id + "'");
             }
@@ -197,7 +236,7 @@ public class Customer {
     }
 
     public static Optional<Customer> get(Connection connection, long id) throws SQLException {
-        try (PreparedStatement preparedStatement = connection.prepareStatement("select ID, FIRST_NAME, LAST_NAME, BIRTH_DATE, ADDRESS, COUNTRY, POSTAL_CODE from CUSTOMER where ID = ?")) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement("select ID, FIRST_NAME, LAST_NAME, BIRTH_DATE, ADDRESS, COUNTRY, POSTAL_CODE, PHONE_NUMBER, KIDS from CUSTOMER where ID = ?")) {
             preparedStatement.setObject(1, id);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 if (resultSet.next()) {
@@ -221,7 +260,7 @@ public class Customer {
     }
 
     public static List<Customer> getList(Connection connection) throws SQLException {
-        return getList(connection, "select ID, FIRST_NAME, LAST_NAME, BIRTH_DATE, ADDRESS, COUNTRY, POSTAL_CODE from CUSTOMER");
+        return getList(connection, "select ID, FIRST_NAME, LAST_NAME, BIRTH_DATE, ADDRESS, COUNTRY, POSTAL_CODE, PHONE_NUMBER, KIDS from CUSTOMER");
     }
 
     public static List<Customer> getList(Connection connection, String sql, Object... args) throws SQLException {
@@ -242,7 +281,7 @@ public class Customer {
     }
 
     public static Stream<Customer> stream(Connection connection) throws SQLException {
-        return stream(connection, "select ID, FIRST_NAME, LAST_NAME, BIRTH_DATE, ADDRESS, COUNTRY, POSTAL_CODE from CUSTOMER ");
+        return stream(connection, "select ID, FIRST_NAME, LAST_NAME, BIRTH_DATE, ADDRESS, COUNTRY, POSTAL_CODE, PHONE_NUMBER, KIDS from CUSTOMER ");
     }
 
     public static Stream<Customer> stream(Connection connection, String sql, Object... args) throws SQLException {
@@ -285,6 +324,10 @@ public class Customer {
         Files.write(jsonFile, toJson().getBytes(StandardCharsets.UTF_8));
     }
 
+    public static Builder builder() {
+        return new Builder();
+    }
+
     public static Builder builder(long id, String firstName, String lastName) {
         return new Builder(id, firstName, lastName);
     }
@@ -299,6 +342,8 @@ public class Customer {
                 ", address='" + address + '\'' +
                 ", country='" + country + '\'' +
                 ", postalCode=" + postalCode +
+                ", phoneNumber='" + phoneNumber + '\'' +
+                ", kids=" + kids +
                 '}';
     }
 
@@ -307,12 +352,12 @@ public class Customer {
         if (this == o) return true;
         if (!(o instanceof Customer)) return false;
         Customer customer = (Customer) o;
-        return Objects.equals(id, customer.id) && Objects.equals(firstName, customer.firstName) && Objects.equals(lastName, customer.lastName) && Objects.equals(birthDate, customer.birthDate) && Objects.equals(address, customer.address) && Objects.equals(country, customer.country) && Objects.equals(postalCode, customer.postalCode);
+        return Objects.equals(id, customer.id) && Objects.equals(firstName, customer.firstName) && Objects.equals(lastName, customer.lastName) && Objects.equals(birthDate, customer.birthDate) && Objects.equals(address, customer.address) && Objects.equals(country, customer.country) && Objects.equals(postalCode, customer.postalCode) && Objects.equals(phoneNumber, customer.phoneNumber) && Objects.equals(kids, customer.kids);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, firstName, lastName, birthDate, address, country, postalCode);
+        return Objects.hash(id, firstName, lastName, birthDate, address, country, postalCode, phoneNumber, kids);
     }
 
     private static class ResultSetSpliterator extends AbstractResultSetSpliterator<Customer> implements AutoCloseable {
@@ -328,18 +373,38 @@ public class Customer {
     }
 
     public static class Builder {
-        private final long id;
-        private final String firstName;
-        private final String lastName;
+        private long id;
+        private String firstName;
+        private String lastName;
         private LocalDate birthDate;
         private String address = "Unknown";
         private String country;
         private Integer postalCode = 9999;
+        private String phoneNumber;
+        private int kids = 0;
+
+        public Builder() {
+        }
 
         public Builder(long id, String firstName, String lastName) {
             this.id = id;
             this.firstName = firstName;
             this.lastName = lastName;
+        }
+
+        public Builder setId(long id) {
+            this.id = id;
+            return this;
+        }
+
+        public Builder setFirstName(String firstName) {
+            this.firstName = firstName;
+            return this;
+        }
+
+        public Builder setLastName(String lastName) {
+            this.lastName = lastName;
+            return this;
         }
 
         public Builder setBirthDate(LocalDate birthDate) {
@@ -362,8 +427,18 @@ public class Customer {
             return this;
         }
 
+        public Builder setPhoneNumber(String phoneNumber) {
+            this.phoneNumber = phoneNumber;
+            return this;
+        }
+
+        public Builder setKids(int kids) {
+            this.kids = kids;
+            return this;
+        }
+
         public Customer build() {
-            return new Customer(id, firstName, lastName, birthDate, address, country, postalCode);
+            return new Customer(id, firstName, lastName, birthDate, address, country, postalCode, phoneNumber, kids);
         }
     }
 }

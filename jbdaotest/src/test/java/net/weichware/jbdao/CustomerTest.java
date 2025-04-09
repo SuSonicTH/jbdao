@@ -26,10 +26,10 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class CustomerTest {
     private static final Path TEST_PATH = Paths.get("./target/test");
-    private static final String CUSTOMER_JSON = "{\"id\":1,\"firstName\":\"Michael\",\"lastName\":\"Wolf\",\"birthDate\":\"1980-03-20\"}";
-    private final Customer customer = new Customer(1, "Michael", "Wolf", LocalDate.of(1980, 3, 20), null, null, null);
+    private static final String CUSTOMER_JSON = "{\"id\":1,\"firstName\":\"Michael\",\"lastName\":\"Wolf\",\"birthDate\":\"1980-03-20\",\"kids\":0}";
+    private final Customer customer = new Customer(1, "Michael", "Wolf", LocalDate.of(1980, 3, 20), null, null, null, null, 0);
     private final Customer customerWithDefaults = customer.withAddress("Unknown").withPostalCode(9999);
-    private final Customer customer2 = new Customer(2, "Michaela", "Gruber", LocalDate.of(1985, 5, 23), "Somestreet 20", "Austria", 1010);
+    private final Customer customer2 = new Customer(2, "Michaela", "Gruber", LocalDate.of(1985, 5, 23), "Somestreet 20", "Austria", 1010, "+43123456", 2);
 
     @BeforeAll
     static void beforeAll() throws IOException {
@@ -48,6 +48,8 @@ public class CustomerTest {
         assertEquals("Unknown", customer.getAddress());
         assertNull(customer.getCountry());
         assertEquals(9999, customer.getPostalCode());
+        assertNull(customer.getPhoneNumber());
+        assertEquals(0, customer.getKids());
     }
 
     @Test
@@ -60,52 +62,112 @@ public class CustomerTest {
         assertEquals("Unknown", customer.getAddress());
         assertNull(customer.getCountry());
         assertEquals(9999, customer.getPostalCode());
+        assertNull(customer.getPhoneNumber());
+        assertEquals(0, customer.getKids());
+    }
+
+    @Test
+    void nonMatchingPatternThrows() {
+        assertEquals("phoneNumber does not match pattern '\\+[1-9][0-9]+'",
+                assertThrows(ValidationException.class, () -> customer.withPhoneNumber("0043123456")).getMessage()
+        );
+        assertEquals("phoneNumber does not match pattern '\\+[1-9][0-9]+'",
+                assertThrows(ValidationException.class, () -> customer.withPhoneNumber("+043123456")).getMessage()
+        );
+        assertEquals("phoneNumber does not match pattern '\\+[1-9][0-9]+'",
+                assertThrows(ValidationException.class, () -> customer.withPhoneNumber("+ABC")).getMessage()
+        );
+        assertEquals("phoneNumber does not match pattern '\\+[1-9][0-9]+'",
+                assertThrows(ValidationException.class, () -> customer.withPhoneNumber("+1")).getMessage()
+        );
+        assertDoesNotThrow(() -> customer.withPhoneNumber("+4312345"));
     }
 
     @Test
     void firstNameNullThrows() {
         assertEquals("firstName may not be null",
-                assertThrows(NullPointerException.class, () -> new Customer(1, null, "Wolf", LocalDate.of(1980, 3, 20), null, null, null)).getMessage()
+                assertThrows(ValidationException.class, () -> new Customer(1, null, "Wolf", LocalDate.of(1980, 3, 20), null, null, null, null, 0)).getMessage()
         );
         assertEquals("firstName may not be null",
-                assertThrows(NullPointerException.class, () -> new Customer(1, null, "Wolf")).getMessage()
+                assertThrows(ValidationException.class, () -> new Customer(1, null, "Wolf")).getMessage()
         );
     }
 
     @Test
     void emptyNameThrows() {
         assertEquals("firstName may not be empty",
-                assertThrows(IllegalArgumentException.class, () -> new Customer(1, "", "Wolf", LocalDate.of(1980, 3, 20), null, null, null)).getMessage()
+                assertThrows(ValidationException.class, () -> new Customer(1, "", "Wolf", LocalDate.of(1980, 3, 20), null, null, null, null, 0)).getMessage()
         );
         assertEquals("firstName may not be empty",
-                assertThrows(IllegalArgumentException.class, () -> new Customer(1, "", "Wolf")).getMessage()
+                assertThrows(ValidationException.class, () -> new Customer(1, "", "Wolf")).getMessage()
         );
     }
 
     @Test
     void lastNameNullThrows() {
         assertEquals("lastName may not be null",
-                assertThrows(NullPointerException.class, () -> new Customer(1, "Michael", null, LocalDate.of(1980, 3, 20), null, null, null)).getMessage()
+                assertThrows(ValidationException.class, () -> new Customer(1, "Michael", null, LocalDate.of(1980, 3, 20), null, null, null, null, 0)).getMessage()
         );
         assertEquals("lastName may not be null",
-                assertThrows(NullPointerException.class, () -> new Customer(1, "Michael", null)).getMessage()
+                assertThrows(ValidationException.class, () -> new Customer(1, "Michael", null)).getMessage()
         );
     }
 
     @Test
     void lastNameEmptyThrows() {
         assertEquals("lastName may not be empty",
-                assertThrows(IllegalArgumentException.class, () -> new Customer(1, "Michael", "", LocalDate.of(1980, 3, 20), null, null, null)).getMessage()
+                assertThrows(ValidationException.class, () -> new Customer(1, "Michael", "", LocalDate.of(1980, 3, 20), null, null, null, null, 0)).getMessage()
         );
         assertEquals("lastName may not be empty",
-                assertThrows(IllegalArgumentException.class, () -> new Customer(1, "Michael", "")).getMessage()
+                assertThrows(ValidationException.class, () -> new Customer(1, "Michael", "")).getMessage()
+        );
+    }
+
+    @Test
+    void validateThrowsForNonValidObject() {
+        Customer emptyCustomer = new Customer();
+        assertEquals("firstName may not be null",
+                assertThrows(ValidationException.class, emptyCustomer::validate).getMessage()
+        );
+    }
+
+    @Test
+    void validateReturnsSameObject() {
+        assertTrue(customer == customer.validate());
+    }
+
+    @Test
+    void minValidationThrowsForOutOfRange() {
+        assertEquals("kids is lower then min 0",
+                assertThrows(ValidationException.class, () -> customer.withKids(-1)).getMessage()
+        );
+    }
+
+    @Test
+    void maxValidationThrowsForOutOfRange() {
+        assertEquals("kids is higher then max 10",
+                assertThrows(ValidationException.class, () -> customer.withKids(11)).getMessage()
+        );
+    }
+
+    @Test
+    void minValidationThrowsForStringLengthOutOfRange() {
+        assertEquals("address is shorter than min 3",
+                assertThrows(ValidationException.class, () -> customer.withAddress("AS")).getMessage()
+        );
+    }
+
+    @Test
+    void maxValidationThrowsForStringLengthOutOfRange() {
+        assertEquals("address is longer than max 50",
+                assertThrows(ValidationException.class, () -> customer.withAddress("Some extra long street name that should throw because its to long 1")).getMessage()
         );
     }
 
     @Test
     void toStringTest() {
-        assertEquals("Customer{id=1, firstName='Michael', lastName='Wolf', birthDate=1980-03-20, address='null', country='null', postalCode=null}", customer.toString());
-        assertEquals("Customer{id=2, firstName='Michaela', lastName='Gruber', birthDate=1985-05-23, address='Somestreet 20', country='Austria', postalCode=1010}", customer2.toString());
+        assertEquals("Customer{id=1, firstName='Michael', lastName='Wolf', birthDate=1980-03-20, address='null', country='null', postalCode=null, phoneNumber='null', kids=0}", customer.toString());
+        assertEquals("Customer{id=2, firstName='Michaela', lastName='Gruber', birthDate=1985-05-23, address='Somestreet 20', country='Austria', postalCode=1010, phoneNumber='+43123456', kids=2}", customer2.toString());
     }
 
     @Test
@@ -131,7 +193,9 @@ public class CustomerTest {
                 .withBirthDate(LocalDate.of(1985, 5, 23))
                 .withAddress("A-street 10")
                 .withCountry("Germany")
-                .withPostalCode(12345);
+                .withPostalCode(12345)
+                .withPhoneNumber("+43123456")
+                .withKids(2);
 
 
         assertEquals(2, withCustomer.getId());
@@ -141,22 +205,24 @@ public class CustomerTest {
         assertEquals("A-street 10", withCustomer.getAddress());
         assertEquals("Germany", withCustomer.getCountry());
         assertEquals(12345, withCustomer.getPostalCode());
+        assertEquals("+43123456", withCustomer.getPhoneNumber());
+        assertEquals(2, withCustomer.getKids());
     }
 
     @Test
     void hashCodeTest() {
         assertEquals(customer.hashCode(), customer.hashCode());
-        assertEquals(customer.hashCode(), new Customer(1, "Michael", "Wolf", LocalDate.of(1980, 3, 20), null, null, null).hashCode());
+        assertEquals(customer.hashCode(), new Customer(1, "Michael", "Wolf", LocalDate.of(1980, 3, 20), null, null, null, null, 0).hashCode());
         assertNotEquals(customer, customer2);
 
-        assertEquals(customer2.hashCode(), new Customer(2, "Michaela", "Gruber", LocalDate.of(1985, 5, 23), "Somestreet 20", "Austria", 1010).hashCode());
+        assertEquals(customer2.hashCode(), new Customer(2, "Michaela", "Gruber", LocalDate.of(1985, 5, 23), "Somestreet 20", "Austria", 1010, "+43123456", 2).hashCode());
     }
 
     @Test
     void equalsTest() {
         assertEquals(customer, customer);
 
-        Customer equalCustomer = new Customer(1, "Michael", "Wolf", LocalDate.of(1980, 3, 20), null, null, null);
+        Customer equalCustomer = new Customer(1, "Michael", "Wolf", LocalDate.of(1980, 3, 20), null, null, null, null, 0);
         assertEquals(customer, equalCustomer);
 
         assertNotEquals(customer, customer2);
@@ -172,7 +238,7 @@ public class CustomerTest {
     @Test
     void databaseGetExisting(TestInfo testInfo) throws Exception {
         try (TestDatabase testDatabase = setupTestDatabase(testInfo)) {
-            testDatabase.execute("Insert into CUSTOMER (ID,FIRST_NAME,LAST_NAME, BIRTH_DATE) values (1, 'Michael', 'Wolf', date '1980-03-20')");
+            testDatabase.execute("Insert into CUSTOMER (ID,FIRST_NAME,LAST_NAME, BIRTH_DATE, KIDS) values (1, 'Michael', 'Wolf', date '1980-03-20', 0)");
             Optional<Customer> optionalCustomer = Customer.get(testDatabase.getConnection(), 1);
             assertTrue(optionalCustomer.isPresent());
             assertEquals(customer, optionalCustomer.get());
@@ -400,11 +466,11 @@ public class CustomerTest {
     @Test
     void builderTestOnlyNotNullable() {
         Customer build = Customer.builder(1, "Michael", "Wolf").build();
-        assertEquals(new Customer(1, "Michael", "Wolf", null, "Unknown", null, 9999), build);
+        assertEquals(new Customer(1, "Michael", "Wolf", null, "Unknown", null, 9999, null, 0), build);
     }
 
     @Test
-    void builderTestSetters() {
+    void builderTestSettersWithArguments() {
         Customer build = Customer.builder(1, "Michael", "Wolf")
                 .setBirthDate(LocalDate.of(1980, 3, 20))
                 .build();
@@ -415,6 +481,33 @@ public class CustomerTest {
                 .setAddress("Somestreet 20")
                 .setCountry("Austria")
                 .setPostalCode(1010)
+                .setPhoneNumber("+43123456")
+                .setKids(2)
+                .build();
+
+        assertEquals(customer2, build2);
+    }
+
+    @Test
+    void builderTestSetters() {
+        Customer build = Customer.builder()
+                .setId(1)
+                .setFirstName("Michael")
+                .setLastName("Wolf")
+                .setBirthDate(LocalDate.of(1980, 3, 20))
+                .build();
+        assertEquals(customerWithDefaults, build);
+
+        Customer build2 = Customer.builder()
+                .setId(2)
+                .setFirstName("Michaela")
+                .setLastName("Gruber")
+                .setBirthDate(LocalDate.of(1985, 5, 23))
+                .setAddress("Somestreet 20")
+                .setCountry("Austria")
+                .setPostalCode(1010)
+                .setPhoneNumber("+43123456")
+                .setKids(2)
                 .build();
 
         assertEquals(customer2, build2);
@@ -424,7 +517,7 @@ public class CustomerTest {
     void builderThrowsOnBuildWithEmptyStringForNonEmptyMember() {
         Customer.Builder builder = Customer.builder(0, "Mike", "");
         assertEquals("lastName may not be empty",
-                assertThrows(IllegalArgumentException.class, builder::build).getMessage()
+                assertThrows(ValidationException.class, builder::build).getMessage()
         );
     }
 
@@ -437,7 +530,9 @@ public class CustomerTest {
                 "BIRTH_DATE date," +
                 "ADDRESS varchar2," +
                 "COUNTRY varchar2," +
-                "POSTAL_CODE varchar2" +
+                "POSTAL_CODE varchar2," +
+                "PHONE_NUMBER varchar2," +
+                "KIDS number" +
                 ")");
         return testDatabase;
     }

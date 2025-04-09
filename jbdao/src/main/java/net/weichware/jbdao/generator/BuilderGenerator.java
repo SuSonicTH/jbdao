@@ -17,6 +17,11 @@ public class BuilderGenerator extends Generator {
     }
 
     private void appendBuilderMethod() {
+        emptyLine();
+        appendLine("public static Builder builder() {");
+        appendLine("return new Builder();");
+        appendLine("}");
+
         String arguments = members.stream().filter(Member::isNotNullable).map(Member::getName).collect(Collectors.joining(", "));
         emptyLine();
         appendLine("public static Builder builder(%s) {", getSignature());
@@ -42,11 +47,15 @@ public class BuilderGenerator extends Generator {
 
         private void appendMembers() {
             members.forEach(member ->
-                    appendLine("private %s%s %s%s;", member.isNotNullable() ? "final " : "", member.getType(), member.getName(), member.getDefaultValue(" = "))
+                    appendLine("private %s %s%s;", member.getType(), member.getName(), member.getDefaultValue(" = "))
             );
         }
 
         private void appendConstructor() {
+            emptyLine();
+            appendLine("public Builder() {", getSignature());
+            appendLine("}");
+
             emptyLine();
             appendLine("public Builder(%s) {", getSignature());
             members.stream().filter(Member::isNotNullable).forEach(member ->
@@ -56,7 +65,7 @@ public class BuilderGenerator extends Generator {
         }
 
         private void appendSetters() {
-            members.stream().filter(Member::isNullable).forEach(member -> {
+            members.forEach(member -> {
                 emptyLine();
                 appendLine("public Builder set%s(%s %s) {", NameUtil.firstCharacterUpper(member.getName()), member.getType(), member.getName());
                 appendLine("this.%s = %s;", member.getName(), member.getName());

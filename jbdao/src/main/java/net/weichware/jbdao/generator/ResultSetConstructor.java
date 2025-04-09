@@ -21,6 +21,7 @@ public class ResultSetConstructor extends Generator {
         appendLines(members.stream().map(member ->
                 member.getName() + " = resultSet.getObject(" + quote(member.getDatabaseName()) + ", " + ClassUtil.primitiveToObjectMap.getOrDefault(member.getType(), member.getType()) + ".class);")
         );
+        appendLine("validate();");
         appendLine("}");
 
     }

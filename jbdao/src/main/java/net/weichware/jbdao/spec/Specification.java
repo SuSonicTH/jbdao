@@ -100,7 +100,7 @@ public class Specification {
     public boolean hasNonEmpty() {
         return members.stream()
                 .filter(member -> member.getType().equals("String"))
-                .anyMatch(Member::acceptsEmpty);
+                .anyMatch(Member::nonEmpty);
     }
 
     public boolean generateWith() {
@@ -148,4 +148,21 @@ public class Specification {
         return builder;
     }
 
+    public boolean needsValidation() {
+        return members.stream().anyMatch(member -> !member.isNullable() ||
+                member.nonEmpty() ||
+                !member.acceptsEmpty() ||
+                member.getMin() != null ||
+                member.getMax() != null ||
+                member.getPattern() != null
+        );
+    }
+
+    public boolean hasPatterns() {
+        return members.stream().anyMatch(member -> member.getPattern() != null);
+    }
+
+    public boolean hasMinMax() {
+        return members.stream().anyMatch(Member::hasMinMax);
+    }
 }

@@ -24,6 +24,9 @@ public class Member {
     private Boolean hashEquals;
     @SerializedName("default")
     private String defaultValue;
+    private String min;
+    private String max;
+    private String pattern;
 
     public String getName() {
         return name;
@@ -80,7 +83,7 @@ public class Member {
         if (acceptEmpty == null) {
             acceptEmpty = isNullable();
         }
-        return !acceptEmpty;
+        return acceptEmpty;
     }
 
     public boolean generateWith() {
@@ -133,6 +136,23 @@ public class Member {
         }
     }
 
+    public String getMin() {
+        return min;
+    }
+
+    public String getMax() {
+        return max;
+    }
+
+    public String getPattern() {
+        if (pattern == null) {
+            return null;
+        } else if (pattern.isEmpty()) {
+            return null;
+        }
+        return pattern.replace("\\", "\\\\");
+    }
+
     @Override
     public String toString() {
         return "Member{" +
@@ -156,5 +176,13 @@ public class Member {
 
     public boolean hasDefault() {
         return defaultValue != null;
+    }
+
+    public boolean nonEmpty() {
+        return type.equals("String") && !acceptsEmpty();
+    }
+
+    public boolean hasMinMax() {
+        return min != null || max != null;
     }
 }

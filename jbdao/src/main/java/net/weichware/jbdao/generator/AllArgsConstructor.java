@@ -20,9 +20,8 @@ public class AllArgsConstructor extends Generator {
     private void generateCode() {
         emptyLine();
         appendLine("public %s(%s) {", specification.getName(), constructorArgumentList());
-        appendObjectsRequireNonNull();
-        appendStringEmptyCheck();
         appendConstructorAssignment();
+        appendLine("validate();");
         appendLine("}");
     }
 
@@ -32,30 +31,7 @@ public class AllArgsConstructor extends Generator {
                 .collect(joining(", "));
     }
 
-    private void appendObjectsRequireNonNull() {
-        if (specification.hasNonNullable()) {
-            addImport("java.util.Objects");
-            appendLines(members.stream()
-                    .filter(member -> !member.isNullable())
-                    .filter(member -> !ClassUtil.primitiveToObjectMap.containsKey(member.getType()))
-                    .map(Member::getName)
-                    .map(name -> String.format("Objects.requireNonNull(%s, \"%s may not be null\");", name, name))
-            );
-            emptyLine();
-        }
-    }
 
-    private void appendStringEmptyCheck() {
-        if (specification.hasNonEmpty()) {
-            appendLines(members.stream()
-                    .filter(member -> member.getType().equals("String"))
-                    .filter(Member::acceptsEmpty)
-                    .map(Member::getName)
-                    .map(name -> "if (" + name + ".isEmpty()) throw new IllegalArgumentException(" + quote(name + " may not be empty") + ");")
-            );
-            emptyLine();
-        }
-    }
 
     private void appendConstructorAssignment() {
         appendLines(members.stream()
