@@ -33,7 +33,7 @@ public class Customer {
     private final String country;
     private final Integer postalCode;
     private final String phoneNumber;
-    private final int kids;
+    private int kids;
 
     public Customer() {
         id = 0;
@@ -88,18 +88,14 @@ public class Customer {
 
     public Customer validate() {
         if (firstName == null) throw new ValidationException("firstName may not be null");
-        if (lastName == null) throw new ValidationException("lastName may not be null");
-
         if (firstName.isEmpty()) throw new ValidationException("firstName may not be empty");
+        if (lastName == null) throw new ValidationException("lastName may not be null");
         if (lastName.isEmpty()) throw new ValidationException("lastName may not be empty");
-
-        if (phoneNumber != null && !phoneNumber.matches("\\+[1-9][0-9]+")) throw new ValidationException("phoneNumber does not match pattern '\\+[1-9][0-9]+'");
-
         if (address != null && address.length() < 3) throw new ValidationException("address is shorter than min 3");
         if (address != null && address.length() > 50) throw new ValidationException("address is longer than max 50");
+        if (phoneNumber != null && !phoneNumber.matches("\\+[1-9][0-9]+")) throw new ValidationException("phoneNumber does not match pattern '\\+[1-9][0-9]+'");
         if (kids < 0) throw new ValidationException("kids is lower then min 0");
         if (kids > 10) throw new ValidationException("kids is higher then max 10");
-
         return this;
     }
 
@@ -137,6 +133,13 @@ public class Customer {
 
     public int getKids() {
         return kids;
+    }
+
+    public Customer setKids(int kids) {
+        if (kids < 0) throw new ValidationException("kids is lower then min 0");
+        if (kids > 10) throw new ValidationException("kids is higher then max 10");
+        this.kids = kids;
+        return this;
     }
 
     public Customer withId(long id) {

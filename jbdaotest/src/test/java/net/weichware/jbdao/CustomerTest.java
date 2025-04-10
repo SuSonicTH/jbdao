@@ -185,6 +185,35 @@ public class CustomerTest {
     }
 
     @Test
+    void setterSetsValue() {
+        Customer customer3 = new Customer(3, "Hans", "Schmidt");
+        customer3.setKids(3);
+        assertEquals(3, customer3.getKids());
+    }
+
+    @Test
+    void setterReturnsSameObject() {
+        Customer customer3 = new Customer(3, "Hans", "Schmidt");
+        assertTrue(customer3 == customer3.setKids(3));
+    }
+
+    @Test
+    void setterThrowsValidationErrorIfValueTooHigh() {
+        Customer customer3 = new Customer(3, "Hans", "Schmidt");
+        assertEquals("kids is higher then max 10",
+                assertThrows(ValidationException.class, () -> customer3.setKids(20)).getMessage()
+        );
+    }
+
+    @Test
+    void setterThrowsValidationErrorIfValueTooLow() {
+        Customer customer3 = new Customer(3, "Hans", "Schmidt");
+        assertEquals("kids is lower then min 0",
+                assertThrows(ValidationException.class, () -> customer3.setKids(-2)).getMessage()
+        );
+    }
+
+    @Test
     void withTest() {
         Customer withCustomer = customer
                 .withId(2)

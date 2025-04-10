@@ -179,7 +179,7 @@ public class Member {
     }
 
     public boolean nonEmpty() {
-        return type.equals("String") && !acceptsEmpty();
+        return type.equals("String") && !acceptsEmpty() && getMin() == null;
     }
 
     public boolean hasMinMax() {
