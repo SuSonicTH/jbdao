@@ -12,6 +12,9 @@ a Java library to generate DAO classes at compile time
 * if a string member has a min the empty check should not be done
 * implement as an abstract class to be overwritten with additional implementations, should also create the overwritten
   class if it does not exist
+* buildFromThis to return a builder with all the values set from this class
+* implement setters (including validation)
+* automatic ID generation from sequence or trigger
 
 ## TBD
 * implement servlet for put/get/patch ?
