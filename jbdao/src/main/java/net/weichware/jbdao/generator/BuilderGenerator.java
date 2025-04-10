@@ -24,13 +24,24 @@ public class BuilderGenerator extends Generator {
 
         String arguments = members.stream().filter(Member::isNotNullable).map(Member::getName).collect(Collectors.joining(", "));
         emptyLine();
-        appendLine("public static Builder builder(%s) {", getSignature());
+        appendLine("public static Builder builder(%s) {", getNonNullableSignature());
         appendLine("return new Builder(%s);", arguments);
         appendLine("}");
+
+        String allArguments = members.stream().map(Member::getName).collect(Collectors.joining(", "));
+        emptyLine();
+        appendLine("public Builder builderFrom() {");
+        appendLine("return new Builder(%s);", allArguments);
+        appendLine("}");
+
     }
 
-    private String getSignature() {
+    private String getNonNullableSignature() {
         return members.stream().filter(Member::isNotNullable).map(m -> m.getType() + " " + m.getName()).collect(Collectors.joining(", "));
+    }
+
+    private String getAllMembersSignature() {
+        return members.stream().map(m -> m.getType() + " " + m.getName()).collect(Collectors.joining(", "));
     }
 
     private class Builder extends Generator {
@@ -53,12 +64,20 @@ public class BuilderGenerator extends Generator {
 
         private void appendConstructor() {
             emptyLine();
-            appendLine("public Builder() {", getSignature());
+            appendLine("public Builder() {", getNonNullableSignature());
             appendLine("}");
 
             emptyLine();
-            appendLine("public Builder(%s) {", getSignature());
+            appendLine("public Builder(%s) {", getNonNullableSignature());
             members.stream().filter(Member::isNotNullable).forEach(member ->
+                    appendLine("this.%s = %s;", member.getName(), member.getName())
+            );
+            appendLine("}");
+
+            emptyLine();
+            String allArguments = members.stream().map(Member::getName).collect(Collectors.joining(", "));
+            appendLine("public Builder(%s) {", getAllMembersSignature());
+            members.forEach(member ->
                     appendLine("this.%s = %s;", member.getName(), member.getName())
             );
             appendLine("}");

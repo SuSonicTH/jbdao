@@ -518,6 +518,11 @@ public class CustomerTest {
     }
 
     @Test
+    void BuilderFormGeneratesEqualObject() {
+        assertEquals(customer, customer.builderFrom().build());
+    }
+
+    @Test
     void builderTestSetters() {
         Customer build = Customer.builder()
                 .setId(1)

@@ -335,6 +335,10 @@ public class Customer {
         return new Builder(id, firstName, lastName);
     }
 
+    public Builder builderFrom() {
+        return new Builder(id, firstName, lastName, birthDate, address, country, postalCode, phoneNumber, kids);
+    }
+
     @Override
     public String toString() {
         return "Customer{" +
@@ -393,6 +397,18 @@ public class Customer {
             this.id = id;
             this.firstName = firstName;
             this.lastName = lastName;
+        }
+
+        public Builder(long id, String firstName, String lastName, LocalDate birthDate, String address, String country, Integer postalCode, String phoneNumber, int kids) {
+            this.id = id;
+            this.firstName = firstName;
+            this.lastName = lastName;
+            this.birthDate = birthDate;
+            this.address = address;
+            this.country = country;
+            this.postalCode = postalCode;
+            this.phoneNumber = phoneNumber;
+            this.kids = kids;
         }
 
         public Builder setId(long id) {
