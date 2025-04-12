@@ -27,6 +27,8 @@ public class Member {
     private String min;
     private String max;
     private String pattern;
+    private String maskPattern;
+    private String maskReplace;
 
     public String getName() {
         return name;
@@ -184,5 +186,17 @@ public class Member {
 
     public boolean hasMinMax() {
         return min != null || max != null;
+    }
+
+    public boolean hasMasking() {
+        return maskPattern != null && !maskPattern.isEmpty() && maskReplace != null;
+    }
+
+    public String getMaskPattern() {
+        return maskPattern;
+    }
+
+    public String getMaskReplace() {
+        return maskReplace;
     }
 }

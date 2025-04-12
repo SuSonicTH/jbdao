@@ -345,13 +345,26 @@ public class Customer {
                 "id=" + id +
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
-                ", birthDate=" + birthDate +
+                ", birthDate=" + getBirthDateMasked(true) +
                 ", address='" + address + '\'' +
                 ", country='" + country + '\'' +
                 ", postalCode=" + postalCode +
-                ", phoneNumber='" + phoneNumber + '\'' +
-                ", kids=" + kids +
+                ", phoneNumber='" + getPhoneNumberMasked(true) + '\'' +
                 '}';
+    }
+
+    public String getBirthDateMasked(boolean nullable) {
+        if (birthDate == null) {
+            return nullable ? null : "";
+        }
+        return (birthDate + "").replaceAll("^(.+)..", "$1xx");
+    }
+
+    public String getPhoneNumberMasked(boolean nullable) {
+        if (phoneNumber == null) {
+            return nullable ? null : "";
+        }
+        return phoneNumber.replaceAll("^(.+)....", "$1xxxx");
     }
 
     @Override

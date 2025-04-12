@@ -8,7 +8,6 @@ a Java library to generate DAO classes at compile time
 * implement from/to csv (inkl. read csv file as list and write list as csv file)
 * Enums as members (& enum generation)
 * automatic ID generation from sequence or trigger
-* maskedPattern and masked Replace to replace sensitive data in toString/logs (i.e pattern "...(.*)" replace "xxx\1")
 * implement as an abstract class to be overwritten with additional implementations, should also create the overwritten
   class if it does not exist
 

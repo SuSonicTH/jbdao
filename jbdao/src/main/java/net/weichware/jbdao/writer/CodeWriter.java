@@ -72,7 +72,18 @@ public class CodeWriter {
     }
 
     protected String quote(String string) {
-        return "\"" + string + "\"";
+        return "\"" + escape(string) + "\"";
+    }
+
+    protected String escape(String string) {
+        return string.replace("\\", "\\\\")
+                .replace("\t", "\\t")
+                .replace("\b", "\\b")
+                .replace("\n", "\\n")
+                .replace("\r", "\\r")
+                .replace("\f", "\\f")
+                .replace("\'", "\\'")
+                .replace("\"", "\\\"");
     }
 
     protected void append(CodeWriter codeWriter) {

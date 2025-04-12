@@ -166,8 +166,8 @@ public class CustomerTest {
 
     @Test
     void toStringTest() {
-        assertEquals("Customer{id=1, firstName='Michael', lastName='Wolf', birthDate=1980-03-20, address='null', country='null', postalCode=null, phoneNumber='null', kids=0}", customer.toString());
-        assertEquals("Customer{id=2, firstName='Michaela', lastName='Gruber', birthDate=1985-05-23, address='Somestreet 20', country='Austria', postalCode=1010, phoneNumber='+43123456', kids=2}", customer2.toString());
+        assertEquals("Customer{id=1, firstName='Michael', lastName='Wolf', birthDate=1980-03-xx, address='null', country='null', postalCode=null, phoneNumber='null'}", customer.toString());
+        assertEquals("Customer{id=2, firstName='Michaela', lastName='Gruber', birthDate=1985-05-xx, address='Somestreet 20', country='Austria', postalCode=1010, phoneNumber='+4312xxxx'}", customer2.toString());
     }
 
     @Test

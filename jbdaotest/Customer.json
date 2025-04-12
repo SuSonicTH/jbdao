@@ -25,7 +25,9 @@
     {
       "name": "birthDate",
       "type": "LocalDate",
-      "nullable": true
+      "nullable": true,
+      "maskPattern": "^(.+)..",
+      "maskReplace": "$1xx"
     },
     {
       "name": "address",
@@ -50,7 +52,9 @@
       "name": "phoneNumber",
       "type": "String",
       "nullable": true,
-      "pattern": "\\+[1-9][0-9]+"
+      "pattern": "\\+[1-9][0-9]+",
+      "maskPattern": "^(.+)....",
+      "maskReplace": "$1xxxx"
     },
     {
       "name": "kids",
@@ -59,7 +63,8 @@
       "default": "0",
       "min": "0",
       "max": "10",
-      "immutable": false
+      "immutable": false,
+      "toString": false
     }
   ]
 }
