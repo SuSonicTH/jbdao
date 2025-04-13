@@ -39,7 +39,7 @@ public class ToStringGenerator extends Generator {
             emptyLine();
             appendLine("public String get%sMasked(boolean nullable) {", NameUtil.firstCharacterUpper(member.getName()));
             appendLine("if (%s == null) {", member.getName());
-            appendLine("return nullable ? null: \"\";");
+            appendLine("return nullable ? null : \"\";");
             appendLine("}");
             if (member.getType().equals("String")) {
                 appendLine("return %s.replaceAll(%s, %s);", member.getName(), quote(member.getMaskPattern()), quote(member.getMaskReplace()));
