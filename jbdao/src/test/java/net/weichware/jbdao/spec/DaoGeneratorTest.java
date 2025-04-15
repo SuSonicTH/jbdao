@@ -1,5 +1,6 @@
 package net.weichware.jbdao.spec;
 
+import net.weichware.jbdao.Customer;
 import net.weichware.jbdao.DaoGenerator;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -8,6 +9,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -32,5 +35,16 @@ class DaoGeneratorTest {
         String expected = new String(Files.readAllBytes(EXPECTED_PATH.resolve(CUSTOMER)));
 
         assertEquals(expected, actual);
+    }
+
+    @Test
+    void csvReadTest() {
+        //Customer.streamCsv(Paths.get("../customers-2000000.csv")).forEach(c->System.out.println(c.getId() + ": " + c.getFirstName() + " " + c.getLastName() ));
+        long start = System.currentTimeMillis();
+        List<Customer> collect = Customer.streamCsv(Paths.get("../customers-2000000.csv")).collect(Collectors.toList());
+        long end = System.currentTimeMillis();
+        System.out.println("records: " + collect.size());
+        System.out.println("time needed: " + ((end - start) / 1000.0));
+
     }
 }

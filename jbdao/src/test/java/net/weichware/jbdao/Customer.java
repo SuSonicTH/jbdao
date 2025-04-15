@@ -19,6 +19,7 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -339,6 +340,14 @@ public class Customer {
         return new Builder(id, firstName, lastName, birthDate, address, country, postalCode, phoneNumber, kids);
     }
 
+    public static Stream<Customer> streamCsv(Path file) {
+        try {
+            return StreamSupport.stream(new CsvReader(file, true), false);
+        } catch (IOException e) {
+            throw new CsvReaderException("Could not read file '" + file + "'", e);
+        }
+    }
+
     @Override
     public String toString() {
         return "Customer{" +
@@ -380,7 +389,7 @@ public class Customer {
         return Objects.hash(id, firstName, lastName, birthDate, address, country, postalCode, phoneNumber, kids);
     }
 
-    private static class ResultSetSpliterator extends AbstractResultSetSpliterator<Customer> implements AutoCloseable {
+    private static class ResultSetSpliterator extends AbstractResultSetSpliterator<Customer> {
 
         public ResultSetSpliterator(Connection connection, String sql, Object... args) {
             super(connection, sql, args);
@@ -389,6 +398,32 @@ public class Customer {
         @Override
         protected Customer create(ResultSet resultSet) throws SQLException {
             return new Customer(resultSet);
+        }
+    }
+
+    private static class CsvReader extends AbstractCsvReader<Customer> {
+        private int id;
+        private int firstName;
+        private int lastName;
+
+        public CsvReader(Path file, boolean hasHeader) throws IOException {
+            super(file, hasHeader);
+        }
+
+        @Override
+        protected void validateHeader(Map<String, Integer> header) {
+            id = header.get("Index");
+            firstName = header.get("First Name");
+            lastName = header.get("Last Name");
+        }
+
+        @Override
+        protected Customer create(List<String> fields) {
+            return new Customer(
+                    Long.parseLong(fields.get(id)),
+                    fields.get(firstName),
+                    fields.get(lastName)
+            );
         }
     }
 

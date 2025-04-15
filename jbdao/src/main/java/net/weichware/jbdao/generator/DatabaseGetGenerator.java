@@ -125,7 +125,7 @@ public class DatabaseGetGenerator extends Generator {
             addExtraClass("ResultSetSpliteratorException.java");
 
             emptyLine();
-            appendLine("private static class ResultSetSpliterator extends AbstractResultSetSpliterator<%s> implements AutoCloseable {", specification.getName());
+            appendLine("private static class ResultSetSpliterator extends AbstractResultSetSpliterator<%s> {", specification.getName());
             emptyLine();
             appendLine("public ResultSetSpliterator(Connection connection, String sql, Object... args) {");
             appendLine("super(connection, sql, args);");
