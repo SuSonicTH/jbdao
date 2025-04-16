@@ -171,7 +171,7 @@ public class CodeWriter {
     }
 
     private void outdentIfNeeded(String line) {
-        if (line.trim().endsWith("}")) {
+        if (line.trim().startsWith("}") || line.trim().endsWith("}")) {
             indent--;
         }
     }

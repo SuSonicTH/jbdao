@@ -165,4 +165,8 @@ public class Specification {
     public boolean hasMinMax() {
         return members.stream().anyMatch(Member::hasMinMax);
     }
+
+    public boolean hasCsv() {
+        return csv;
+    }
 }

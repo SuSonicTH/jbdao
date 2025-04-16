@@ -328,6 +328,14 @@ public class Customer {
         Files.write(jsonFile, toJson().getBytes(StandardCharsets.UTF_8));
     }
 
+    public static Stream<Customer> streamCsv(Path file) {
+        try {
+            return StreamSupport.stream(new CsvReader(file, true), false);
+        } catch (IOException e) {
+            throw new CsvReaderException("Could not read file '" + file + "'", e);
+        }
+    }
+
     public static Builder builder() {
         return new Builder();
     }
@@ -338,14 +346,6 @@ public class Customer {
 
     public Builder builderFrom() {
         return new Builder(id, firstName, lastName, birthDate, address, country, postalCode, phoneNumber, kids);
-    }
-
-    public static Stream<Customer> streamCsv(Path file) {
-        try {
-            return StreamSupport.stream(new CsvReader(file, true), false);
-        } catch (IOException e) {
-            throw new CsvReaderException("Could not read file '" + file + "'", e);
-        }
     }
 
     @Override
@@ -407,7 +407,7 @@ public class Customer {
         private int lastName;
 
         public CsvReader(Path file, boolean hasHeader) throws IOException {
-            super(file, hasHeader);
+            super(Files.newBufferedReader(file), hasHeader);
         }
 
         @Override
@@ -419,11 +419,7 @@ public class Customer {
 
         @Override
         protected Customer create(List<String> fields) {
-            return new Customer(
-                    Long.parseLong(fields.get(id)),
-                    fields.get(firstName),
-                    fields.get(lastName)
-            );
+            return new Customer(Long.parseLong(fields.get(id)), fields.get(firstName), fields.get(lastName));
         }
     }
 

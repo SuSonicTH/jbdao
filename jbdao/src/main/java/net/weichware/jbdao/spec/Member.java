@@ -22,6 +22,7 @@ public class Member {
     private Boolean getter;
     private Boolean toString;
     private Boolean hashEquals;
+    private Boolean csv;
     @SerializedName("default")
     private String defaultValue;
     private String min;
@@ -198,5 +199,12 @@ public class Member {
 
     public String getMaskReplace() {
         return maskReplace;
+    }
+
+    public Boolean hasCsv() {
+        if (csv == null) {
+            csv = true;
+        }
+        return csv;
     }
 }

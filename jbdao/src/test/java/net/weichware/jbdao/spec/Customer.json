@@ -4,6 +4,7 @@
   "with": true,
   "database": true,
   "json": true,
+  "csv": true,
   "toString": true,
   "builder": true,
   "noArgsConstructor": true,
@@ -12,22 +13,26 @@
     {
       "name": "id",
       "type": "long",
-      "primary": true
+      "primary": true,
+      "csvName": "Index"
     },
     {
       "name": "firstName",
-      "type": "String"
+      "type": "String",
+      "csvName": "First Name"
     },
     {
       "name": "lastName",
-      "type": "String"
+      "type": "String",
+      "csvName": "Last Name"
     },
     {
       "name": "birthDate",
       "type": "LocalDate",
       "nullable": true,
       "maskPattern": "^(.+)..",
-      "maskReplace": "$1xx"
+      "maskReplace": "$1xx",
+      "csv": false
     },
     {
       "name": "address",
@@ -35,18 +40,21 @@
       "nullable": true,
       "default": "Unknown",
       "min": "3",
-      "max": "50"
+      "max": "50",
+      "csv": false
     },
     {
       "name": "country",
       "type": "String",
-      "nullable": true
+      "nullable": true,
+      "csv": false
     },
     {
       "name": "postalCode",
       "type": "Integer",
       "nullable": true,
-      "default": 9999
+      "default": 9999,
+      "csv": false
     },
     {
       "name": "phoneNumber",
@@ -54,7 +62,8 @@
       "nullable": true,
       "pattern": "\\+[1-9][0-9]+",
       "maskPattern": "^(.+)....",
-      "maskReplace": "$1xxxx"
+      "maskReplace": "$1xxxx",
+      "csv": false
     },
     {
       "name": "kids",
@@ -64,7 +73,8 @@
       "min": "0",
       "max": "10",
       "immutable": false,
-      "toString": false
+      "toString": false,
+      "csv": false
     }
   ]
 }

@@ -27,6 +27,11 @@ import static org.junit.jupiter.api.Assertions.*;
 public class CustomerTest {
     private static final Path TEST_PATH = Paths.get("./target/test");
     private static final String CUSTOMER_JSON = "{\"id\":1,\"firstName\":\"Michael\",\"lastName\":\"Wolf\",\"birthDate\":\"1980-03-20\",\"kids\":0}";
+    private static final String CSV_FILE_CONTENTS = "Index,Customer Id,First Name,Last Name,Company,City,Country,Phone 1,Phone 2,Email,Subscription Date,Website\n" +
+            "1,4962fdbE6Bfee6D,Pam,Sparks,Patel-Deleon,Blakemouth,British Indian Ocean Territory (Chagos Archipelago),267-243-9490x035,480-078-0535x889,nicolas00@faulkner-kramer.com,2020-11-29,https://nelson.com/\n" +
+            "2,9b12Ae76fdBc9bE,Gina,Rocha,\"Acosta, Paul and Barber\",East Lynnchester,Costa Rica,027.142.0940,+1-752-593-4777x07171,yfarley@morgan.com,2021-01-03,https://pineda-rogers.biz/\n" +
+            "3,39edFd2F60C85BC,Kristie,Greer,Ochoa PLC,West Pamela,Ecuador,+1-049-168-7497x5053,+1-311-216-7855,jennyhayden@petty.org,2021-06-20,https://mckinney.com/\n";
+    private static final Path CSV_FILE_PATH = TEST_PATH.resolve("testFile.csv");
     private final Customer customer = new Customer(1, "Michael", "Wolf", LocalDate.of(1980, 3, 20), null, null, null, null, 0);
     private final Customer customerWithDefaults = customer.withAddress("Unknown").withPostalCode(9999);
     private final Customer customer2 = new Customer(2, "Michaela", "Gruber", LocalDate.of(1985, 5, 23), "Somestreet 20", "Austria", 1010, "+43123456", 2);
@@ -133,7 +138,7 @@ public class CustomerTest {
 
     @Test
     void validateReturnsSameObject() {
-        assertTrue(customer == customer.validate());
+        assertSame(customer, customer.validate());
     }
 
     @Test
@@ -194,7 +199,7 @@ public class CustomerTest {
     @Test
     void setterReturnsSameObject() {
         Customer customer3 = new Customer(3, "Hans", "Schmidt");
-        assertTrue(customer3 == customer3.setKids(3));
+        assertSame(customer3, customer3.setKids(3));
     }
 
     @Test
@@ -211,6 +216,22 @@ public class CustomerTest {
         assertEquals("kids is lower then min 0",
                 assertThrows(ValidationException.class, () -> customer3.setKids(-2)).getMessage()
         );
+    }
+
+    @Test
+    void getPhoneNumberMaskedTest() {
+        assertEquals("+4312xxxx", customer2.getPhoneNumberMasked(false));
+        assertEquals("+4312xxxx", customer2.getPhoneNumberMasked(true));
+        assertEquals("", customer.getPhoneNumberMasked(false));
+        assertNull(customer.getPhoneNumberMasked(true));
+    }
+
+    @Test
+    void getBirthDateMaskedTest() {
+        assertEquals("1985-05-xx", customer2.getBirthDateMasked(false));
+        assertEquals("1985-05-xx", customer2.getBirthDateMasked(true));
+        assertEquals("", new Customer().getBirthDateMasked(false));
+        assertNull(new Customer().getBirthDateMasked(true));
     }
 
     @Test
@@ -552,6 +573,23 @@ public class CustomerTest {
         Customer.Builder builder = Customer.builder(0, "Mike", "");
         assertEquals("lastName may not be empty",
                 assertThrows(ValidationException.class, builder::build).getMessage()
+        );
+    }
+
+    @Test
+    void csvFileReadingTest() throws IOException {
+        Files.write(CSV_FILE_PATH, CSV_FILE_CONTENTS.getBytes());
+        List<Customer> list = Customer.streamCsv(CSV_FILE_PATH).collect(Collectors.toList());
+        assertEquals(3, list.size());
+        assertEquals(new Customer(1, "Pam", "Sparks"), list.get(0));
+        assertEquals(new Customer(2, "Gina", "Rocha"), list.get(1));
+        assertEquals(new Customer(3, "Kristie", "Greer"), list.get(2));
+    }
+
+    @Test
+    void streamCsvThrowsOnIOError() {
+        assertEquals("Could not read file './target/test'",
+                assertThrows(CsvReaderException.class, () -> Customer.streamCsv(TEST_PATH)).getMessage().replace('\\', '/')
         );
     }
 
