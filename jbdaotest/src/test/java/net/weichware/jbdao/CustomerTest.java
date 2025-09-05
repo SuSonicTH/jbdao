@@ -4,13 +4,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -588,8 +582,9 @@ public class CustomerTest {
 
     @Test
     void streamCsvThrowsOnIOError() {
-        assertEquals("Could not read file './target/test'",
-                assertThrows(CsvReaderException.class, () -> Customer.streamCsv(TEST_PATH)).getMessage().replace('\\', '/')
+        Path notExistingFile = TEST_PATH.resolve("NotExisting.csv");
+        assertEquals("Could not read file '" + notExistingFile + "'",
+                assertThrows(CsvReaderException.class, () -> Customer.streamCsv(notExistingFile)).getMessage().replace('\\', '/')
         );
     }
 
