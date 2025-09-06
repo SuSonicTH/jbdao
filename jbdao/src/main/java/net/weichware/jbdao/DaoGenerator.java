@@ -26,6 +26,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class DaoGenerator extends ClassWriter {
     private static final Logger log = LoggerFactory.getLogger(DaoGenerator.class);
@@ -42,10 +44,49 @@ public class DaoGenerator extends ClassWriter {
 
     public static void main(String[] args) throws IOException {
         log.info("Starting jbdao godegen " + Paths.get("./").toAbsolutePath());
-        String spec = new String(Files.readAllBytes(Paths.get(args[0])));
+        if (args.length != 2) {
+            System.err.println("jbdao error: expecting exactly 2 arguments spec file/path and output path");
+            System.exit(1);
+        }
+
+        Path specPath = Paths.get(args[0]);
+        if (!Files.exists(specPath)) {
+            System.err.println("jbdao error: spec file/path " + specPath + " does not exist");
+            System.exit(2);
+        }
+
+        Path outputPath = Paths.get(args[1]);
+        if (!Files.exists(specPath)) {
+            Files.createDirectories(outputPath);
+        } else if (!Files.isDirectory(outputPath)) {
+            System.err.println("jbdao error: output path " + outputPath + " is not a directory");
+            System.exit(3);
+        }
+
+        if (Files.isDirectory(specPath)) {
+            for (Path file : getFileList(specPath)) {
+                generateClass(file, outputPath);
+            }
+        } else {
+            generateClass(specPath, outputPath);
+        }
+        log.info("Finished jbdao codegen");
+    }
+
+    private static List<Path> getFileList(Path specPath) throws IOException {
+        try (Stream<Path> fileStream = Files.list(specPath)) {
+            return fileStream
+                    .filter(Files::isRegularFile)
+                    .filter(file -> file.getFileName().toString().toLowerCase().endsWith(".json"))
+                    .collect(Collectors.toList());
+        }
+    }
+
+    private static void generateClass(Path specFile, Path outputPath) throws IOException {
+        log.info("generating class for spec " + specFile.getFileName());
+        String spec = new String(Files.readAllBytes(specFile));
         Specification specification = Specification.readSpec(spec);
-        new DaoGenerator(specification, Paths.get(args[1])).generate();
-        log.info("Finished jbdao godegen");
+        new DaoGenerator(specification, outputPath).generate();
     }
 
     public void generate() throws IOException {

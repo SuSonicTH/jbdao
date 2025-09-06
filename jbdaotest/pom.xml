@@ -30,7 +30,7 @@
                             <mainClass>net.weichware.jbdao.DaoGenerator</mainClass>
                             <addResourcesToClasspath>true</addResourcesToClasspath>
                             <arguments>
-                                <argument>./jbdaotest/Customer.json</argument>
+                                <argument>./jbdaotest/</argument>
                                 <argument>./jbdaotest/target/generated-sources</argument>
                             </arguments>
                         </configuration>

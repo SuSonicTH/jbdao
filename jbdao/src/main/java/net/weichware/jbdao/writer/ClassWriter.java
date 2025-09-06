@@ -7,12 +7,14 @@ import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 
 public class ClassWriter extends CodeWriter {
+    private static final HashSet<String> extraClasses = new HashSet<>();
     protected final String packagePath;
     protected final String name;
 
@@ -34,16 +36,20 @@ public class ClassWriter extends CodeWriter {
     }
 
     private void writeExtraClass(Path basePath, String fileName) {
-        try {
-            String source = getResourceFileAsString(fileName);
-            String packageName = Arrays.stream(source.split("\r?\n"))
-                    .map(String::trim)
-                    .filter(line -> line.startsWith("package"))
-                    .findFirst()
-                    .orElseThrow(() -> new DaoGeneratorException("Package not found for utility class " + fileName));
-            writeSource(basePath, packageName, fileName, source);
-        } catch (IOException e) {
-            throw new DaoGeneratorException("Could not write support class " + fileName, e);
+        if (!extraClasses.contains(fileName)) {
+            System.out.println("Writing class: " + fileName);
+            try {
+                String source = getResourceFileAsString(fileName);
+                String packageName = Arrays.stream(source.split("\r?\n"))
+                        .map(String::trim)
+                        .filter(line -> line.startsWith("package"))
+                        .findFirst()
+                        .orElseThrow(() -> new DaoGeneratorException("Package not found for utility class " + fileName));
+                writeSource(basePath, packageName, fileName, source);
+                extraClasses.add(fileName);
+            } catch (IOException e) {
+                throw new DaoGeneratorException("Could not write support class " + fileName, e);
+            }
         }
     }
 
