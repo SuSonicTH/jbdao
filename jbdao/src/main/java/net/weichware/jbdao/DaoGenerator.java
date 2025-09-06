@@ -1,16 +1,16 @@
 package net.weichware.jbdao;
 
-import net.weichware.jbdao.generator.AllArgsConstructor;
 import net.weichware.jbdao.generator.BuilderGenerator;
+import net.weichware.jbdao.generator.ConstructorAllArgsGenerator;
+import net.weichware.jbdao.generator.ConstructorNoArgsGenerator;
+import net.weichware.jbdao.generator.ConstructorNonNullGenerator;
+import net.weichware.jbdao.generator.ConstructorResultSetGenerator;
 import net.weichware.jbdao.generator.CsvGenerator;
 import net.weichware.jbdao.generator.DatabaseGetGenerator;
 import net.weichware.jbdao.generator.DatabasePersistenceGenerator;
 import net.weichware.jbdao.generator.GetterSetterGenerator;
 import net.weichware.jbdao.generator.HashEqualsGenerator;
 import net.weichware.jbdao.generator.JsonGenerator;
-import net.weichware.jbdao.generator.NoArgsConstructor;
-import net.weichware.jbdao.generator.NonNullConstructor;
-import net.weichware.jbdao.generator.ResultSetConstructor;
 import net.weichware.jbdao.generator.ToStringGenerator;
 import net.weichware.jbdao.generator.ValidationGenerator;
 import net.weichware.jbdao.generator.WithGenerator;
@@ -52,10 +52,10 @@ public class DaoGenerator extends ClassWriter {
         appendLine("public class %s {", specification.getName());
         appendLines(members.stream().map(this::memberDefinition));
         memberImports();
-        append(new NoArgsConstructor(specification));
-        append(new NonNullConstructor(specification));
-        append(new AllArgsConstructor(specification));
-        append(new ResultSetConstructor(specification));
+        append(new ConstructorNoArgsGenerator(specification));
+        append(new ConstructorNonNullGenerator(specification));
+        append(new ConstructorAllArgsGenerator(specification));
+        append(new ConstructorResultSetGenerator(specification));
         append(new ValidationGenerator(specification));
         append(new GetterSetterGenerator(specification));
         append(new WithGenerator(specification));

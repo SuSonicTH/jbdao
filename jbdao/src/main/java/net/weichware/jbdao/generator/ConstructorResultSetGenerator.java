@@ -4,8 +4,8 @@ import net.weichware.jbdao.spec.Specification;
 import net.weichware.jbdao.util.ClassUtil;
 import net.weichware.jbdao.writer.Generator;
 
-public class ResultSetConstructor extends Generator {
-    public ResultSetConstructor(Specification specification) {
+public class ConstructorResultSetGenerator extends Generator {
+    public ConstructorResultSetGenerator(Specification specification) {
         super(specification);
 
         if (specification.generateDatabase()) {

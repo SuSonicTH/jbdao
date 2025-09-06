@@ -5,9 +5,9 @@ import net.weichware.jbdao.spec.Specification;
 import net.weichware.jbdao.util.ClassUtil;
 import net.weichware.jbdao.writer.Generator;
 
-public class NoArgsConstructor extends Generator {
+public class ConstructorNoArgsGenerator extends Generator {
 
-    public NoArgsConstructor(Specification specification) {
+    public ConstructorNoArgsGenerator(Specification specification) {
         super(specification);
 
         if (specification.hasNoArgsConstructor()) {

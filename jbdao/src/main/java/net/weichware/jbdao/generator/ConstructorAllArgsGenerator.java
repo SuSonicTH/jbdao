@@ -2,14 +2,13 @@ package net.weichware.jbdao.generator;
 
 import net.weichware.jbdao.spec.Member;
 import net.weichware.jbdao.spec.Specification;
-import net.weichware.jbdao.util.ClassUtil;
 import net.weichware.jbdao.writer.Generator;
 
 import static java.util.stream.Collectors.joining;
 
-public class AllArgsConstructor extends Generator {
+public class ConstructorAllArgsGenerator extends Generator {
 
-    public AllArgsConstructor(Specification specification) {
+    public ConstructorAllArgsGenerator(Specification specification) {
         super(specification);
 
         if (specification.hasAllArgsConstructor()) {

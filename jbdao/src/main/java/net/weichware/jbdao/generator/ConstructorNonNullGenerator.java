@@ -7,9 +7,9 @@ import net.weichware.jbdao.writer.Generator;
 
 import static java.util.stream.Collectors.joining;
 
-public class NonNullConstructor extends Generator {
+public class ConstructorNonNullGenerator extends Generator {
 
-    public NonNullConstructor(Specification specification) {
+    public ConstructorNonNullGenerator(Specification specification) {
         super(specification);
 
         if (specification.hasNonNullConstructor()) {
