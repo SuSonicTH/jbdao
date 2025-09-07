@@ -1,5 +1,8 @@
-package net.weichware.jbdao;
+package net.weichware.myapp;
 
+import net.weichware.jbdao.AbstractCsvReader;
+import net.weichware.jbdao.AbstractResultSetSpliterator;
+import net.weichware.jbdao.CsvReaderException;
 import net.weichware.jbdao.GsonUtil;
 import net.weichware.jbdao.ValidationException;
 

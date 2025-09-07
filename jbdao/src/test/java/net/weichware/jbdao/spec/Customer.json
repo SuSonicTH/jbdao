@@ -1,5 +1,5 @@
 {
-  "packagePath": "net.weichware.jbdao",
+  "packagePath": "net.weichware.myapp",
   "name": "Customer",
   "with": true,
   "database": true,

@@ -43,7 +43,7 @@ public class DaoGenerator extends ClassWriter {
     }
 
     public static void main(String[] args) throws IOException {
-        log.info("Starting jbdao godegen " + Paths.get("./").toAbsolutePath());
+        log.info("Starting codegen ");
         if (args.length != 2) {
             System.err.println("jbdao error: expecting exactly 2 arguments spec file/path and output path");
             System.exit(1);
@@ -51,7 +51,7 @@ public class DaoGenerator extends ClassWriter {
 
         Path specPath = Paths.get(args[0]);
         if (!Files.exists(specPath)) {
-            System.err.println("jbdao error: spec file/path " + specPath + " does not exist");
+            System.err.println("error: spec file/path " + specPath + " does not exist");
             System.exit(2);
         }
 
@@ -59,7 +59,7 @@ public class DaoGenerator extends ClassWriter {
         if (!Files.exists(specPath)) {
             Files.createDirectories(outputPath);
         } else if (!Files.isDirectory(outputPath)) {
-            System.err.println("jbdao error: output path " + outputPath + " is not a directory");
+            System.err.println("error: output path " + outputPath + " is not a directory");
             System.exit(3);
         }
 
@@ -70,7 +70,7 @@ public class DaoGenerator extends ClassWriter {
         } else {
             generateClass(specPath, outputPath);
         }
-        log.info("Finished jbdao codegen");
+        log.info("Finished codegen");
     }
 
     private static List<Path> getFileList(Path specPath) throws IOException {

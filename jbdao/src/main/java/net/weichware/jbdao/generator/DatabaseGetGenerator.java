@@ -122,6 +122,7 @@ public class DatabaseGetGenerator extends Generator {
         protected ResultSetSpliteratorGenerator(Specification specification) {
             super(specification);
             addExtraClass("AbstractResultSetSpliterator.java");
+            addImport("net.weichware.jbdao.AbstractResultSetSpliterator");
             addExtraClass("ResultSetSpliteratorException.java");
 
             emptyLine();

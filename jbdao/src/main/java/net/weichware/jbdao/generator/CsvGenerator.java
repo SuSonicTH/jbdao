@@ -14,7 +14,9 @@ public class CsvGenerator extends Generator {
             appendStreamCsv();
             addPrivateClass(new CsvReaderGenerator(specification));
             addExtraClass("AbstractCsvReader.java");
+            addImport("net.weichware.jbdao.AbstractCsvReader");
             addExtraClass("CsvReaderException.java");
+            addImport("net.weichware.jbdao.CsvReaderException");
         }
     }
 
