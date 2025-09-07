@@ -42,33 +42,37 @@ public class DaoGenerator extends ClassWriter {
         this.outputPath = outputPath;
     }
 
-    public static void main(String[] args) throws IOException {
-        log.info("Starting codegen ");
-        if (args.length != 2) {
-            System.err.println("jbdao error: expecting exactly 2 arguments spec file/path and output path");
-            System.exit(1);
-        }
-
-        Path specPath = Paths.get(args[0]);
-        if (!Files.exists(specPath)) {
-            System.err.println("error: spec file/path " + specPath + " does not exist");
-            System.exit(2);
-        }
-
-        Path outputPath = Paths.get(args[1]);
-        if (!Files.exists(specPath)) {
-            Files.createDirectories(outputPath);
-        } else if (!Files.isDirectory(outputPath)) {
-            System.err.println("error: output path " + outputPath + " is not a directory");
-            System.exit(3);
-        }
-
-        if (Files.isDirectory(specPath)) {
-            for (Path file : getFileList(specPath)) {
-                generateClass(file, outputPath);
+    public static void main(String[] args) {
+        try {
+            log.info("Starting codegen ");
+            if (args.length != 2) {
+                log.error("jbdao error: expecting exactly 2 arguments spec file/path and output path");
+                System.exit(1);
             }
-        } else {
-            generateClass(specPath, outputPath);
+
+            Path specPath = Paths.get(args[0]);
+            if (!Files.exists(specPath)) {
+                log.error("error: spec file/path {} does not exist", specPath);
+                System.exit(2);
+            }
+
+            Path outputPath = Paths.get(args[1]);
+            if (!Files.exists(outputPath)) {
+                Files.createDirectories(outputPath);
+            } else if (!Files.isDirectory(outputPath)) {
+                log.error("error: output path {}} is not a directory", specPath);
+                System.exit(3);
+            }
+
+            if (Files.isDirectory(specPath)) {
+                for (Path file : getFileList(specPath)) {
+                    generateClass(file, outputPath);
+                }
+            } else {
+                generateClass(specPath, outputPath);
+            }
+        } catch (Exception e) {
+            log.error("Error while executing codegen", e);
         }
         log.info("Finished codegen");
     }
@@ -83,7 +87,7 @@ public class DaoGenerator extends ClassWriter {
     }
 
     private static void generateClass(Path specFile, Path outputPath) throws IOException {
-        log.info("generating class for spec " + specFile.getFileName());
+        log.info("generating class for spec {}", specFile.getFileName());
         String spec = new String(Files.readAllBytes(specFile));
         Specification specification = Specification.readSpec(spec);
         new DaoGenerator(specification, outputPath).generate();
