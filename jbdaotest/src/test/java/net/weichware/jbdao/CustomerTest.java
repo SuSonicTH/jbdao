@@ -1,6 +1,5 @@
 package net.weichware.jbdao;
 
-import net.weichware.myapp.Customer;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
