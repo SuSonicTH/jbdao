@@ -1,5 +1,8 @@
 package net.weichware.jbdao.writer;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,6 +17,7 @@ import java.util.stream.Collectors;
 import static java.util.stream.Collectors.toList;
 
 public class ClassWriter extends CodeWriter {
+    private static final Logger log = LoggerFactory.getLogger(ClassWriter.class);
     private static final HashSet<String> extraClasses = new HashSet<>();
     protected final String packagePath;
     protected final String name;
@@ -37,7 +41,7 @@ public class ClassWriter extends CodeWriter {
 
     private void writeExtraClass(Path basePath, String fileName) {
         if (!extraClasses.contains(fileName)) {
-            System.out.println("Writing class: " + fileName);
+            log.info("adding class {}", fileName);
             try {
                 String source = getResourceFileAsString(fileName);
                 String packageName = Arrays.stream(source.split("\r?\n"))
