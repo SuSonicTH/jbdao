@@ -27,7 +27,7 @@ public class DatabasePersistenceGenerator extends Generator {
 
     private void appendInsert() {
         emptyLine();
-        appendLine("public Customer insert(Connection connection) throws SQLException {");
+        appendLine("public %s insert(Connection connection) throws SQLException {", specification.getName());
         appendLine("try (PreparedStatement preparedStatement = connection.prepareStatement(\"insert into %s (%s) values(%s)\")) {", specification.getDatabaseName(), memberList(), valueList());
         int i = 1;
         for (Member member : members) {
@@ -53,7 +53,7 @@ public class DatabasePersistenceGenerator extends Generator {
 
     private void appendUpdate() {
         emptyLine();
-        appendLine("public Customer update(Connection connection) throws SQLException {");
+        appendLine("public %s update(Connection connection) throws SQLException {", specification.getName());
         appendLine("try (PreparedStatement preparedStatement = connection.prepareStatement(\"update %s set %s where %s = ?\")) {", specification.getDatabaseName(), memberSetExpression(), primary.getDatabaseName());
         int i = 1;
         for (Member member : members) {
@@ -104,7 +104,7 @@ public class DatabasePersistenceGenerator extends Generator {
 
     private void appendPersist() {
         emptyLine();
-        appendLine("public Customer persist(Connection connection) throws SQLException {");
+        appendLine("public %s persist(Connection connection) throws SQLException {", specification.getName());
         appendLine("if (isInDatabase(connection)) {");
         appendLine("return update(connection);");
         appendLine("}");

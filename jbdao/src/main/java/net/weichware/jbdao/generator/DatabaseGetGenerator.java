@@ -41,12 +41,12 @@ public class DatabaseGetGenerator extends Generator {
     private void appendGet(Member primary) {
         addImport("java.util.Optional");
         emptyLine();
-        appendLine("public static Optional<Customer> get(Connection connection, long %s) throws SQLException {", primary.getName());
+        appendLine("public static Optional<%s> get(Connection connection, long %s) throws SQLException {", specification.getName(), primary.getName());
         appendLine("try (PreparedStatement preparedStatement = connection.prepareStatement(\"select %s from %s where %s = ?\")) {", getColumns(), specification.getDatabaseName(), primary.getDatabaseName());
         appendLine("preparedStatement.setObject(1, %s);", primary.getName());
         appendLine("try (ResultSet resultSet = preparedStatement.executeQuery()) {");
         appendLine("if (resultSet.next()) {");
-        appendLine("return Optional.of(new Customer(resultSet));");
+        appendLine("return Optional.of(new %s(resultSet));", specification.getName());
         appendLine("}");
         appendLine("}");
         appendLine("}");

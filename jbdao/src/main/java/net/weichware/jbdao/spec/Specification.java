@@ -30,6 +30,7 @@ public class Specification {
 
     private Boolean toString;
     private Boolean hashEquals;
+    private Boolean createAbstract;
 
     public static Specification readSpec(String spec) {
         return new Gson().fromJson(spec, Specification.class);

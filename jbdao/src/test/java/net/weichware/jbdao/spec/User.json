@@ -1,0 +1,22 @@
+{
+  "packagePath": "net.weichware.myapp",
+  "name": "User",
+  "createAbstract": true,
+  "database": true,
+  "members": [
+    {
+      "name": "id",
+      "type": "long",
+      "primary": true
+    },
+    {
+      "name": "name",
+      "type": "String"
+    },
+    {
+      "name": "lastActiveTime",
+      "type": "LocalDateTime",
+      "nullable": true
+    }
+  ]
+}
