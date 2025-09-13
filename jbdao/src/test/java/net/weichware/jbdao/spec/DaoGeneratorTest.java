@@ -1,5 +1,6 @@
 package net.weichware.jbdao.spec;
 
+import net.weichware.jbdao.ConcreteClassGenerator;
 import net.weichware.jbdao.DaoGenerator;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -39,11 +40,21 @@ class DaoGeneratorTest {
     }
 
     @Test
-    void generateUser() throws IOException {
+    void generateAbstractUser() throws IOException {
         new DaoGenerator(Specification.readSpec(USER_JSON), OUTOUT_PATH).generate();
-        String actual = new String(Files.readAllBytes(OUTOUT_PACKAGE_PATH.resolve(USER)));
+        String actual = new String(Files.readAllBytes(OUTOUT_PACKAGE_PATH.resolve(ABSTRACT_USER)));
         String expected = new String(Files.readAllBytes(EXPECTED_PATH.resolve(ABSTRACT_USER)));
 
         assertEquals(expected, actual);
     }
+
+    @Test
+    void generateConcreteUser() throws IOException {
+        new ConcreteClassGenerator(Specification.readSpec(USER_JSON), OUTOUT_PATH).generate();
+        String actual = new String(Files.readAllBytes(OUTOUT_PACKAGE_PATH.resolve(USER)));
+        String expected = new String(Files.readAllBytes(EXPECTED_PATH.resolve(USER)));
+
+        assertEquals(expected, actual);
+    }
+
 }

@@ -30,7 +30,7 @@ public class GetterSetterGenerator extends Generator {
             );
             appendLines(ValidationGenerator.getValidations(member));
             appendLine("this.%s = %s;", member.getName(), member.getName());
-            appendLine("return this;");
+            appendLine(specification.returnThis());
             appendLine("}");
         }
     }

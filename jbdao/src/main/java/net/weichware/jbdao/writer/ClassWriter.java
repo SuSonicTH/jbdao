@@ -27,11 +27,16 @@ public class ClassWriter extends CodeWriter {
         this.name = name;
     }
 
-    protected void writeSource(Path basePath) throws IOException {
-        writeSource(basePath, packagePath, name + ".java", getCode());
+    protected void writeSource(String className, Path basePath) throws IOException {
+        writeSource(basePath, packagePath, className + ".java", getCode());
         getExtraClassSet().forEach(fileName -> writeExtraClass(basePath, fileName));
     }
 
+    protected Path getOutputFilePath(Path basePath, String packageName, String className) {
+        return basePath
+                .resolve(packagePath.replace(".", "/"))
+                .resolve(className + ".java");
+    }
     private void writeSource(Path basePath, String packageName, String fileName, String source) throws IOException {
         Path outputPath = basePath.resolve(packagePath.replace(".", "/"));
         Path outputFile = outputPath.resolve(fileName);

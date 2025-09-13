@@ -77,7 +77,7 @@ public class Customer {
         validate();
     }
 
-    private Customer(ResultSet resultSet) throws SQLException {
+    protected Customer(ResultSet resultSet) throws SQLException {
         id = resultSet.getObject("ID", Long.class);
         firstName = resultSet.getObject("FIRST_NAME", String.class);
         lastName = resultSet.getObject("LAST_NAME", String.class);

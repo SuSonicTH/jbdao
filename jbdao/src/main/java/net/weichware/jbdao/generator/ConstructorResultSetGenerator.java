@@ -17,13 +17,12 @@ public class ConstructorResultSetGenerator extends Generator {
         addImport("java.sql.ResultSet", "java.sql.SQLException");
 
         emptyLine();
-        appendLine("private %s(ResultSet resultSet) throws SQLException {", specification.getName());
+        appendLine("protected %s(ResultSet resultSet) throws SQLException {", specification.className());
         appendLines(members.stream().map(member ->
                 member.getName() + " = resultSet.getObject(" + quote(member.getDatabaseName()) + ", " + ClassUtil.primitiveToObjectMap.getOrDefault(member.getType(), member.getType()) + ".class);")
         );
         appendLine("validate();");
         appendLine("}");
-
     }
 
 }

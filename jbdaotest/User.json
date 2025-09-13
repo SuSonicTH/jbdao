@@ -10,7 +10,6 @@
   "noArgsConstructor": true,
   "allArgsConstructor": true,
   "abstract": true,
-
   "members": [
     {
       "name": "id",
