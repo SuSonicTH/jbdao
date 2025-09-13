@@ -7,8 +7,6 @@ a Java library to generate DAO classes at compile time
 
 * Enums as members (& enum generation)
 * automatic ID generation from sequence or trigger
-* implement as an abstract class to be overwritten with additional implementations, should also create the overwritten
-  class if it does not exist
 
 ## TBD
 * implement servlet for put/get/patch ?
