@@ -28,13 +28,14 @@ public class ConcreteClassGenerator extends ClassWriter {
     }
 
     public void generate() throws IOException {
-        Path outputFile = getOutputFilePath(outputPath, specification.getPackagePath(), specification.className());
+        Path outputFile = getOutputFilePath(outputPath, specification.getPackagePath(), specification.getName());
         if (Files.exists(outputFile)) {
             log.info("skipping generating concrete class {}", specification.getName());
             return;
         } else {
             log.info("generating concrete class {}", specification.getName());
         }
+
         appendLine("public class %s extends %s<%s> {", specification.getName(), specification.className(), specification.getName());
         if (specification.hasNoArgsConstructor()) {
             emptyLine();
