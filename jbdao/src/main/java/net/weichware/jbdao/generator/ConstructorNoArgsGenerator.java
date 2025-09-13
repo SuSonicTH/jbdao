@@ -17,7 +17,7 @@ public class ConstructorNoArgsGenerator extends Generator {
 
     private void generateCode() {
         emptyLine();
-        appendLine("public %s() {", specification.getName());
+        appendLine("%s %s() {", specification.constructorVisibility(), specification.className());
         for (Member member : members) {
             if (member.hasDefault()) {
                 appendLine("%s = %s;", member.getName(), member.getDefaultValue());

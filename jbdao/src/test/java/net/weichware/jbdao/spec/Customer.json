@@ -9,6 +9,7 @@
   "builder": true,
   "noArgsConstructor": true,
   "allArgsConstructor": true,
+
   "members": [
     {
       "name": "id",

@@ -5,7 +5,6 @@ import net.weichware.jbdao.spec.Specification;
 import net.weichware.jbdao.util.ClassUtil;
 import net.weichware.jbdao.writer.Generator;
 
-import java.sql.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,9 +21,9 @@ public class ValidationGenerator extends Generator {
         addImport("net.weichware.jbdao.ValidationException");
 
         emptyLine();
-        appendLine("public %s validate() {", specification.getName());
+        appendLine("public %s validate() {", specification.returnThisType());
         members.forEach(member -> appendLines(getValidations(member)));
-        appendLine("return this;");
+        appendLine(specification.returnThis());
         appendLine("}");
     }
 

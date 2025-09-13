@@ -31,10 +31,17 @@ public class HashEqualsGenerator extends Generator {
         String objectEqualsList = members.stream()
                 .filter(Member::generateHashEquals)
                 .map(Member::getName)
-                .map(member -> "Objects.equals(" + member + ", " + objectName + "." + member + ")")
+                .map(member -> "Objects.equals(" + member + ", " + objectName + "." + memberValue(member) + ")")
                 .collect(Collectors.joining(" && "));
         appendLine("return " + objectEqualsList + ";");
         appendLine("}");
+    }
+
+    private String memberValue(String memberName) {
+        if (specification.generateAbstract()) {
+            return String.format("get%s()", NameUtil.firstCharacterUpper(memberName));
+        }
+        return memberName;
     }
 
     private void appendHashCode() {

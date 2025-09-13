@@ -45,8 +45,8 @@ public class DaoGenerator extends ClassWriter {
     public static void main(String[] args) {
         try {
             log.info("Starting codegen ");
-            if (args.length != 2) {
-                log.error("jbdao error: expecting exactly 2 arguments spec file/path and output path");
+            if (args.length != 3) {
+                log.error("jbdao error: expecting exactly 3 arguments spec file/path,output path, and source path");
                 System.exit(1);
             }
 
@@ -60,16 +60,24 @@ public class DaoGenerator extends ClassWriter {
             if (!Files.exists(outputPath)) {
                 Files.createDirectories(outputPath);
             } else if (!Files.isDirectory(outputPath)) {
-                log.error("error: output path {}} is not a directory", specPath);
+                log.error("error: output path {}} is not a directory", outputPath);
                 System.exit(3);
+            }
+
+            Path sourcePath = Paths.get(args[2]);
+            if (!Files.exists(sourcePath)) {
+                Files.createDirectories(sourcePath);
+            } else if (!Files.isDirectory(sourcePath)) {
+                log.error("error: source output path {}} is not a directory", sourcePath);
+                System.exit(4);
             }
 
             if (Files.isDirectory(specPath)) {
                 for (Path file : getFileList(specPath)) {
-                    generateClass(file, outputPath);
+                    generateClass(file, outputPath, sourcePath);
                 }
             } else {
-                generateClass(specPath, outputPath);
+                generateClass(specPath, outputPath, sourcePath);
             }
         } catch (Exception e) {
             log.error("Error while executing codegen", e);
@@ -86,15 +94,22 @@ public class DaoGenerator extends ClassWriter {
         }
     }
 
-    private static void generateClass(Path specFile, Path outputPath) throws IOException {
+    private static void generateClass(Path specFile, Path outputPath, Path sourcePath) throws IOException {
         log.info("generating class for spec {}", specFile.getFileName());
         String spec = new String(Files.readAllBytes(specFile));
         Specification specification = Specification.readSpec(spec);
         new DaoGenerator(specification, outputPath).generate();
+        if (specification.generateAbstract()) {
+            new ConcreteClassGenerator(specification, sourcePath).generate();
+        }
     }
 
     public void generate() throws IOException {
-        appendLine("public class %s {", specification.getName());
+        if (specification.generateAbstract()) {
+            appendLine("public abstract class Abstract%s<T> {", specification.getName());
+        } else {
+            appendLine("public class %s {", specification.getName());
+        }
         appendLines(members.stream().map(this::memberDefinition));
         memberImports();
         append(new ConstructorNoArgsGenerator(specification));
@@ -113,7 +128,7 @@ public class DaoGenerator extends ClassWriter {
         append(new HashEqualsGenerator(specification));
         append(getPrivateClasses());
         appendLine("}");
-        writeSource(outputPath);
+        writeSource(specification.className(), outputPath);
     }
 
     private void memberImports() {

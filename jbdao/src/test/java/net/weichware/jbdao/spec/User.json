@@ -1,0 +1,31 @@
+{
+  "packagePath": "net.weichware.myapp",
+  "name": "User",
+  "with": true,
+  "database": true,
+  "json": true,
+  "csv": true,
+  "toString": true,
+  "builder": true,
+  "noArgsConstructor": true,
+  "allArgsConstructor": true,
+  "abstract": true,
+
+  "members": [
+    {
+      "name": "id",
+      "type": "long",
+      "primary": true
+    },
+    {
+      "name": "name",
+      "type": "String"
+    },
+    {
+      "name": "lastActiveTime",
+      "type": "LocalDateTime",
+      "nullable": true,
+      "csv": false
+    }
+  ]
+}

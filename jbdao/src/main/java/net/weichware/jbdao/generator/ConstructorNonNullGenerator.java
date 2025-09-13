@@ -19,7 +19,7 @@ public class ConstructorNonNullGenerator extends Generator {
 
     private void generateCode() {
         emptyLine();
-        appendLine("public %s(%s) {", specification.getName(), constructorArgumentList());
+        appendLine("%s %s(%s) {", specification.constructorVisibility(), specification.className(), constructorArgumentList());
         appendConstructorAssignment();
         appendLine("validate();");
         appendLine("}");

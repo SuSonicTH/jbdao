@@ -1,6 +1,7 @@
 package net.weichware.jbdao.spec;
 
 import com.google.gson.Gson;
+import com.google.gson.annotations.SerializedName;
 import net.weichware.jbdao.util.NameUtil;
 
 import java.util.List;
@@ -30,6 +31,13 @@ public class Specification {
 
     private Boolean toString;
     private Boolean hashEquals;
+    @SerializedName("abstract")
+
+    private boolean generateAbstract;
+    private String className;
+    private String returnThisType;
+    private String returnThis;
+    private String constructorVisibility;
 
     public static Specification readSpec(String spec) {
         return new Gson().fromJson(spec, Specification.class);
@@ -125,6 +133,10 @@ public class Specification {
         return hashEquals;
     }
 
+    public Boolean generateAbstract() {
+        return generateAbstract;
+    }
+
     public boolean generateCsv() {
         return csv;
     }
@@ -168,5 +180,33 @@ public class Specification {
 
     public boolean hasCsv() {
         return csv;
+    }
+
+    public String className() {
+        if (className == null) {
+            className = generateAbstract ? "Abstract" + getName() : getName();
+        }
+        return className;
+    }
+
+    public String returnThisType() {
+        if (returnThisType == null) {
+            returnThisType = generateAbstract ? "T" : getName();
+        }
+        return returnThisType;
+    }
+
+    public String returnThis() {
+        if (returnThis == null) {
+            returnThis = String.format("return %sthis;", generateAbstract ? "(T) " : "");
+        }
+        return returnThis;
+    }
+
+    public String constructorVisibility() {
+        if (constructorVisibility == null) {
+            constructorVisibility = generateAbstract ? "protected" : "public";
+        }
+        return constructorVisibility;
     }
 }

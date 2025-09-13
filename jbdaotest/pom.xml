@@ -32,6 +32,7 @@
                             <arguments>
                                 <argument>./jbdaotest/</argument>
                                 <argument>./jbdaotest/target/generated-sources</argument>
+                                <argument>./jbdaotest/target/generated-sources</argument>
                             </arguments>
                         </configuration>
                     </execution>
