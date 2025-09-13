@@ -78,32 +78,16 @@ public abstract class AbstractUser<T> {
         return lastActiveTime;
     }
 
-    public static Optional<User> get(Connection connection, long id) throws SQLException {
-        try (PreparedStatement preparedStatement = connection.prepareStatement("select ID, NAME, LAST_ACTIVE_TIME from USER where ID = ?")) {
-            preparedStatement.setObject(1, id);
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                if (resultSet.next()) {
-                    return Optional.of(new User(resultSet));
-                }
-            }
-        }
-        return Optional.empty();
+    public User withId(long id) {
+        return new User(id, name, lastActiveTime);
     }
 
-    public static boolean exists(Connection connection, long id) throws SQLException {
-        try (PreparedStatement preparedStatement = connection.prepareStatement("select ID from USER where ID = ?")) {
-            preparedStatement.setObject(1, id);
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                if (resultSet.next()) {
-                    return true;
-                }
-            }
-        }
-        return false;
+    public User withName(String name) {
+        return new User(id, name, lastActiveTime);
     }
 
-    public static List<User> getList(Connection connection) throws SQLException {
-        return getList(connection, "select ID, NAME, LAST_ACTIVE_TIME from USER");
+    public User withLastActiveTime(LocalDateTime lastActiveTime) {
+        return new User(id, name, lastActiveTime);
     }
 
     public T insert(Connection connection) throws SQLException {
@@ -154,6 +138,34 @@ public abstract class AbstractUser<T> {
         return insert(connection);
     }
 
+    public static Optional<User> get(Connection connection, long id) throws SQLException {
+        try (PreparedStatement preparedStatement = connection.prepareStatement("select ID, NAME, LAST_ACTIVE_TIME from USER where ID = ?")) {
+            preparedStatement.setObject(1, id);
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    return Optional.of(new User(resultSet));
+                }
+            }
+        }
+        return Optional.empty();
+    }
+
+    public static boolean exists(Connection connection, long id) throws SQLException {
+        try (PreparedStatement preparedStatement = connection.prepareStatement("select ID from USER where ID = ?")) {
+            preparedStatement.setObject(1, id);
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public static List<User> getList(Connection connection) throws SQLException {
+        return getList(connection, "select ID, NAME, LAST_ACTIVE_TIME from USER");
+    }
+
     public static List<User> getList(Connection connection, String sql, Object... args) throws SQLException {
         final List<User> list = new ArrayList<>();
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
@@ -199,34 +211,6 @@ public abstract class AbstractUser<T> {
         }
     }
 
-    public static Stream<User> streamCsv(Path file) {
-        try {
-            return StreamSupport.stream(new CsvReader(file, true), false);
-        } catch (IOException e) {
-            throw new CsvReaderException("Could not read file '" + file + "'", e);
-        }
-    }
-
-    public static Builder builder() {
-        return new Builder();
-    }
-
-    public static Builder builder(long id, String name) {
-        return new Builder(id, name);
-    }
-
-    public User withId(long id) {
-        return new User(id, name, lastActiveTime);
-    }
-
-    public User withName(String name) {
-        return new User(id, name, lastActiveTime);
-    }
-
-    public User withLastActiveTime(LocalDateTime lastActiveTime) {
-        return new User(id, name, lastActiveTime);
-    }
-
     public String toJson() {
         return GsonUtil.gson.toJson(this);
     }
@@ -241,6 +225,22 @@ public abstract class AbstractUser<T> {
 
     public void toJson(Path jsonFile) throws IOException {
         Files.write(jsonFile, toJson().getBytes(StandardCharsets.UTF_8));
+    }
+
+    public static Stream<User> streamCsv(Path file) {
+        try {
+            return StreamSupport.stream(new CsvReader(file, true), false);
+        } catch (IOException e) {
+            throw new CsvReaderException("Could not read file '" + file + "'", e);
+        }
+    }
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static Builder builder(long id, String name) {
+        return new Builder(id, name);
     }
 
     public Builder builderFrom() {
