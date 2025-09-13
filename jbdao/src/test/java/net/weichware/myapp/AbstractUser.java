@@ -66,15 +66,15 @@ public abstract class AbstractUser<T> {
         return (T) this;
     }
 
-    public long getId() {
+    public long id() {
         return id;
     }
 
-    public String getName() {
+    public String name() {
         return name;
     }
 
-    public LocalDateTime getLastActiveTime() {
+    public LocalDateTime lastActiveTime() {
         return lastActiveTime;
     }
 
@@ -261,7 +261,7 @@ public abstract class AbstractUser<T> {
         if (this == o) return true;
         if (!(o instanceof User)) return false;
         User user = (User) o;
-        return Objects.equals(id, user.getId()) && Objects.equals(name, user.getName()) && Objects.equals(lastActiveTime, user.getLastActiveTime());
+        return Objects.equals(id, user.id()) && Objects.equals(name, user.name()) && Objects.equals(lastActiveTime, user.lastActiveTime());
     }
 
     @Override
