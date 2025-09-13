@@ -18,6 +18,7 @@ public class Specification {
     private String displayName;
     private String csvName;
     private String jsonName;
+    private boolean accessorPrefix;
 
     private boolean allArgsConstructor;
     private Boolean noArgsConstructor;
@@ -40,7 +41,9 @@ public class Specification {
     private String constructorVisibility;
 
     public static Specification readSpec(String spec) {
-        return new Gson().fromJson(spec, Specification.class);
+        Specification specification = new Gson().fromJson(spec, Specification.class);
+        specification.members.forEach(member -> member.setSpecification(specification));
+        return specification;
     }
 
     public String packagePath() {
@@ -53,6 +56,10 @@ public class Specification {
 
     public List<Member> members() {
         return members;
+    }
+
+    public boolean accessorPrefix() {
+        return accessorPrefix;
     }
 
     public boolean hasNonNullConstructor() {

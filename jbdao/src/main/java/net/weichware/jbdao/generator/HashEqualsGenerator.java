@@ -30,18 +30,17 @@ public class HashEqualsGenerator extends Generator {
         appendLine("%s %s = (%s) o;", className, objectName, className);
         String objectEqualsList = members.stream()
                 .filter(Member::generateHashEquals)
-                .map(Member::name)
-                .map(member -> "Objects.equals(" + member + ", " + objectName + "." + memberValue(member) + ")")
+                .map(member -> "Objects.equals(" + member.name() + ", " + objectName + "." + memberValue(member) + ")")
                 .collect(Collectors.joining(" && "));
         appendLine("return " + objectEqualsList + ";");
         appendLine("}");
     }
 
-    private String memberValue(String memberName) {
+    private String memberValue(Member member) {
         if (specification.generateAbstract()) {
-            return String.format("get%s()", NameUtil.firstCharacterUpper(memberName));
+            return member.getterName() + "()";
         }
-        return memberName;
+        return member.name();
     }
 
     private void appendHashCode() {

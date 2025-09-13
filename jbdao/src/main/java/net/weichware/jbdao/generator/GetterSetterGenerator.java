@@ -2,7 +2,6 @@ package net.weichware.jbdao.generator;
 
 import net.weichware.jbdao.spec.Member;
 import net.weichware.jbdao.spec.Specification;
-import net.weichware.jbdao.util.NameUtil;
 import net.weichware.jbdao.writer.Generator;
 
 public class GetterSetterGenerator extends Generator {
@@ -16,15 +15,15 @@ public class GetterSetterGenerator extends Generator {
 
     private void appendGetterSetter(Member member) {
         emptyLine();
-        appendLine("public %s get%s() {", member.type(), NameUtil.firstCharacterUpper(member.name()));
+        appendLine("public %s %s() {", member.type(), member.getterName());
         appendLine("return %s;", member.name());
         appendLine("}");
 
         if (!member.isImmutable()) {
             emptyLine();
-            appendLine("public %s set%s(%s %s) {",
+            appendLine("public %s %s(%s %s) {",
                     specification.name(),
-                    NameUtil.firstCharacterUpper(member.name()),
+                    member.setterName(),
                     member.type(),
                     member.name()
             );

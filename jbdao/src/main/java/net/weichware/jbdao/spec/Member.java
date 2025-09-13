@@ -30,6 +30,15 @@ public class Member {
     private String maskPattern;
     private String maskReplace;
 
+    private String getterName;
+    private String setterName;
+
+    private Specification specification;
+
+    public void setSpecification(Specification specification) {
+        this.specification = specification;
+    }
+
     public String name() {
         return name;
     }
@@ -153,6 +162,28 @@ public class Member {
             return null;
         }
         return pattern.replace("\\", "\\\\");
+    }
+
+    public String getterName() {
+        if (getterName == null) {
+            if (specification.accessorPrefix()) {
+                getterName = "get" + NameUtil.firstCharacterUpper(name());
+            } else {
+                getterName = name();
+            }
+        }
+        return getterName;
+    }
+
+    public String setterName() {
+        if (setterName == null) {
+            if (specification.accessorPrefix()) {
+                setterName = "set" + NameUtil.firstCharacterUpper(name());
+            } else {
+                setterName = name();
+            }
+        }
+        return setterName;
     }
 
     public boolean hasDefault() {
