@@ -21,37 +21,37 @@ public class ConcreteClassGenerator extends ClassWriter {
     private final Path outputPath;
 
     public ConcreteClassGenerator(Specification specification, Path outputPath) {
-        super(specification.getPackagePath(), specification.getName());
+        super(specification.packagePath(), specification.name());
         this.specification = specification;
-        this.members = specification.getMembers();
+        this.members = specification.members();
         this.outputPath = outputPath;
     }
 
     public void generate() throws IOException {
-        Path outputFile = getOutputFilePath(outputPath, specification.getPackagePath(), specification.getName());
+        Path outputFile = getOutputFilePath(outputPath, specification.packagePath(), specification.name());
         if (Files.exists(outputFile)) {
-            log.info("skipping generating concrete class {}", specification.getName());
+            log.info("skipping generating concrete class {}", specification.name());
             return;
         } else {
-            log.info("generating concrete class {}", specification.getName());
+            log.info("generating concrete class {}", specification.name());
         }
 
-        appendLine("public class %s extends %s<%s> {", specification.getName(), specification.className(), specification.getName());
+        appendLine("public class %s extends %s<%s> {", specification.name(), specification.className(), specification.name());
         if (specification.hasNoArgsConstructor()) {
             emptyLine();
-            appendLine("public %s() {", specification.getName());
+            appendLine("public %s() {", specification.name());
             appendLine("super();");
             appendLine("}");
         }
         if (specification.hasNonNullConstructor()) {
             emptyLine();
-            appendLine("public %s(%s) {", specification.getName(), nonNullConstructorArgumentList());
+            appendLine("public %s(%s) {", specification.name(), nonNullConstructorArgumentList());
             appendLine("super(%s);", nonNullConstructorNameList());
             appendLine("}");
         }
         if (specification.hasAllArgsConstructor()) {
             emptyLine();
-            appendLine("public %s(%s) {", specification.getName(), allArgsConstructorArgumentList());
+            appendLine("public %s(%s) {", specification.name(), allArgsConstructorArgumentList());
             appendLine("super(%s);", allArgsConstructorNameList());
             appendLine("}");
 
@@ -61,50 +61,50 @@ public class ConcreteClassGenerator extends ClassWriter {
             addImport("java.sql.ResultSet", "java.sql.SQLException");
 
             emptyLine();
-            appendLine("protected %s(ResultSet resultSet) throws SQLException {", specification.getName());
+            appendLine("protected %s(ResultSet resultSet) throws SQLException {", specification.name());
             appendLine("super(resultSet);");
             appendLine("}");
         }
         appendLine("}");
         memberImports();
-        writeSource(specification.getName(), outputPath);
+        writeSource(specification.name(), outputPath);
     }
 
 
     private String nonNullConstructorArgumentList() {
         return members.stream()
                 .filter(Member::isNotNullable)
-                .map(member -> member.getType() + " " + member.getName())
+                .map(member -> member.type() + " " + member.name())
                 .collect(joining(", "));
     }
 
     private String nonNullConstructorNameList() {
         return members.stream()
                 .filter(Member::isNotNullable)
-                .map(Member::getName)
+                .map(Member::name)
                 .collect(joining(", "));
     }
 
     private String allArgsConstructorArgumentList() {
         return members.stream()
-                .map(member -> member.getType() + " " + member.getName())
+                .map(member -> member.type() + " " + member.name())
                 .collect(joining(", "));
     }
 
     private String allArgsConstructorNameList() {
         return members.stream()
-                .map(Member::getName)
+                .map(Member::name)
                 .collect(joining(", "));
     }
 
     private void memberImports() {
         for (Member member : members) {
-            if (!ClassUtil.javaBuildIn.contains(member.getType())) {
-                String clazz = ClassUtil.knownClasses.get(member.getType());
+            if (!ClassUtil.javaBuildIn.contains(member.type())) {
+                String clazz = ClassUtil.knownClasses.get(member.type());
                 if (clazz != null) {
                     addImport(clazz);
                 } else {
-                    throw new IllegalArgumentException("type '" + member.getType() + " for member variable '" + member.getName() + "' is unknown");
+                    throw new IllegalArgumentException("type '" + member.type() + " for member variable '" + member.name() + "' is unknown");
                 }
             }
         }

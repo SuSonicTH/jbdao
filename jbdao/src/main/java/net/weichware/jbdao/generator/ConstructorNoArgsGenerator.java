@@ -20,13 +20,13 @@ public class ConstructorNoArgsGenerator extends Generator {
         appendLine("%s %s() {", specification.constructorVisibility(), specification.className());
         for (Member member : members) {
             if (member.hasDefault()) {
-                appendLine("%s = %s;", member.getName(), member.getDefaultValue());
-            } else if (member.getType().equals("boolean")) {
-                appendLine("%s = false;", member.getName());
-            } else if (ClassUtil.primitiveToObjectMap.get(member.getType()) != null) {
-                appendLine("%s = 0;", member.getName());
+                appendLine("%s = %s;", member.name(), member.defaultValue());
+            } else if (member.type().equals("boolean")) {
+                appendLine("%s = false;", member.name());
+            } else if (ClassUtil.primitiveToObjectMap.get(member.type()) != null) {
+                appendLine("%s = 0;", member.name());
             } else {
-                appendLine("%s = null;", member.getName());
+                appendLine("%s = null;", member.name());
             }
         }
         appendLine("}");

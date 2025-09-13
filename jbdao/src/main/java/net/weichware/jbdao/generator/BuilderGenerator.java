@@ -22,13 +22,13 @@ public class BuilderGenerator extends Generator {
         appendLine("return new Builder();");
         appendLine("}");
 
-        String arguments = members.stream().filter(Member::isNotNullable).map(Member::getName).collect(Collectors.joining(", "));
+        String arguments = members.stream().filter(Member::isNotNullable).map(Member::name).collect(Collectors.joining(", "));
         emptyLine();
         appendLine("public static Builder builder(%s) {", getNonNullableSignature());
         appendLine("return new Builder(%s);", arguments);
         appendLine("}");
 
-        String allArguments = members.stream().map(Member::getName).collect(Collectors.joining(", "));
+        String allArguments = members.stream().map(Member::name).collect(Collectors.joining(", "));
         emptyLine();
         appendLine("public Builder builderFrom() {");
         appendLine("return new Builder(%s);", allArguments);
@@ -37,11 +37,11 @@ public class BuilderGenerator extends Generator {
     }
 
     private String getNonNullableSignature() {
-        return members.stream().filter(Member::isNotNullable).map(m -> m.getType() + " " + m.getName()).collect(Collectors.joining(", "));
+        return members.stream().filter(Member::isNotNullable).map(m -> m.type() + " " + m.name()).collect(Collectors.joining(", "));
     }
 
     private String getAllMembersSignature() {
-        return members.stream().map(m -> m.getType() + " " + m.getName()).collect(Collectors.joining(", "));
+        return members.stream().map(m -> m.type() + " " + m.name()).collect(Collectors.joining(", "));
     }
 
     private class Builder extends Generator {
@@ -58,7 +58,7 @@ public class BuilderGenerator extends Generator {
 
         private void appendMembers() {
             members.forEach(member ->
-                    appendLine("private %s %s%s;", member.getType(), member.getName(), member.getDefaultValue(" = "))
+                    appendLine("private %s %s%s;", member.type(), member.name(), member.defaultValue(" = "))
             );
         }
 
@@ -70,15 +70,15 @@ public class BuilderGenerator extends Generator {
             emptyLine();
             appendLine("public Builder(%s) {", getNonNullableSignature());
             members.stream().filter(Member::isNotNullable).forEach(member ->
-                    appendLine("this.%s = %s;", member.getName(), member.getName())
+                    appendLine("this.%s = %s;", member.name(), member.name())
             );
             appendLine("}");
 
             emptyLine();
-            String allArguments = members.stream().map(Member::getName).collect(Collectors.joining(", "));
+            String allArguments = members.stream().map(Member::name).collect(Collectors.joining(", "));
             appendLine("public Builder(%s) {", getAllMembersSignature());
             members.forEach(member ->
-                    appendLine("this.%s = %s;", member.getName(), member.getName())
+                    appendLine("this.%s = %s;", member.name(), member.name())
             );
             appendLine("}");
         }
@@ -86,8 +86,8 @@ public class BuilderGenerator extends Generator {
         private void appendSetters() {
             members.forEach(member -> {
                 emptyLine();
-                appendLine("public Builder set%s(%s %s) {", NameUtil.firstCharacterUpper(member.getName()), member.getType(), member.getName());
-                appendLine("this.%s = %s;", member.getName(), member.getName());
+                appendLine("public Builder set%s(%s %s) {", NameUtil.firstCharacterUpper(member.name()), member.type(), member.name());
+                appendLine("this.%s = %s;", member.name(), member.name());
                 appendLine("return this;");
                 appendLine("}");
             });
@@ -95,8 +95,8 @@ public class BuilderGenerator extends Generator {
 
         private void appendBuild() {
             emptyLine();
-            appendLine("public %s build() {", specification.getName());
-            appendLine("return new %s(%s);", specification.getName(), members.stream().map(Member::getName).collect(Collectors.joining(", ")));
+            appendLine("public %s build() {", specification.name());
+            appendLine("return new %s(%s);", specification.name(), members.stream().map(Member::name).collect(Collectors.joining(", ")));
             appendLine("}");
         }
     }

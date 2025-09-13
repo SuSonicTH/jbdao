@@ -13,7 +13,7 @@ public class DatabasePersistenceGenerator extends Generator {
     public DatabasePersistenceGenerator(Specification specification) {
         super(specification);
         if (specification.generateDatabase()) {
-            Optional<Member> optionalPrimary = specification.getPrimary();
+            Optional<Member> optionalPrimary = specification.primary();
             if (optionalPrimary.isPresent()) {
                 primary = optionalPrimary.get();
                 appendInsert();
@@ -28,10 +28,10 @@ public class DatabasePersistenceGenerator extends Generator {
     private void appendInsert() {
         emptyLine();
         appendLine("public %s insert(Connection connection) throws SQLException {", specification.returnThisType());
-        appendLine("try (PreparedStatement preparedStatement = connection.prepareStatement(\"insert into %s (%s) values(%s)\")) {", specification.getDatabaseName(), memberList(), valueList());
+        appendLine("try (PreparedStatement preparedStatement = connection.prepareStatement(\"insert into %s (%s) values(%s)\")) {", specification.databaseName(), memberList(), valueList());
         int i = 1;
         for (Member member : members) {
-            appendLine("preparedStatement.setObject(%d, %s);", i++, member.getName());
+            appendLine("preparedStatement.setObject(%d, %s);", i++, member.name());
         }
         appendLine("preparedStatement.execute();");
         appendLine("}");
@@ -41,7 +41,7 @@ public class DatabasePersistenceGenerator extends Generator {
 
     private String memberList() {
         return members.stream()
-                .map(Member::getDatabaseName)
+                .map(Member::databaseName)
                 .collect(Collectors.joining(", "));
     }
 
@@ -54,16 +54,16 @@ public class DatabasePersistenceGenerator extends Generator {
     private void appendUpdate() {
         emptyLine();
         appendLine("public %s update(Connection connection) throws SQLException {", specification.returnThisType());
-        appendLine("try (PreparedStatement preparedStatement = connection.prepareStatement(\"update %s set %s where %s = ?\")) {", specification.getDatabaseName(), memberSetExpression(), primary.getDatabaseName());
+        appendLine("try (PreparedStatement preparedStatement = connection.prepareStatement(\"update %s set %s where %s = ?\")) {", specification.databaseName(), memberSetExpression(), primary.databaseName());
         int i = 1;
         for (Member member : members) {
             if (!member.isPrimary()) {
-                appendLine("preparedStatement.setObject(%d, %s);", i++, member.getName());
+                appendLine("preparedStatement.setObject(%d, %s);", i++, member.name());
             }
         }
-        appendLine("preparedStatement.setObject(%d, %s);", i, primary.getName());
+        appendLine("preparedStatement.setObject(%d, %s);", i, primary.name());
         appendLine("if (preparedStatement.executeUpdate() != 1) {");
-        appendLine("throw new SQLException(\"%s table not updated for primary key %s = '\" + %s + \"'\");", specification.getDatabaseName(), specification.getPrimary().get().getDatabaseName(), specification.getPrimary().get().getName());
+        appendLine("throw new SQLException(\"%s table not updated for primary key %s = '\" + %s + \"'\");", specification.databaseName(), specification.primary().get().databaseName(), specification.primary().get().name());
         appendLine("}");
         appendLine("}");
         appendLine(specification.returnThis());
@@ -73,15 +73,15 @@ public class DatabasePersistenceGenerator extends Generator {
     private String memberSetExpression() {
         return members.stream()
                 .filter(member -> !member.isPrimary())
-                .map(member -> member.getDatabaseName() + " = ?")
+                .map(member -> member.databaseName() + " = ?")
                 .collect(Collectors.joining(", "));
     }
 
     private void appendDelete() {
         emptyLine();
         appendLine("public void delete(Connection connection) throws SQLException {");
-        appendLine("try (PreparedStatement preparedStatement = connection.prepareStatement(\"delete from %s where %s = ?\")) {", specification.getDatabaseName(), primary.getDatabaseName());
-        appendLine("preparedStatement.setObject(1, %s);", primary.getName());
+        appendLine("try (PreparedStatement preparedStatement = connection.prepareStatement(\"delete from %s where %s = ?\")) {", specification.databaseName(), primary.databaseName());
+        appendLine("preparedStatement.setObject(1, %s);", primary.name());
         appendLine("preparedStatement.execute();");
         appendLine("}");
         appendLine("}");
@@ -90,8 +90,8 @@ public class DatabasePersistenceGenerator extends Generator {
     private void appendIsInDatabase() {
         emptyLine();
         appendLine("public boolean isInDatabase(Connection connection) throws SQLException {");
-        appendLine("try (PreparedStatement preparedStatement = connection.prepareStatement(\"select %s from %s where %s = ?\")) {", primary.getDatabaseName(), specification.getDatabaseName(), primary.getDatabaseName());
-        appendLine("preparedStatement.setObject(1, %s);", primary.getName());
+        appendLine("try (PreparedStatement preparedStatement = connection.prepareStatement(\"select %s from %s where %s = ?\")) {", primary.databaseName(), specification.databaseName(), primary.databaseName());
+        appendLine("preparedStatement.setObject(1, %s);", primary.name());
         appendLine("try (ResultSet resultSet = preparedStatement.executeQuery()) {");
         appendLine("if (resultSet.next()) {");
         appendLine("return true;");

@@ -36,9 +36,9 @@ public class DaoGenerator extends ClassWriter {
     private final Path outputPath;
 
     public DaoGenerator(Specification specification, Path outputPath) {
-        super(specification.getPackagePath(), specification.getName());
+        super(specification.packagePath(), specification.name());
         this.specification = specification;
-        this.members = specification.getMembers();
+        this.members = specification.members();
         this.outputPath = outputPath;
     }
 
@@ -106,9 +106,9 @@ public class DaoGenerator extends ClassWriter {
 
     public void generate() throws IOException {
         if (specification.generateAbstract()) {
-            appendLine("public abstract class Abstract%s<T> {", specification.getName());
+            appendLine("public abstract class Abstract%s<T> {", specification.name());
         } else {
-            appendLine("public class %s {", specification.getName());
+            appendLine("public class %s {", specification.name());
         }
         appendLines(members.stream().map(this::memberDefinition));
         memberImports();
@@ -133,12 +133,12 @@ public class DaoGenerator extends ClassWriter {
 
     private void memberImports() {
         for (Member member : members) {
-            if (!ClassUtil.javaBuildIn.contains(member.getType())) {
-                String clazz = ClassUtil.knownClasses.get(member.getType());
+            if (!ClassUtil.javaBuildIn.contains(member.type())) {
+                String clazz = ClassUtil.knownClasses.get(member.type());
                 if (clazz != null) {
                     addImport(clazz);
                 } else {
-                    throw new IllegalArgumentException("type '" + member.getType() + " for member variable '" + member.getName() + "' is unknown");
+                    throw new IllegalArgumentException("type '" + member.type() + " for member variable '" + member.name() + "' is unknown");
                 }
             }
         }
@@ -147,8 +147,8 @@ public class DaoGenerator extends ClassWriter {
     private String memberDefinition(Member member) {
         return String.format("private%s%s %s;",
                 member.isImmutable() ? " final " : " ",
-                member.getType(),
-                member.getName()
+                member.type(),
+                member.name()
         );
     }
 

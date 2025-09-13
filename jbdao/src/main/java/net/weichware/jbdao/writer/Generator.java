@@ -13,6 +13,6 @@ public class Generator extends CodeWriter {
         super(1);
 
         this.specification = specification;
-        this.members = specification.getMembers();
+        this.members = specification.members();
     }
 }

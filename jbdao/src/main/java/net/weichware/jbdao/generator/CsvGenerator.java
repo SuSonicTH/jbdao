@@ -22,7 +22,7 @@ public class CsvGenerator extends Generator {
 
     private void appendStreamCsv() {
         emptyLine();
-        appendLine("public static Stream<%s> streamCsv(Path file) {", specification.getName());
+        appendLine("public static Stream<%s> streamCsv(Path file) {", specification.name());
         appendLine("try {");
         appendLine("return StreamSupport.stream(new CsvReader(file, true), false);");
         appendLine("} catch (IOException e) {");
@@ -36,9 +36,9 @@ public class CsvGenerator extends Generator {
         public CsvReaderGenerator(Specification specification) {
             super(specification);
             emptyLine();
-            appendLine("private static class CsvReader extends AbstractCsvReader<%s> {", specification.getName());
+            appendLine("private static class CsvReader extends AbstractCsvReader<%s> {", specification.name());
             members.stream().filter(Member::hasCsv)
-                    .forEach(member -> appendLine("private int %s;", member.getName()));
+                    .forEach(member -> appendLine("private int %s;", member.name()));
 
             emptyLine();
             appendLine("public CsvReader(Path file, boolean hasHeader) throws IOException {");
@@ -49,26 +49,26 @@ public class CsvGenerator extends Generator {
             appendLine("@Override");
             appendLine("protected void validateHeader(Map<String, Integer> header) {");
             members.stream().filter(Member::hasCsv)
-                    .forEach(member -> appendLine("%s = header.get(\"%s\");", member.getName(), member.getCsvName()));
+                    .forEach(member -> appendLine("%s = header.get(\"%s\");", member.name(), member.csvName()));
             appendLine("}");
 
             emptyLine();
             appendLine("@Override");
-            appendLine("protected %s create(List<String> fields) {", specification.getName());
+            appendLine("protected %s create(List<String> fields) {", specification.name());
             String arguments = members.stream().filter(Member::hasCsv)
                     .map(this::argument)
                     .collect(Collectors.joining(", "));
-            appendLine("return new %s(%s);", specification.getName(), arguments);
+            appendLine("return new %s(%s);", specification.name(), arguments);
             appendLine("}");
 
             appendLine("}");
         }
 
         private String argument(Member member) {
-            if (member.getType().equals("String")) {
-                return "fields.get(" + member.getName() + ")";
+            if (member.type().equals("String")) {
+                return "fields.get(" + member.name() + ")";
             } else {
-                return "Long.parseLong(fields.get(" + member.getName() + "))";
+                return "Long.parseLong(fields.get(" + member.name() + "))";
             }
         }
 

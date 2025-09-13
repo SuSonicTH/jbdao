@@ -19,7 +19,7 @@ public class ToStringGenerator extends Generator {
         emptyLine();
         appendLine("@Override");
         appendLine("public String toString() {");
-        appendLine("return \"" + specification.getName() + "{\" +");
+        appendLine("return \"" + specification.name() + "{\" +");
         indent(2);
         members.stream()
                 .filter(Member::generateToString)
@@ -37,14 +37,14 @@ public class ToStringGenerator extends Generator {
     private void appendMaskedGetters() {
         members.stream().filter(Member::hasMasking).forEach(member -> {
             emptyLine();
-            appendLine("public String get%sMasked(boolean nullable) {", NameUtil.firstCharacterUpper(member.getName()));
-            appendLine("if (%s == null) {", member.getName());
+            appendLine("public String get%sMasked(boolean nullable) {", NameUtil.firstCharacterUpper(member.name()));
+            appendLine("if (%s == null) {", member.name());
             appendLine("return nullable ? null : \"\";");
             appendLine("}");
-            if (member.getType().equals("String")) {
-                appendLine("return %s.replaceAll(%s, %s);", member.getName(), quote(member.getMaskPattern()), quote(member.getMaskReplace()));
+            if (member.type().equals("String")) {
+                appendLine("return %s.replaceAll(%s, %s);", member.name(), quote(member.maskPattern()), quote(member.maskReplace()));
             } else {
-                appendLine("return (%s + \"\").replaceAll(%s, %s);", member.getName(), quote(member.getMaskPattern()), quote(member.getMaskReplace()));
+                appendLine("return (%s + \"\").replaceAll(%s, %s);", member.name(), quote(member.maskPattern()), quote(member.maskReplace()));
             }
             appendLine("}");
         });
@@ -52,18 +52,18 @@ public class ToStringGenerator extends Generator {
 
     private void appendToStringMember(Member member) {
         String comma = getComma();
-        if (member.getType().equals("String")) {
-            appendLine("\"%s%s='\" + %s + '\\'' +", comma, member.getName(), maskedCall(member));
+        if (member.type().equals("String")) {
+            appendLine("\"%s%s='\" + %s + '\\'' +", comma, member.name(), maskedCall(member));
         } else {
-            appendLine("\"%s%s=\" + %s +", comma, member.getName(), maskedCall(member));
+            appendLine("\"%s%s=\" + %s +", comma, member.name(), maskedCall(member));
         }
     }
 
     private String maskedCall(Member member) {
         if (member.hasMasking()) {
-            return "get" + NameUtil.firstCharacterUpper(member.getName()) + "Masked(true)";
+            return "get" + NameUtil.firstCharacterUpper(member.name()) + "Masked(true)";
         }
-        return member.getName();
+        return member.name();
     }
 
     private String getComma() {

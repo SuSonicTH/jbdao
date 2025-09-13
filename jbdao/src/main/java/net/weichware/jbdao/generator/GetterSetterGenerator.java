@@ -16,20 +16,20 @@ public class GetterSetterGenerator extends Generator {
 
     private void appendGetterSetter(Member member) {
         emptyLine();
-        appendLine("public %s get%s() {", member.getType(), NameUtil.firstCharacterUpper(member.getName()));
-        appendLine("return %s;", member.getName());
+        appendLine("public %s get%s() {", member.type(), NameUtil.firstCharacterUpper(member.name()));
+        appendLine("return %s;", member.name());
         appendLine("}");
 
         if (!member.isImmutable()) {
             emptyLine();
             appendLine("public %s set%s(%s %s) {",
-                    specification.getName(),
-                    NameUtil.firstCharacterUpper(member.getName()),
-                    member.getType(),
-                    member.getName()
+                    specification.name(),
+                    NameUtil.firstCharacterUpper(member.name()),
+                    member.type(),
+                    member.name()
             );
             appendLines(ValidationGenerator.getValidations(member));
-            appendLine("this.%s = %s;", member.getName(), member.getName());
+            appendLine("this.%s = %s;", member.name(), member.name());
             appendLine(specification.returnThis());
             appendLine("}");
         }

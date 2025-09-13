@@ -43,15 +43,15 @@ public class Specification {
         return new Gson().fromJson(spec, Specification.class);
     }
 
-    public String getPackagePath() {
+    public String packagePath() {
         return packagePath;
     }
 
-    public String getName() {
+    public String name() {
         return name;
     }
 
-    public List<Member> getMembers() {
+    public List<Member> members() {
         return members;
     }
 
@@ -73,28 +73,28 @@ public class Specification {
         return allArgsConstructor;
     }
 
-    public String getDatabaseName() {
+    public String databaseName() {
         if (databaseName == null) {
             databaseName = NameUtil.camelToSnakeUpperCase(name);
         }
         return databaseName;
     }
 
-    public String getDisplayName() {
+    public String displayName() {
         if (displayName == null) {
             displayName = NameUtil.camelToDisplay(name);
         }
         return displayName;
     }
 
-    public String getCsvName() {
+    public String csvName() {
         if (csvName == null) {
-            csvName = getDatabaseName();
+            csvName = databaseName();
         }
         return csvName;
     }
 
-    public String getJsonName() {
+    public String jsonName() {
         if (jsonName == null) {
             jsonName = name;
         }
@@ -107,7 +107,7 @@ public class Specification {
 
     public boolean hasNonEmpty() {
         return members.stream()
-                .filter(member -> member.getType().equals("String"))
+                .filter(member -> member.type().equals("String"))
                 .anyMatch(Member::nonEmpty);
     }
 
@@ -145,14 +145,14 @@ public class Specification {
         return json;
     }
 
-    public Optional<Member> getPrimary() {
+    public Optional<Member> primary() {
         List<Member> primaries = members.stream().filter(Member::isPrimary).collect(Collectors.toList());
         if (primaries.isEmpty()) {
             return Optional.empty();
         } else if (primaries.size() == 1) {
             return Optional.of(primaries.get(0));
         } else {
-            throw new SpecificationException("More then one primary columns are not supported, members in " + getName() + " with primary flag :" + members.stream().map(Member::getName).collect(Collectors.joining(",")));
+            throw new SpecificationException("More then one primary columns are not supported, members in " + name() + " with primary flag :" + members.stream().map(Member::name).collect(Collectors.joining(",")));
         }
     }
 
@@ -164,14 +164,14 @@ public class Specification {
         return members.stream().anyMatch(member -> !member.isNullable() ||
                 member.nonEmpty() ||
                 !member.acceptsEmpty() ||
-                member.getMin() != null ||
-                member.getMax() != null ||
-                member.getPattern() != null
+                member.min() != null ||
+                member.max() != null ||
+                member.pattern() != null
         );
     }
 
     public boolean hasPatterns() {
-        return members.stream().anyMatch(member -> member.getPattern() != null);
+        return members.stream().anyMatch(member -> member.pattern() != null);
     }
 
     public boolean hasMinMax() {
@@ -184,14 +184,14 @@ public class Specification {
 
     public String className() {
         if (className == null) {
-            className = generateAbstract ? "Abstract" + getName() : getName();
+            className = generateAbstract ? "Abstract" + name() : name();
         }
         return className;
     }
 
     public String returnThisType() {
         if (returnThisType == null) {
-            returnThisType = generateAbstract ? "T" : getName();
+            returnThisType = generateAbstract ? "T" : name();
         }
         return returnThisType;
     }

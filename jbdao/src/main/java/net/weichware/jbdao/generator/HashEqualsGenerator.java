@@ -19,7 +19,7 @@ public class HashEqualsGenerator extends Generator {
     }
 
     private void appendEquals() {
-        final String className = specification.getName();
+        final String className = specification.name();
         final String objectName = NameUtil.firstCharacterLower(className);
 
         emptyLine();
@@ -30,7 +30,7 @@ public class HashEqualsGenerator extends Generator {
         appendLine("%s %s = (%s) o;", className, objectName, className);
         String objectEqualsList = members.stream()
                 .filter(Member::generateHashEquals)
-                .map(Member::getName)
+                .map(Member::name)
                 .map(member -> "Objects.equals(" + member + ", " + objectName + "." + memberValue(member) + ")")
                 .collect(Collectors.joining(" && "));
         appendLine("return " + objectEqualsList + ";");
@@ -48,7 +48,7 @@ public class HashEqualsGenerator extends Generator {
         emptyLine();
         appendLine("@Override");
         appendLine("public int hashCode() {");
-        String memberList = members.stream().filter(Member::generateHashEquals).map(Member::getName).collect(Collectors.joining(", "));
+        String memberList = members.stream().filter(Member::generateHashEquals).map(Member::name).collect(Collectors.joining(", "));
         appendLine("return Objects.hash(" + memberList + ");");
         appendLine("}");
     }

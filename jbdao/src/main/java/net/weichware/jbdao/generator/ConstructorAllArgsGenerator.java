@@ -26,7 +26,7 @@ public class ConstructorAllArgsGenerator extends Generator {
 
     private String constructorArgumentList() {
         return members.stream()
-                .map(member -> member.getType() + " " + member.getName())
+                .map(member -> member.type() + " " + member.name())
                 .collect(joining(", "));
     }
 
@@ -34,7 +34,7 @@ public class ConstructorAllArgsGenerator extends Generator {
 
     private void appendConstructorAssignment() {
         appendLines(members.stream()
-                .map(Member::getName)
+                .map(Member::name)
                 .map(name -> String.format("this.%s = %s;", name, name))
         );
     }

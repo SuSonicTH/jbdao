@@ -19,7 +19,7 @@ public class ConstructorResultSetGenerator extends Generator {
         emptyLine();
         appendLine("protected %s(ResultSet resultSet) throws SQLException {", specification.className());
         appendLines(members.stream().map(member ->
-                member.getName() + " = resultSet.getObject(" + quote(member.getDatabaseName()) + ", " + ClassUtil.primitiveToObjectMap.getOrDefault(member.getType(), member.getType()) + ".class);")
+                member.name() + " = resultSet.getObject(" + quote(member.databaseName()) + ", " + ClassUtil.primitiveToObjectMap.getOrDefault(member.type(), member.type()) + ".class);")
         );
         appendLine("validate();");
         appendLine("}");

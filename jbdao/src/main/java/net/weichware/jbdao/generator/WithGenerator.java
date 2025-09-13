@@ -23,19 +23,19 @@ public class WithGenerator extends Generator {
     private void appendWith(Member member) {
         emptyLine();
         appendLine("public %s with%s(%s %s) {",
-                specification.getName(),
-                NameUtil.firstCharacterUpper(member.getName()),
-                member.getType(),
-                member.getName()
+                specification.name(),
+                NameUtil.firstCharacterUpper(member.name()),
+                member.type(),
+                member.name()
         );
-        appendLine("return new %s(%s);", specification.getName(), argumentList());
+        appendLine("return new %s(%s);", specification.name(), argumentList());
         appendLine("}");
     }
 
     private String argumentList() {
         if (argumentList == null) {
             argumentList = members.stream()
-                    .map(Member::getName)
+                    .map(Member::name)
                     .collect(joining(", "));
         }
         return argumentList;

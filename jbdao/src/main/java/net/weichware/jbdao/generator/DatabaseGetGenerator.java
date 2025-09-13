@@ -14,7 +14,7 @@ public class DatabaseGetGenerator extends Generator {
 
         if (specification.generateDatabase()) {
             addImports();
-            specification.getPrimary().ifPresent(primary -> {
+            specification.primary().ifPresent(primary -> {
                 appendGet(primary);
                 appendExists(primary);
             });
@@ -41,12 +41,12 @@ public class DatabaseGetGenerator extends Generator {
     private void appendGet(Member primary) {
         addImport("java.util.Optional");
         emptyLine();
-        appendLine("public static Optional<%s> get(Connection connection, long %s) throws SQLException {", specification.getName(), primary.getName());
-        appendLine("try (PreparedStatement preparedStatement = connection.prepareStatement(\"select %s from %s where %s = ?\")) {", getColumns(), specification.getDatabaseName(), primary.getDatabaseName());
-        appendLine("preparedStatement.setObject(1, %s);", primary.getName());
+        appendLine("public static Optional<%s> get(Connection connection, long %s) throws SQLException {", specification.name(), primary.name());
+        appendLine("try (PreparedStatement preparedStatement = connection.prepareStatement(\"select %s from %s where %s = ?\")) {", getColumns(), specification.databaseName(), primary.databaseName());
+        appendLine("preparedStatement.setObject(1, %s);", primary.name());
         appendLine("try (ResultSet resultSet = preparedStatement.executeQuery()) {");
         appendLine("if (resultSet.next()) {");
-        appendLine("return Optional.of(new %s(resultSet));", specification.getName());
+        appendLine("return Optional.of(new %s(resultSet));", specification.name());
         appendLine("}");
         appendLine("}");
         appendLine("}");
@@ -56,9 +56,9 @@ public class DatabaseGetGenerator extends Generator {
 
     private void appendExists(Member primary) {
         emptyLine();
-        appendLine("public static boolean exists(Connection connection, long %s) throws SQLException {", primary.getName());
-        appendLine("try (PreparedStatement preparedStatement = connection.prepareStatement(\"select %s from %s where %s = ?\")) {", primary.getDatabaseName(), specification.getDatabaseName(), primary.getDatabaseName());
-        appendLine("preparedStatement.setObject(1, %s);", primary.getName());
+        appendLine("public static boolean exists(Connection connection, long %s) throws SQLException {", primary.name());
+        appendLine("try (PreparedStatement preparedStatement = connection.prepareStatement(\"select %s from %s where %s = ?\")) {", primary.databaseName(), specification.databaseName(), primary.databaseName());
+        appendLine("preparedStatement.setObject(1, %s);", primary.name());
         appendLine("try (ResultSet resultSet = preparedStatement.executeQuery()) {");
         appendLine("if (resultSet.next()) {");
         appendLine("return true;");
@@ -71,22 +71,22 @@ public class DatabaseGetGenerator extends Generator {
 
     private void appendGetList() {
         emptyLine();
-        appendLine("public static List<%s> getList(Connection connection) throws SQLException {", specification.getName());
-        appendLine("return getList(connection, \"select %s from %s\");", getColumns(), specification.getDatabaseName());
+        appendLine("public static List<%s> getList(Connection connection) throws SQLException {", specification.name());
+        appendLine("return getList(connection, \"select %s from %s\");", getColumns(), specification.databaseName());
         appendLine("}");
     }
 
     private String getColumns() {
         if (columns == null) {
             columns = members.stream()
-                    .map(Member::getDatabaseName)
+                    .map(Member::databaseName)
                     .collect(Collectors.joining(", "));
         }
         return columns;
     }
 
     private void appendGetListStatement() {
-        String className = specification.getName();
+        String className = specification.name();
         emptyLine();
         appendLine("public static List<%s> getList(Connection connection, String sql, Object... args) throws SQLException {", className);
         appendLine("final List<%s> list = new ArrayList<>();", className);
@@ -108,11 +108,11 @@ public class DatabaseGetGenerator extends Generator {
 
     private void appendStream() {
         emptyLine();
-        appendLine("public static Stream<%s> stream(Connection connection) throws SQLException {", specification.getName());
-        appendLine("return stream(connection, \"select %s from %s \");", getColumns(), specification.getDatabaseName());
+        appendLine("public static Stream<%s> stream(Connection connection) throws SQLException {", specification.name());
+        appendLine("return stream(connection, \"select %s from %s \");", getColumns(), specification.databaseName());
         appendLine("}");
         emptyLine();
-        appendLine("public static Stream<%s> stream(Connection connection, String sql, Object... args) throws SQLException {", specification.getName());
+        appendLine("public static Stream<%s> stream(Connection connection, String sql, Object... args) throws SQLException {", specification.name());
         appendLine("return StreamSupport.stream(new ResultSetSpliterator(connection, sql, args), false);");
         appendLine("}");
     }
@@ -126,15 +126,15 @@ public class DatabaseGetGenerator extends Generator {
             addExtraClass("ResultSetSpliteratorException.java");
 
             emptyLine();
-            appendLine("private static class ResultSetSpliterator extends AbstractResultSetSpliterator<%s> {", specification.getName());
+            appendLine("private static class ResultSetSpliterator extends AbstractResultSetSpliterator<%s> {", specification.name());
             emptyLine();
             appendLine("public ResultSetSpliterator(Connection connection, String sql, Object... args) {");
             appendLine("super(connection, sql, args);");
             appendLine("}");
             emptyLine();
             appendLine("@Override");
-            appendLine("protected %s create(ResultSet resultSet) throws SQLException {", specification.getName());
-            appendLine("return new %s(resultSet);", specification.getName());
+            appendLine("protected %s create(ResultSet resultSet) throws SQLException {", specification.name());
+            appendLine("return new %s(resultSet);", specification.name());
             appendLine("}");
             appendLine("}");
         }

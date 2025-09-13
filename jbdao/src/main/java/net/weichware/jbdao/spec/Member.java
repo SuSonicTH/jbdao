@@ -2,7 +2,6 @@ package net.weichware.jbdao.spec;
 
 
 import com.google.gson.annotations.SerializedName;
-import net.weichware.jbdao.util.ClassUtil;
 import net.weichware.jbdao.util.NameUtil;
 
 public class Member {
@@ -31,11 +30,11 @@ public class Member {
     private String maskPattern;
     private String maskReplace;
 
-    public String getName() {
+    public String name() {
         return name;
     }
 
-    public String getType() {
+    public String type() {
         return type;
     }
 
@@ -96,64 +95,95 @@ public class Member {
         return with;
     }
 
-    public String getDatabaseName() {
+    public String databaseName() {
         if (databaseName == null) {
             databaseName = NameUtil.camelToSnakeUpperCase(name);
         }
         return databaseName;
     }
 
-    public String getDisplayName() {
+    public String displayName() {
         if (displayName == null) {
             displayName = NameUtil.camelToDisplay(name);
         }
         return displayName;
     }
 
-    public String getCsvName() {
+    public String csvName() {
         if (csvName == null) {
-            csvName = getDatabaseName();
+            csvName = databaseName();
         }
         return csvName;
     }
 
-    public String getJsonName() {
+    public String jsonName() {
         if (jsonName == null) {
             jsonName = name;
         }
         return jsonName;
     }
 
-    public String getDefaultValue() {
-        return getDefaultValue("");
+    public String defaultValue() {
+        return defaultValue("");
     }
 
-    public String getDefaultValue(String prefix) {
+    public String defaultValue(String prefix) {
         if (defaultValue == null) {
             return "";
         }
-        if (getType().equals("String")) {
+        if (type().equals("String")) {
             return prefix + "\"" + defaultValue + "\"";
         } else {
             return prefix + defaultValue;
         }
     }
 
-    public String getMin() {
+    public String min() {
         return min;
     }
 
-    public String getMax() {
+    public String max() {
         return max;
     }
 
-    public String getPattern() {
+    public String pattern() {
         if (pattern == null) {
             return null;
         } else if (pattern.isEmpty()) {
             return null;
         }
         return pattern.replace("\\", "\\\\");
+    }
+
+    public boolean hasDefault() {
+        return defaultValue != null;
+    }
+
+    public boolean nonEmpty() {
+        return type.equals("String") && !acceptsEmpty() && min() == null;
+    }
+
+    public boolean hasMinMax() {
+        return min != null || max != null;
+    }
+
+    public boolean hasMasking() {
+        return maskPattern != null && !maskPattern.isEmpty() && maskReplace != null;
+    }
+
+    public String maskPattern() {
+        return maskPattern;
+    }
+
+    public String maskReplace() {
+        return maskReplace;
+    }
+
+    public Boolean hasCsv() {
+        if (csv == null) {
+            csv = true;
+        }
+        return csv;
     }
 
     @Override
@@ -175,36 +205,5 @@ public class Member {
                 ", hashEquals=" + hashEquals +
                 ", defaultValue='" + defaultValue + '\'' +
                 '}';
-    }
-
-    public boolean hasDefault() {
-        return defaultValue != null;
-    }
-
-    public boolean nonEmpty() {
-        return type.equals("String") && !acceptsEmpty() && getMin() == null;
-    }
-
-    public boolean hasMinMax() {
-        return min != null || max != null;
-    }
-
-    public boolean hasMasking() {
-        return maskPattern != null && !maskPattern.isEmpty() && maskReplace != null;
-    }
-
-    public String getMaskPattern() {
-        return maskPattern;
-    }
-
-    public String getMaskReplace() {
-        return maskReplace;
-    }
-
-    public Boolean hasCsv() {
-        if (csv == null) {
-            csv = true;
-        }
-        return csv;
     }
 }

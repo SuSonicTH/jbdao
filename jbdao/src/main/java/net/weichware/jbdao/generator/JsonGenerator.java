@@ -2,7 +2,6 @@ package net.weichware.jbdao.generator;
 
 import net.weichware.jbdao.spec.Member;
 import net.weichware.jbdao.spec.Specification;
-import net.weichware.jbdao.util.NameUtil;
 import net.weichware.jbdao.writer.Generator;
 
 public class JsonGenerator extends Generator {
@@ -32,7 +31,7 @@ public class JsonGenerator extends Generator {
     }
 
     private void appendFromJson() {
-        String className = specification.getName();
+        String className = specification.name();
         String setDefaultPrefix = "";
         String setDefaultSuffix = "";
 
