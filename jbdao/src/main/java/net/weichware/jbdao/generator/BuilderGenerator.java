@@ -2,7 +2,6 @@ package net.weichware.jbdao.generator;
 
 import net.weichware.jbdao.spec.Member;
 import net.weichware.jbdao.spec.Specification;
-import net.weichware.jbdao.util.NameUtil;
 import net.weichware.jbdao.writer.Generator;
 
 import java.util.stream.Collectors;
@@ -86,7 +85,7 @@ public class BuilderGenerator extends Generator {
         private void appendSetters() {
             members.forEach(member -> {
                 emptyLine();
-                appendLine("public Builder set%s(%s %s) {", NameUtil.firstCharacterUpper(member.name()), member.type(), member.name());
+                appendLine("public Builder %s(%s %s) {", member.setterName(), member.type(), member.name());
                 appendLine("this.%s = %s;", member.name(), member.name());
                 appendLine("return this;");
                 appendLine("}");

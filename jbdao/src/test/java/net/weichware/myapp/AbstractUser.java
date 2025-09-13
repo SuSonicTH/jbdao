@@ -320,17 +320,17 @@ public abstract class AbstractUser<T> {
             this.lastActiveTime = lastActiveTime;
         }
 
-        public Builder setId(long id) {
+        public Builder id(long id) {
             this.id = id;
             return this;
         }
 
-        public Builder setName(String name) {
+        public Builder name(String name) {
             this.name = name;
             return this;
         }
 
-        public Builder setLastActiveTime(LocalDateTime lastActiveTime) {
+        public Builder lastActiveTime(LocalDateTime lastActiveTime) {
             this.lastActiveTime = lastActiveTime;
             return this;
         }
