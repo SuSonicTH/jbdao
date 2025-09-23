@@ -40,6 +40,8 @@ public class Specification {
     private String returnThis;
     private String constructorVisibility;
 
+    private boolean isEnum;
+
     public static Specification readSpec(String spec) {
         Specification specification = new Gson().fromJson(spec, Specification.class);
         specification.members.forEach(member -> member.setSpecification(specification));
@@ -56,6 +58,10 @@ public class Specification {
 
     public List<Member> members() {
         return members;
+    }
+
+    public boolean isEnum() {
+        return isEnum;
     }
 
     public boolean accessorPrefix() {

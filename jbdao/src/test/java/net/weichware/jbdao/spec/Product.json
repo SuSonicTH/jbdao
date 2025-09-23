@@ -1,0 +1,26 @@
+{
+  "packagePath": "net.weichware.myapp",
+  "name": "Product",
+  "isEnum": true,
+  "database": true,
+  "csv": true,
+  "json": true,
+  "members": [
+    {
+      "name": "VCE",
+      "jsonName": "voice",
+      "csvName": "VOICE"
+    },
+    {
+      "name": "VID",
+      "jsonName": "video",
+      "csvName": "VIDEO"
+    },
+    {
+      "name": "SMS"
+    },
+    {
+      "name": "MMS"
+    }
+  ]
+}
