@@ -32,30 +32,28 @@ public class JsonGenerator extends Generator {
 
     private void appendFromJson() {
         String className = specification.name();
-        String setDefaultPrefix = "";
-        String setDefaultSuffix = "";
 
         emptyLine();
         appendLine("public static %s fromJson(String json) {", className);
-        appendLine("return GsonUtil.gson.fromJson(json, %s.class);", className);
+        appendLine("return GSON.fromJson(json, %s.class);", className);
         appendLine("}");
 
         emptyLine();
         appendLine("public static %s fromJson(Reader jsonReader) {", className);
-        appendLine("return GsonUtil.gson.fromJson(jsonReader, %s.class);", className);
+        appendLine("return GSON.fromJson(jsonReader, %s.class);", className);
         appendLine("}");
 
         emptyLine();
         appendLine("public static %s fromJson(InputStream jsonStream) throws IOException {", className);
         appendLine("try (Reader jsonReader = new InputStreamReader(jsonStream)) {");
-        appendLine("return GsonUtil.gson.fromJson(jsonReader, %s.class);", className);
+        appendLine("return GSON.fromJson(jsonReader, %s.class);", className);
         appendLine("}");
         appendLine("}");
 
         emptyLine();
         appendLine("public static %s fromJson(Path jsonFile) throws IOException {", className);
         appendLine("try (Reader jsonReader = new InputStreamReader(Files.newInputStream(jsonFile))) {");
-        appendLine("return GsonUtil.gson.fromJson(jsonReader, %s.class);", className);
+        appendLine("return GSON.fromJson(jsonReader, %s.class);", className);
         appendLine("}");
         appendLine("}");
     }
@@ -63,7 +61,7 @@ public class JsonGenerator extends Generator {
     private void appendToJson() {
         emptyLine();
         appendLine("public String toJson() {");
-        appendLine("return GsonUtil.gson.toJson(this);");
+        appendLine("return GSON.toJson(this);");
         appendLine("}");
 
         emptyLine();

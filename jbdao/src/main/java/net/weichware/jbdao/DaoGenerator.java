@@ -10,6 +10,7 @@ import net.weichware.jbdao.generator.DatabaseGetGenerator;
 import net.weichware.jbdao.generator.DatabasePersistenceGenerator;
 import net.weichware.jbdao.generator.EnumGenerator;
 import net.weichware.jbdao.generator.GetterSetterGenerator;
+import net.weichware.jbdao.generator.GsonAdapterGenerator;
 import net.weichware.jbdao.generator.HashEqualsGenerator;
 import net.weichware.jbdao.generator.JsonGenerator;
 import net.weichware.jbdao.generator.ToStringGenerator;
@@ -122,6 +123,7 @@ public class DaoGenerator extends ClassWriter {
     }
 
     private void generateDao() {
+        append(new GsonAdapterGenerator(specification));
         appendLines(members.stream().map(this::memberDefinition));
         memberImports();
         append(new ConstructorNoArgsGenerator(specification));
@@ -147,6 +149,10 @@ public class DaoGenerator extends ClassWriter {
                 String clazz = ClassUtil.knownClasses.get(member.type());
                 if (clazz != null) {
                     addImport(clazz);
+                } else if (member.isEnum()) {
+                    if (member.path() != null && !member.path().isEmpty()) {
+                        addImport(member.path() + "." + member.type());
+                    }
                 } else {
                     throw new IllegalArgumentException("type '" + member.type() + " for member variable '" + member.name() + "' is unknown");
                 }

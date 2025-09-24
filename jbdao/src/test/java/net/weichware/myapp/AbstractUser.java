@@ -1,5 +1,6 @@
 package net.weichware.myapp;
 
+import com.google.gson.Gson;
 import net.weichware.jbdao.AbstractCsvReader;
 import net.weichware.jbdao.AbstractResultSetSpliterator;
 import net.weichware.jbdao.CsvReaderException;
@@ -29,6 +30,7 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 public abstract class AbstractUser<T> {
+    public static final Gson GSON = GsonUtil.GSON;
     private final long id;
     private final String name;
     private final LocalDateTime lastActiveTime;
@@ -192,27 +194,27 @@ public abstract class AbstractUser<T> {
     }
 
     public static User fromJson(String json) {
-        return GsonUtil.gson.fromJson(json, User.class);
+        return GSON.fromJson(json, User.class);
     }
 
     public static User fromJson(Reader jsonReader) {
-        return GsonUtil.gson.fromJson(jsonReader, User.class);
+        return GSON.fromJson(jsonReader, User.class);
     }
 
     public static User fromJson(InputStream jsonStream) throws IOException {
         try (Reader jsonReader = new InputStreamReader(jsonStream)) {
-            return GsonUtil.gson.fromJson(jsonReader, User.class);
+            return GSON.fromJson(jsonReader, User.class);
         }
     }
 
     public static User fromJson(Path jsonFile) throws IOException {
         try (Reader jsonReader = new InputStreamReader(Files.newInputStream(jsonFile))) {
-            return GsonUtil.gson.fromJson(jsonReader, User.class);
+            return GSON.fromJson(jsonReader, User.class);
         }
     }
 
     public String toJson() {
-        return GsonUtil.gson.toJson(this);
+        return GSON.toJson(this);
     }
 
     public void toJson(Writer writer) throws IOException {

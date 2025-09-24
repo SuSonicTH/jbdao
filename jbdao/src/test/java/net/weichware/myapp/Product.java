@@ -1,7 +1,11 @@
 package net.weichware.myapp;
 
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import net.weichware.jbdao.ValidationException;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Optional;
@@ -61,5 +65,17 @@ public enum Product {
 
     public String toJson() {
         return json;
+    }
+
+    public static class GsonAdapter extends TypeAdapter<Product> {
+        @Override
+        public void write(final JsonWriter jsonWriter, final Product product) throws IOException {
+            jsonWriter.value(product.toJson());
+        }
+
+        @Override
+        public Product read(final JsonReader jsonReader) throws IOException {
+            return Product.fromJson(jsonReader.nextString());
+        }
     }
 }

@@ -27,9 +27,13 @@ public class EnumGenerator extends Generator {
         appendGenerator(type -> appendLine("private final String %s;", type));
 
         appendConstructor();
-        appendGenerator(this::appendGetterSub);
         appendGenerator(this::appendMapperSub);
         appendGenerator(this::appendOptionalMapperSub);
+        appendGenerator(this::appendGetterSub);
+
+        if (specification.generateJson()) {
+            append(new EnumGenerator.GsonAdapterGenerator(specification));
+        }
     }
 
     private String constructorArguments() {
@@ -104,5 +108,30 @@ public class EnumGenerator extends Generator {
         appendLine("public static Optional<%s> optionalFrom%s(String value) {", specification.className(), NameUtil.firstCharacterUpper(type));
         appendLine("return Optional.ofNullable(%sMap.get(value));", type);
         appendLine("}");
+    }
+
+    public class GsonAdapterGenerator extends Generator {
+        public GsonAdapterGenerator(Specification specification) {
+            super(specification);
+            addImport(
+                    "com.google.gson.TypeAdapter",
+                    "com.google.gson.stream.JsonReader",
+                    "com.google.gson.stream.JsonWriter",
+                    "java.io.IOException"
+            );
+            String className = specification.className();
+            emptyLine();
+            appendLine("public static class GsonAdapter extends TypeAdapter<%s> {", className);
+            appendLine("@Override");
+            appendLine("public void write(final JsonWriter jsonWriter, final %s %s) throws IOException {", className, NameUtil.firstCharacterLower(className));
+            appendLine("jsonWriter.value(product.toJson());");
+            appendLine("}");
+            emptyLine();
+            appendLine("@Override");
+            appendLine("public %s read(final JsonReader jsonReader) throws IOException {", className);
+            appendLine("return %s.fromJson(jsonReader.nextString());", className);
+            appendLine("}");
+            appendLine("}");
+        }
     }
 }

@@ -21,15 +21,18 @@ class DaoGeneratorTest {
     private static final String USER = "User.java";
     private static final String ABSTRACT_USER = "AbstractUser.java";
     private static final String PRODUCT = "Product.java";
+    private static final String RECORD = "Record.java";
     private static String CUSTOMER_JSON;
     private static String USER_JSON;
     private static String PRODUCT_JSON;
+    private static String RECORD_JSON;
 
     @BeforeAll
     static void beforeAll() throws IOException {
         CUSTOMER_JSON = new String(Files.readAllBytes(TEST_PATH.resolve("Customer.json")));
         USER_JSON = new String(Files.readAllBytes(TEST_PATH.resolve("User.json")));
         PRODUCT_JSON = new String(Files.readAllBytes(TEST_PATH.resolve("Product.json")));
+        RECORD_JSON = new String(Files.readAllBytes(TEST_PATH.resolve("RECORD.json")));
         Files.createDirectories(OUTOUT_PATH);
     }
 
@@ -65,6 +68,15 @@ class DaoGeneratorTest {
         new DaoGenerator(Specification.readSpec(PRODUCT_JSON), OUTOUT_PATH).generate();
         String actual = new String(Files.readAllBytes(OUTOUT_PACKAGE_PATH.resolve(PRODUCT)));
         String expected = new String(Files.readAllBytes(EXPECTED_PATH.resolve(PRODUCT)));
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void generateRecord() throws IOException {
+        new DaoGenerator(Specification.readSpec(RECORD_JSON), OUTOUT_PATH).generate();
+        String actual = new String(Files.readAllBytes(OUTOUT_PACKAGE_PATH.resolve(RECORD)));
+        String expected = new String(Files.readAllBytes(EXPECTED_PATH.resolve(RECORD)));
 
         assertEquals(expected, actual);
     }

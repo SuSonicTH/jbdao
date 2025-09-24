@@ -11,11 +11,11 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class GsonUtil {
-    public static final GsonBuilder gsonBuilder = new GsonBuilder()
+    public static final GsonBuilder GSON_BUILDER = new GsonBuilder()
             .registerTypeAdapter(LocalDate.class, new GsonLocalDateAdapter().nullSafe())
             .registerTypeAdapter(LocalDateTime.class, new GsonLocalDateTimeAdapter().nullSafe());
 
-    public static final Gson gson = gsonBuilder.create();
+    public static final Gson GSON = GSON_BUILDER.create();
 
     private static class GsonLocalDateAdapter extends TypeAdapter<LocalDate> {
         @Override
