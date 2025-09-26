@@ -1,5 +1,6 @@
 package net.weichware.myapp;
 
+import com.google.gson.Gson;
 import net.weichware.jbdao.AbstractCsvReader;
 import net.weichware.jbdao.AbstractResultSetSpliterator;
 import net.weichware.jbdao.CsvReaderException;
@@ -29,6 +30,7 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 public class Customer {
+    public static final Gson GSON = GsonUtil.GSON;
     private final long id;
     private final String firstName;
     private final String lastName;
@@ -296,27 +298,27 @@ public class Customer {
     }
 
     public static Customer fromJson(String json) {
-        return GsonUtil.gson.fromJson(json, Customer.class);
+        return GSON.fromJson(json, Customer.class);
     }
 
     public static Customer fromJson(Reader jsonReader) {
-        return GsonUtil.gson.fromJson(jsonReader, Customer.class);
+        return GSON.fromJson(jsonReader, Customer.class);
     }
 
     public static Customer fromJson(InputStream jsonStream) throws IOException {
         try (Reader jsonReader = new InputStreamReader(jsonStream)) {
-            return GsonUtil.gson.fromJson(jsonReader, Customer.class);
+            return GSON.fromJson(jsonReader, Customer.class);
         }
     }
 
     public static Customer fromJson(Path jsonFile) throws IOException {
         try (Reader jsonReader = new InputStreamReader(Files.newInputStream(jsonFile))) {
-            return GsonUtil.gson.fromJson(jsonReader, Customer.class);
+            return GSON.fromJson(jsonReader, Customer.class);
         }
     }
 
     public String toJson() {
-        return GsonUtil.gson.toJson(this);
+        return GSON.toJson(this);
     }
 
     public void toJson(Writer writer) throws IOException {

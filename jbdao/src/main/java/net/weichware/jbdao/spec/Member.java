@@ -33,6 +33,9 @@ public class Member {
     private String getterName;
     private String setterName;
 
+    private boolean isEnum;
+    private String path;
+
     private Specification specification;
 
     public void setSpecification(Specification specification) {
@@ -88,6 +91,14 @@ public class Member {
 
     public Boolean isNotNullable() {
         return !isNullable();
+    }
+
+    public boolean isEnum() {
+        return isEnum;
+    }
+
+    public String path() {
+        return path;
     }
 
     public boolean acceptsEmpty() {

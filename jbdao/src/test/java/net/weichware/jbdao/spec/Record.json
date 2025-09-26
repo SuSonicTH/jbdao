@@ -1,0 +1,19 @@
+{
+  "packagePath": "net.weichware.myapp",
+  "name": "Record",
+  "database": true,
+  "csv": true,
+  "json": true,
+  "members": [
+    {
+      "name": "id",
+      "type": "int",
+      "primary": true
+    },
+    {
+      "name": "product",
+      "type": "Product",
+      "isEnum": true
+    }
+  ]
+}

@@ -66,9 +66,15 @@ public class CsvGenerator extends Generator {
 
         private String argument(Member member) {
             if (member.type().equals("String")) {
-                return "fields.get(" + member.name() + ")";
+                return String.format("fields.get(%s)", member.name());
+            } else if (member.isEnum()) {
+                return String.format("%s.fromCsv(fields.get(%s))", member.type(), member.name());
+            } else if (member.type().equals("Long") || member.type().equals("long")) {
+                return String.format("Long.parseLong(fields.get(%s))", member.name());
+            } else if (member.type().equals("Integer") || member.type().equals("int")) {
+                return String.format("Integer.parseInt(fields.get(%s))", member.name());
             } else {
-                return "Long.parseLong(fields.get(" + member.name() + "))";
+                throw new RuntimeException("Csv reading of type " + member.type() + " is not implemented");
             }
         }
 

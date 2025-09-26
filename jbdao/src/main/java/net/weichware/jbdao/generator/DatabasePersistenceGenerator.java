@@ -21,6 +21,8 @@ public class DatabasePersistenceGenerator extends Generator {
                 appendDelete();
                 appendIsInDatabase();
                 appendPersist();
+            } else {
+                throw new RuntimeException("Database persistence without primary key not implemented");
             }
         }
     }
@@ -31,7 +33,11 @@ public class DatabasePersistenceGenerator extends Generator {
         appendLine("try (PreparedStatement preparedStatement = connection.prepareStatement(\"insert into %s (%s) values(%s)\")) {", specification.databaseName(), memberList(), valueList());
         int i = 1;
         for (Member member : members) {
-            appendLine("preparedStatement.setObject(%d, %s);", i++, member.name());
+            if (member.isEnum()) {
+                appendLine("preparedStatement.setString(%d, %s.toDatabase());", i++, member.name());
+            } else {
+                appendLine("preparedStatement.setObject(%d, %s);", i++, member.name());
+            }
         }
         appendLine("preparedStatement.execute();");
         appendLine("}");
@@ -58,7 +64,11 @@ public class DatabasePersistenceGenerator extends Generator {
         int i = 1;
         for (Member member : members) {
             if (!member.isPrimary()) {
-                appendLine("preparedStatement.setObject(%d, %s);", i++, member.name());
+                if (member.isEnum()) {
+                    appendLine("preparedStatement.setString(%d, %s.toDatabase());", i++, member.name());
+                } else {
+                    appendLine("preparedStatement.setObject(%d, %s);", i++, member.name());
+                }
             }
         }
         appendLine("preparedStatement.setObject(%d, %s);", i, primary.name());

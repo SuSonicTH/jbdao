@@ -18,9 +18,13 @@ public class ConstructorResultSetGenerator extends Generator {
 
         emptyLine();
         appendLine("protected %s(ResultSet resultSet) throws SQLException {", specification.className());
-        appendLines(members.stream().map(member ->
-                member.name() + " = resultSet.getObject(" + quote(member.databaseName()) + ", " + ClassUtil.primitiveToObjectMap.getOrDefault(member.type(), member.type()) + ".class);")
-        );
+        appendLines(members.stream().map(member -> {
+            if (member.isEnum()) {
+                return String.format("%s = %s.fromDatabase(resultSet.getString(%s));", member.name(), member.type(), quote(member.databaseName()));
+            } else {
+                return String.format("%s = resultSet.getObject(%s, %s.class);", member.name(), quote(member.databaseName()), ClassUtil.primitiveToObjectMap.getOrDefault(member.type(), member.type()));
+            }
+        }));
         appendLine("validate();");
         appendLine("}");
     }

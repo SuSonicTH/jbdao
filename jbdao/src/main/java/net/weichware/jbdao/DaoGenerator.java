@@ -8,7 +8,9 @@ import net.weichware.jbdao.generator.ConstructorResultSetGenerator;
 import net.weichware.jbdao.generator.CsvGenerator;
 import net.weichware.jbdao.generator.DatabaseGetGenerator;
 import net.weichware.jbdao.generator.DatabasePersistenceGenerator;
+import net.weichware.jbdao.generator.EnumGenerator;
 import net.weichware.jbdao.generator.GetterSetterGenerator;
+import net.weichware.jbdao.generator.GsonAdapterGenerator;
 import net.weichware.jbdao.generator.HashEqualsGenerator;
 import net.weichware.jbdao.generator.JsonGenerator;
 import net.weichware.jbdao.generator.ToStringGenerator;
@@ -105,11 +107,23 @@ public class DaoGenerator extends ClassWriter {
     }
 
     public void generate() throws IOException {
-        if (specification.generateAbstract()) {
-            appendLine("public abstract class Abstract%s<T> {", specification.name());
+        if (specification.isEnum()) {
+            appendLine("public enum %s {", specification.name());
+            append(new EnumGenerator(specification));
         } else {
-            appendLine("public class %s {", specification.name());
+            if (specification.generateAbstract()) {
+                appendLine("public abstract class Abstract%s<T> {", specification.name());
+            } else {
+                appendLine("public class %s {", specification.name());
+            }
+            generateDao();
         }
+        appendLine("}");
+        writeSource(specification.className(), outputPath);
+    }
+
+    private void generateDao() {
+        append(new GsonAdapterGenerator(specification));
         appendLines(members.stream().map(this::memberDefinition));
         memberImports();
         append(new ConstructorNoArgsGenerator(specification));
@@ -127,8 +141,6 @@ public class DaoGenerator extends ClassWriter {
         append(new ToStringGenerator(specification));
         append(new HashEqualsGenerator(specification));
         append(getPrivateClasses());
-        appendLine("}");
-        writeSource(specification.className(), outputPath);
     }
 
     private void memberImports() {
@@ -137,6 +149,10 @@ public class DaoGenerator extends ClassWriter {
                 String clazz = ClassUtil.knownClasses.get(member.type());
                 if (clazz != null) {
                     addImport(clazz);
+                } else if (member.isEnum()) {
+                    if (member.path() != null && !member.path().isEmpty()) {
+                        addImport(member.path() + "." + member.type());
+                    }
                 } else {
                     throw new IllegalArgumentException("type '" + member.type() + " for member variable '" + member.name() + "' is unknown");
                 }
