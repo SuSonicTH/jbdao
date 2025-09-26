@@ -17,5 +17,6 @@
     <modules>
         <module>jbdao</module>
         <module>jbdaotest</module>
+        <module>jbdaodemo</module>
     </modules>
 </project>
