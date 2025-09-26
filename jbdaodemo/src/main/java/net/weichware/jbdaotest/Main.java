@@ -1,9 +1,10 @@
 package net.weichware.jbdaotest;
 
-import net.weichware.jbdaotest.uiserver.UiServer;
+import com.github.mvysny.vaadinboot.VaadinBoot;
+import org.jetbrains.annotations.NotNull;
 
-public class Main {
-    public static void main(String[] args) throws Exception {
-        new UiServer().start();
+public final class Main {
+    public static void main(@NotNull String[] args) throws Exception {
+        new VaadinBoot().run();
     }
 }
