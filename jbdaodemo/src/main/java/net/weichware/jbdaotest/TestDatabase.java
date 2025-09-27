@@ -1,18 +1,16 @@
-package net.weichware.jbdao;
+package net.weichware.jbdaotest;
 
 import org.h2.jdbcx.JdbcDataSource;
-import org.junit.jupiter.api.TestInfo;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.Objects;
 
 public class TestDatabase implements AutoCloseable {
     private final Connection connection;
-    private final String url;
+    private static final String url  = "jdbc:h2:mem:JBDAODemo;DB_CLOSE_DELAY=0";;
 
     static {
         try {
@@ -22,10 +20,7 @@ public class TestDatabase implements AutoCloseable {
         }
     }
 
-    public TestDatabase(TestInfo testInfo) throws SQLException {
-        Objects.requireNonNull(testInfo, "testInfo may not be null");
-        String dbName = testInfo.getTestClass().get().getSimpleName() + "_" + testInfo.getTestMethod().get().getName();
-        url = "jdbc:h2:mem:" + dbName + ";DB_CLOSE_DELAY=0";
+    public TestDatabase() throws SQLException {
         this.connection = DriverManager.getConnection(url, null, null);
     }
 
