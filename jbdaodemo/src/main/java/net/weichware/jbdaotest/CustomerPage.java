@@ -15,9 +15,7 @@ import com.vaadin.flow.router.Route;
 import net.weichware.jbdao.Customer;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.List;
 
 @Route(CustomerPage.ROUTE)
 @PageTitle("Customer")
@@ -31,6 +29,7 @@ public class CustomerPage extends VerticalLayout {
                 .setAutoWidth(true)
                 .setFrozen(true)
                 .setHeader("");
+
         grid.addColumn(Customer::getFirstName).setHeader("First name").setSortable(true);
         grid.addColumn(Customer::getLastName).setHeader("Last name").setSortable(true);
         grid.addColumn(Customer::getBirthDate).setHeader("Birth Date").setSortable(true);
@@ -40,11 +39,7 @@ public class CustomerPage extends VerticalLayout {
         grid.addColumn(Customer::getPhoneNumber).setHeader("Phone Number").setSortable(true);
         grid.addColumn(Customer::getKids).setHeader("Number Of Kids").setSortable(true);
 
-        List<Customer> customers;
-        try (Connection connection = dataSource.getConnection()) {
-            customers = Customer.getList(connection);
-        }
-        grid.setItems(customers);
+        grid.setItems(Customer.getList(dataSource));
         add(grid);
     }
 
