@@ -11,9 +11,13 @@ import java.util.function.Consumer;
 public abstract class AbstractResultSetSpliterator<T> extends Spliterators.AbstractSpliterator<T> implements AutoCloseable {
     private final PreparedStatement preparedStatement;
     private final ResultSet resultSet;
+    private final Connection connection;
+    private final boolean closeConnection;
 
-    public AbstractResultSetSpliterator(Connection connection, String sql, Object... args) {
+    public AbstractResultSetSpliterator(Connection connection, String sql, boolean closeConnection, Object... args) {
         super(Long.MAX_VALUE, Spliterator.ORDERED);
+        this.connection = connection;
+        this.closeConnection = closeConnection;
         try {
             preparedStatement = connection.prepareStatement(sql);
             int i = 1;
@@ -56,6 +60,9 @@ public abstract class AbstractResultSetSpliterator<T> extends Spliterators.Abstr
         }
         if (preparedStatement != null) {
             preparedStatement.close();
+        }
+        if (closeConnection && connection != null) {
+            connection.close();
         }
     }
 }

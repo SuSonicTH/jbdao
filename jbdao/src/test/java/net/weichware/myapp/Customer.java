@@ -28,6 +28,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
+import javax.sql.DataSource;
 
 public class Customer {
     public static final Gson GSON = GsonUtil.GSON;
@@ -200,6 +201,12 @@ public class Customer {
         return this;
     }
 
+    public Customer insert(DataSource dataSource) throws SQLException {
+        try (Connection connection = dataSource.getConnection()) {
+            return insert(connection);
+        }
+    }
+
     public Customer update(Connection connection) throws SQLException {
         try (PreparedStatement preparedStatement = connection.prepareStatement("update CUSTOMER set FIRST_NAME = ?, LAST_NAME = ?, BIRTH_DATE = ?, ADDRESS = ?, COUNTRY = ?, POSTAL_CODE = ?, PHONE_NUMBER = ?, KIDS = ? where ID = ?")) {
             preparedStatement.setObject(1, firstName);
@@ -218,10 +225,22 @@ public class Customer {
         return this;
     }
 
+    public Customer update(DataSource dataSource) throws SQLException {
+        try (Connection connection = dataSource.getConnection()) {
+            return update(connection);
+        }
+    }
+
     public void delete(Connection connection) throws SQLException {
         try (PreparedStatement preparedStatement = connection.prepareStatement("delete from CUSTOMER where ID = ?")) {
             preparedStatement.setObject(1, id);
             preparedStatement.execute();
+        }
+    }
+
+    public void delete(DataSource dataSource) throws SQLException {
+        try (Connection connection = dataSource.getConnection()) {
+            delete(connection);
         }
     }
 
@@ -237,11 +256,23 @@ public class Customer {
         return false;
     }
 
+    public boolean isInDatabase(DataSource dataSource) throws SQLException {
+        try (Connection connection = dataSource.getConnection()) {
+            return isInDatabase(connection);
+        }
+    }
+
     public Customer persist(Connection connection) throws SQLException {
         if (isInDatabase(connection)) {
             return update(connection);
         }
         return insert(connection);
+    }
+
+    public Customer persist(DataSource dataSource) throws SQLException {
+        try (Connection connection = dataSource.getConnection()) {
+            return persist(connection);
+        }
     }
 
     public static Optional<Customer> get(Connection connection, long id) throws SQLException {
@@ -256,6 +287,12 @@ public class Customer {
         return Optional.empty();
     }
 
+    public static Optional<Customer> get(DataSource dataSource, long id) throws SQLException {
+        try (Connection connection = dataSource.getConnection()) {
+            return get(connection, id);
+        }
+    }
+
     public static boolean exists(Connection connection, long id) throws SQLException {
         try (PreparedStatement preparedStatement = connection.prepareStatement("select ID from CUSTOMER where ID = ?")) {
             preparedStatement.setObject(1, id);
@@ -268,8 +305,20 @@ public class Customer {
         return false;
     }
 
+    public static boolean exists(DataSource dataSource, long id) throws SQLException {
+        try (Connection connection = dataSource.getConnection()) {
+            return exists(connection, id);
+        }
+    }
+
     public static List<Customer> getList(Connection connection) throws SQLException {
         return getList(connection, "select ID, FIRST_NAME, LAST_NAME, BIRTH_DATE, ADDRESS, COUNTRY, POSTAL_CODE, PHONE_NUMBER, KIDS from CUSTOMER");
+    }
+
+    public static List<Customer> getList(DataSource dataSource) throws SQLException {
+        try (Connection connection = dataSource.getConnection()) {
+            return getList(connection);
+        }
     }
 
     public static List<Customer> getList(Connection connection, String sql, Object... args) throws SQLException {
@@ -289,12 +338,26 @@ public class Customer {
         return list;
     }
 
+    public static List<Customer> getList(DataSource dataSource, String sql, Object... args) throws SQLException {
+        try (Connection connection = dataSource.getConnection()) {
+            return getList(connection, sql, args);
+        }
+    }
+
     public static Stream<Customer> stream(Connection connection) throws SQLException {
         return stream(connection, "select ID, FIRST_NAME, LAST_NAME, BIRTH_DATE, ADDRESS, COUNTRY, POSTAL_CODE, PHONE_NUMBER, KIDS from CUSTOMER ");
     }
 
+    public static Stream<Customer> stream(DataSource dataSource) throws SQLException {
+        return StreamSupport.stream(new ResultSetSpliterator(dataSource.getConnection(), "select ID, FIRST_NAME, LAST_NAME, BIRTH_DATE, ADDRESS, COUNTRY, POSTAL_CODE, PHONE_NUMBER, KIDS from CUSTOMER ", true), false);
+    }
+
     public static Stream<Customer> stream(Connection connection, String sql, Object... args) throws SQLException {
-        return StreamSupport.stream(new ResultSetSpliterator(connection, sql, args), false);
+        return StreamSupport.stream(new ResultSetSpliterator(connection, sql, false, args), false);
+    }
+
+    public static Stream<Customer> stream(DataSource dataSource, String sql, Object... args) throws SQLException {
+        return StreamSupport.stream(new ResultSetSpliterator(dataSource.getConnection(), sql, true, args), false);
     }
 
     public static Customer fromJson(String json) {
@@ -396,8 +459,8 @@ public class Customer {
 
     private static class ResultSetSpliterator extends AbstractResultSetSpliterator<Customer> {
 
-        public ResultSetSpliterator(Connection connection, String sql, Object... args) {
-            super(connection, sql, args);
+        public ResultSetSpliterator(Connection connection, String sql, boolean closeConnection, Object... args) {
+            super(connection, sql, closeConnection, args);
         }
 
         @Override

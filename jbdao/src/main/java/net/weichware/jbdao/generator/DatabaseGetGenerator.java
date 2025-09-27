@@ -28,6 +28,7 @@ public class DatabaseGetGenerator extends Generator {
     private void addImports() {
         addImport(
                 "java.sql.Connection",
+                "javax.sql.DataSource",
                 "java.sql.PreparedStatement",
                 "java.sql.ResultSet",
                 "java.sql.SQLException",
@@ -52,6 +53,14 @@ public class DatabaseGetGenerator extends Generator {
         appendLine("}");
         appendLine("return Optional.empty();");
         appendLine("}");
+
+        emptyLine();
+        appendLine("public static Optional<%s> get(DataSource dataSource, long %s) throws SQLException {", specification.name(), primary.name());
+        appendLine("try (Connection connection = dataSource.getConnection()) {");
+        appendLine("return get(connection, %s);", primary.name());
+        appendLine("}");
+        appendLine("}");
+
     }
 
     private void appendExists(Member primary) {
@@ -67,6 +76,13 @@ public class DatabaseGetGenerator extends Generator {
         appendLine("}");
         appendLine("return false;");
         appendLine("}");
+
+        emptyLine();
+        appendLine("public static boolean exists(DataSource dataSource, long %s) throws SQLException {", primary.name());
+        appendLine("try (Connection connection = dataSource.getConnection()) {");
+        appendLine("return exists(connection, %s);", primary.name());
+        appendLine("}");
+        appendLine("}");
     }
 
     private void appendGetList() {
@@ -74,6 +90,14 @@ public class DatabaseGetGenerator extends Generator {
         appendLine("public static List<%s> getList(Connection connection) throws SQLException {", specification.name());
         appendLine("return getList(connection, \"select %s from %s\");", getColumns(), specification.databaseName());
         appendLine("}");
+
+        emptyLine();
+        appendLine("public static List<%s> getList(DataSource dataSource) throws SQLException {", specification.name());
+        appendLine("try (Connection connection = dataSource.getConnection()) {");
+        appendLine("return getList(connection);", getColumns(), specification.databaseName());
+        appendLine("}");
+        appendLine("}");
+
     }
 
     private String getColumns() {
@@ -104,6 +128,14 @@ public class DatabaseGetGenerator extends Generator {
         appendLine("}");
         appendLine("return list;");
         appendLine("}");
+
+        emptyLine();
+        appendLine("public static List<%s> getList(DataSource dataSource, String sql, Object... args) throws SQLException {", className);
+        appendLine("try (Connection connection = dataSource.getConnection()) {");
+        appendLine("return getList(connection, sql, args);");
+        appendLine("}");
+        appendLine("}");
+
     }
 
     private void appendStream() {
@@ -111,12 +143,23 @@ public class DatabaseGetGenerator extends Generator {
         appendLine("public static Stream<%s> stream(Connection connection) throws SQLException {", specification.name());
         appendLine("return stream(connection, \"select %s from %s \");", getColumns(), specification.databaseName());
         appendLine("}");
+
+        emptyLine();
+        appendLine("public static Stream<%s> stream(DataSource dataSource) throws SQLException {", specification.name());
+        appendLine("return StreamSupport.stream(new ResultSetSpliterator(dataSource.getConnection(), \"select %s from %s \", true), false);", getColumns(), specification.databaseName());
+        appendLine("}");
+
+
         emptyLine();
         appendLine("public static Stream<%s> stream(Connection connection, String sql, Object... args) throws SQLException {", specification.name());
-        appendLine("return StreamSupport.stream(new ResultSetSpliterator(connection, sql, args), false);");
+        appendLine("return StreamSupport.stream(new ResultSetSpliterator(connection, sql, false, args), false);");
+        appendLine("}");
+
+        emptyLine();
+        appendLine("public static Stream<%s> stream(DataSource dataSource, String sql, Object... args) throws SQLException {", specification.name());
+        appendLine("return StreamSupport.stream(new ResultSetSpliterator(dataSource.getConnection(), sql, true, args), false);");
         appendLine("}");
     }
-
 
     private static class ResultSetSpliteratorGenerator extends Generator {
         protected ResultSetSpliteratorGenerator(Specification specification) {
@@ -128,8 +171,8 @@ public class DatabaseGetGenerator extends Generator {
             emptyLine();
             appendLine("private static class ResultSetSpliterator extends AbstractResultSetSpliterator<%s> {", specification.name());
             emptyLine();
-            appendLine("public ResultSetSpliterator(Connection connection, String sql, Object... args) {");
-            appendLine("super(connection, sql, args);");
+            appendLine("public ResultSetSpliterator(Connection connection, String sql, boolean closeConnection, Object... args) {");
+            appendLine("super(connection, sql, closeConnection, args);");
             appendLine("}");
             emptyLine();
             appendLine("@Override");

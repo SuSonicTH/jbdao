@@ -43,6 +43,13 @@ public class DatabasePersistenceGenerator extends Generator {
         appendLine("}");
         appendLine(specification.returnThis());
         appendLine("}");
+
+        emptyLine();
+        appendLine("public %s insert(DataSource dataSource) throws SQLException {", specification.returnThisType());
+        appendLine("try (Connection connection = dataSource.getConnection()) {");
+        appendLine("return insert(connection);");
+        appendLine("}");
+        appendLine("}");
     }
 
     private String memberList() {
@@ -78,6 +85,14 @@ public class DatabasePersistenceGenerator extends Generator {
         appendLine("}");
         appendLine(specification.returnThis());
         appendLine("}");
+
+        emptyLine();
+        appendLine("public %s update(DataSource dataSource) throws SQLException {", specification.returnThisType());
+        appendLine("try (Connection connection = dataSource.getConnection()) {");
+        appendLine("return update(connection);");
+        appendLine("}");
+        appendLine("}");
+
     }
 
     private String memberSetExpression() {
@@ -95,6 +110,13 @@ public class DatabasePersistenceGenerator extends Generator {
         appendLine("preparedStatement.execute();");
         appendLine("}");
         appendLine("}");
+
+        emptyLine();
+        appendLine("public void delete(DataSource dataSource) throws SQLException {");
+        appendLine("try (Connection connection = dataSource.getConnection()) {");
+        appendLine("delete(connection);");
+        appendLine("}");
+        appendLine("}");
     }
 
     private void appendIsInDatabase() {
@@ -110,6 +132,13 @@ public class DatabasePersistenceGenerator extends Generator {
         appendLine("}");
         appendLine("return false;");
         appendLine("}");
+
+        emptyLine();
+        appendLine("public boolean isInDatabase(DataSource dataSource) throws SQLException {");
+        appendLine("try (Connection connection = dataSource.getConnection()) {");
+        appendLine("return isInDatabase(connection);");
+        appendLine("}");
+        appendLine("}");
     }
 
     private void appendPersist() {
@@ -119,6 +148,13 @@ public class DatabasePersistenceGenerator extends Generator {
         appendLine("return update(connection);");
         appendLine("}");
         appendLine("return insert(connection);");
+        appendLine("}");
+
+        emptyLine();
+        appendLine("public %s persist(DataSource dataSource) throws SQLException {", specification.returnThisType());
+        appendLine("try (Connection connection = dataSource.getConnection()) {");
+        appendLine("return persist(connection);");
+        appendLine("}");
         appendLine("}");
     }
 }

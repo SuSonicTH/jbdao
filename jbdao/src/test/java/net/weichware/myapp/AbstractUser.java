@@ -28,6 +28,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
+import javax.sql.DataSource;
 
 public abstract class AbstractUser<T> {
     public static final Gson GSON = GsonUtil.GSON;
@@ -102,6 +103,12 @@ public abstract class AbstractUser<T> {
         return (T) this;
     }
 
+    public T insert(DataSource dataSource) throws SQLException {
+        try (Connection connection = dataSource.getConnection()) {
+            return insert(connection);
+        }
+    }
+
     public T update(Connection connection) throws SQLException {
         try (PreparedStatement preparedStatement = connection.prepareStatement("update USER set NAME = ?, LAST_ACTIVE_TIME = ? where ID = ?")) {
             preparedStatement.setObject(1, name);
@@ -114,10 +121,22 @@ public abstract class AbstractUser<T> {
         return (T) this;
     }
 
+    public T update(DataSource dataSource) throws SQLException {
+        try (Connection connection = dataSource.getConnection()) {
+            return update(connection);
+        }
+    }
+
     public void delete(Connection connection) throws SQLException {
         try (PreparedStatement preparedStatement = connection.prepareStatement("delete from USER where ID = ?")) {
             preparedStatement.setObject(1, id);
             preparedStatement.execute();
+        }
+    }
+
+    public void delete(DataSource dataSource) throws SQLException {
+        try (Connection connection = dataSource.getConnection()) {
+            delete(connection);
         }
     }
 
@@ -133,11 +152,23 @@ public abstract class AbstractUser<T> {
         return false;
     }
 
+    public boolean isInDatabase(DataSource dataSource) throws SQLException {
+        try (Connection connection = dataSource.getConnection()) {
+            return isInDatabase(connection);
+        }
+    }
+
     public T persist(Connection connection) throws SQLException {
         if (isInDatabase(connection)) {
             return update(connection);
         }
         return insert(connection);
+    }
+
+    public T persist(DataSource dataSource) throws SQLException {
+        try (Connection connection = dataSource.getConnection()) {
+            return persist(connection);
+        }
     }
 
     public static Optional<User> get(Connection connection, long id) throws SQLException {
@@ -152,6 +183,12 @@ public abstract class AbstractUser<T> {
         return Optional.empty();
     }
 
+    public static Optional<User> get(DataSource dataSource, long id) throws SQLException {
+        try (Connection connection = dataSource.getConnection()) {
+            return get(connection, id);
+        }
+    }
+
     public static boolean exists(Connection connection, long id) throws SQLException {
         try (PreparedStatement preparedStatement = connection.prepareStatement("select ID from USER where ID = ?")) {
             preparedStatement.setObject(1, id);
@@ -164,8 +201,20 @@ public abstract class AbstractUser<T> {
         return false;
     }
 
+    public static boolean exists(DataSource dataSource, long id) throws SQLException {
+        try (Connection connection = dataSource.getConnection()) {
+            return exists(connection, id);
+        }
+    }
+
     public static List<User> getList(Connection connection) throws SQLException {
         return getList(connection, "select ID, NAME, LAST_ACTIVE_TIME from USER");
+    }
+
+    public static List<User> getList(DataSource dataSource) throws SQLException {
+        try (Connection connection = dataSource.getConnection()) {
+            return getList(connection);
+        }
     }
 
     public static List<User> getList(Connection connection, String sql, Object... args) throws SQLException {
@@ -185,12 +234,26 @@ public abstract class AbstractUser<T> {
         return list;
     }
 
+    public static List<User> getList(DataSource dataSource, String sql, Object... args) throws SQLException {
+        try (Connection connection = dataSource.getConnection()) {
+            return getList(connection, sql, args);
+        }
+    }
+
     public static Stream<User> stream(Connection connection) throws SQLException {
         return stream(connection, "select ID, NAME, LAST_ACTIVE_TIME from USER ");
     }
 
+    public static Stream<User> stream(DataSource dataSource) throws SQLException {
+        return StreamSupport.stream(new ResultSetSpliterator(dataSource.getConnection(), "select ID, NAME, LAST_ACTIVE_TIME from USER ", true), false);
+    }
+
     public static Stream<User> stream(Connection connection, String sql, Object... args) throws SQLException {
-        return StreamSupport.stream(new ResultSetSpliterator(connection, sql, args), false);
+        return StreamSupport.stream(new ResultSetSpliterator(connection, sql, false, args), false);
+    }
+
+    public static Stream<User> stream(DataSource dataSource, String sql, Object... args) throws SQLException {
+        return StreamSupport.stream(new ResultSetSpliterator(dataSource.getConnection(), sql, true, args), false);
     }
 
     public static User fromJson(String json) {
@@ -273,8 +336,8 @@ public abstract class AbstractUser<T> {
 
     private static class ResultSetSpliterator extends AbstractResultSetSpliterator<User> {
 
-        public ResultSetSpliterator(Connection connection, String sql, Object... args) {
-            super(connection, sql, args);
+        public ResultSetSpliterator(Connection connection, String sql, boolean closeConnection, Object... args) {
+            super(connection, sql, closeConnection, args);
         }
 
         @Override
