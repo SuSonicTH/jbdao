@@ -73,13 +73,14 @@ public class BuilderGenerator extends Generator {
             );
             appendLine("}");
 
-            emptyLine();
-            String allArguments = members.stream().map(Member::name).collect(Collectors.joining(", "));
-            appendLine("public Builder(%s) {", getAllMembersSignature());
-            members.forEach(member ->
-                    appendLine("this.%s = %s;", member.name(), member.name())
-            );
-            appendLine("}");
+            if (members.stream().filter(Member::isNotNullable).count() < members.size()) {
+                emptyLine();
+                appendLine("public Builder(%s) {", getAllMembersSignature());
+                members.forEach(member ->
+                        appendLine("this.%s = %s;", member.name(), member.name())
+                );
+                appendLine("}");
+            }
         }
 
         private void appendSetters() {
