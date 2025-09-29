@@ -70,7 +70,7 @@ public class Specification {
 
     public boolean hasNonNullConstructor() {
         if (nonNullConstructor == null) {
-            nonNullConstructor = true;
+            nonNullConstructor = !hasAllArgsConstructor() || members.size() > members.stream().filter(Member::isNotNullable).count();
         }
         return nonNullConstructor;
     }
