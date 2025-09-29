@@ -12,10 +12,15 @@
   "accessorPrefix": true,
   "members": [
     {
-      "name": "id",
+      "name": "index",
       "type": "long",
       "primary": true,
       "csvName": "Index"
+    },
+    {
+      "name": "customerId",
+      "type": "String",
+      "csvName": "Customer Id"
     },
     {
       "name": "firstName",
@@ -28,54 +33,45 @@
       "csvName": "Last Name"
     },
     {
-      "name": "birthDate",
-      "type": "LocalDate",
-      "nullable": true,
-      "maskPattern": "^(.+)..",
-      "maskReplace": "$1xx",
-      "csv": false
+      "name": "company",
+      "type": "String",
+      "csvName": "Company"
     },
     {
-      "name": "address",
+      "name": "city",
       "type": "String",
-      "nullable": true,
-      "default": "Unknown",
-      "min": "3",
-      "max": "50",
-      "csv": false
+      "csvName": "City"
     },
     {
       "name": "country",
       "type": "String",
-      "nullable": true,
-      "csv": false
+      "csvName": "Country"
     },
     {
-      "name": "postalCode",
-      "type": "Integer",
-      "nullable": true,
-      "default": 9999,
-      "csv": false
-    },
-    {
-      "name": "phoneNumber",
+      "name": "phone1",
       "type": "String",
-      "nullable": true,
-      "pattern": "\\+[1-9][0-9]+",
-      "maskPattern": "^(.+)....",
-      "maskReplace": "$1xxxx",
-      "csv": false
+      "csvName": "Phone 1"
     },
     {
-      "name": "kids",
-      "type": "int",
-      "nullable": true,
-      "default": "0",
-      "min": "0",
-      "max": "10",
-      "immutable": false,
-      "toString": false,
-      "csv": false
+      "name": "phone2",
+      "type": "String",
+      "csvName": "Phone 2"
+    },
+    {
+      "name": "email",
+      "type": "String",
+      "csvName": "Email"
+    },
+    {
+      "name": "subscriptionDate",
+      "type": "String",
+      "csvName": "Subscription Date"
+    },
+    {
+      "name": "website",
+      "type": "String",
+      "csvName": "Website",
+      "nullable": true
     }
   ]
 }

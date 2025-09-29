@@ -33,9 +33,9 @@
                             <mainClass>net.weichware.jbdao.DaoGenerator</mainClass>
                             <addResourcesToClasspath>true</addResourcesToClasspath>
                             <arguments>
-                                <argument>./jbdaodemo/</argument>
-                                <argument>./jbdaodemo/target/generated-sources</argument>
-                                <argument>./jbdaodemo/target/generated-sources</argument>
+                                <argument>${project.basedir}/Customer.json</argument>
+                                <argument>${project.basedir}/target/generated-sources</argument>
+                                <argument>${project.basedir}/target/generated-sources</argument>
                             </arguments>
                         </configuration>
                     </execution>
