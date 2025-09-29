@@ -4,6 +4,7 @@
   "database": true,
   "csv": true,
   "json": true,
+  "allArgsConstructor": true,
   "members": [
     {
       "name": "id",
