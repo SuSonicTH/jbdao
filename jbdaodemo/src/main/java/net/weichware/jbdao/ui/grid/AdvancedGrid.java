@@ -21,15 +21,14 @@ import java.util.List;
 
 public class AdvancedGrid<T> extends Grid<T> {
     private final String name;
-    private transient final GridAction addAction;
-    private transient final GridAction updateAction;
+    private final transient GridAction addAction;
+    private final transient GridAction updateAction;
     private final transient List<GridButton<T>> gridButtonsList;
-    protected String search = "";
-    protected boolean useRegEx = false;
     protected ListDataProvider<T> dataProvider;
     protected HeaderRow filterRow;
     protected transient List<FilterTextField> filterTextFields = new ArrayList<>();
     protected Column<?> buttonColumn;
+    private SerializablePredicate<T> omniFilter;
 
     public AdvancedGrid(String name, List<GridButton<T>> gridButtonList, GridAction addAction, GridAction updateAction) {
         this.name = name;
@@ -92,29 +91,24 @@ public class AdvancedGrid<T> extends Grid<T> {
         filterTextFields.forEach(FilterTextField::updateList);
     }
 
-    protected void delete(ComponentEventListener<ClickEvent<Button>> okEvent) {
-        new ConfirmationDialog("Delete Entry", "Do you really want to permanently delete this entry?\n", ok -> {
-            okEvent.onComponentEvent(ok);
-            updateAction.call(this);
-        }).open();
-    }
-
     protected Component createGridButtons(T item) {
         HorizontalLayout layout = new HorizontalLayout();
         gridButtonsList.forEach(button -> layout.add(button.create(item)));
         return layout;
     }
 
-
-    public void setRegex(Boolean value) {
-        useRegEx = value;
+    public void setOmniFilter(SerializablePredicate<T> omniFilter) {
+        this.omniFilter = omniFilter;
     }
 
-    protected void updateFilters() {
+    public void updateFilters() {
         if (dataProvider != null) {
             dataProvider.clearFilters();
+            if (omniFilter!=null) {
+                dataProvider.addFilter(omniFilter);
+            }
             filterTextFields.forEach(filterTextField -> {
-                SerializablePredicate filter = filterTextField.getFieldFilter();
+                SerializablePredicate<T> filter = filterTextField.getFieldFilter();
                 if (filter != null) {
                     dataProvider.addFilter(filterTextField.getValueProvider(), filter);
                 }

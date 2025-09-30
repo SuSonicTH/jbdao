@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-class FilterTextField<T, C> extends ComboBox<String> {
+public class FilterTextField<T, C> extends ComboBox<String> {
     public static final String EMPTY = " <empty> ";
     private static final Pattern DATE_SEARCH_PATTERN = Pattern.compile("(\\d\\d\\d\\d)-?(\\d\\d)?-?(\\d\\d)?");
     private final AdvancedGrid<T> grid;
