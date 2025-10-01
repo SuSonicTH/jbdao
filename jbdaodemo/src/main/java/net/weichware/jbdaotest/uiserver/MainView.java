@@ -4,12 +4,10 @@ import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.Route;
-import net.weichware.jbdao.Customer;
 import net.weichware.jbdaotest.CustomerPage;
 
 @Route("")
@@ -20,7 +18,7 @@ public class MainView extends VerticalLayout {
                 e -> Notification.show("Hello " + textField.getValue()));
         button.addClickShortcut(Key.ENTER);
         Button customer = new Button("Customer",
-                e -> openPage(e, CustomerPage.ROUTE));
+                e -> openPage(e, CustomerPage.Name));
         add(textField, button, customer);
     }
 

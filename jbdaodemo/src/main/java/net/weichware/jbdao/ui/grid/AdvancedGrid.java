@@ -21,8 +21,8 @@ import java.util.List;
 
 public class AdvancedGrid<T> extends Grid<T> {
     private final String name;
-    private final transient GridAction addAction;
-    private final transient GridAction updateAction;
+    private final transient Runnable addAction;
+    private final transient Runnable updateAction;
     private final transient List<GridButton<T>> gridButtonsList;
     protected ListDataProvider<T> dataProvider;
     protected HeaderRow filterRow;
@@ -30,7 +30,7 @@ public class AdvancedGrid<T> extends Grid<T> {
     protected Column<?> buttonColumn;
     private SerializablePredicate<T> omniFilter;
 
-    public AdvancedGrid(String name, List<GridButton<T>> gridButtonList, GridAction addAction, GridAction updateAction) {
+    public AdvancedGrid(String name, List<GridButton<T>> gridButtonList, Runnable addAction, Runnable updateAction) {
         this.name = name;
         this.addAction = addAction;
         this.updateAction = updateAction;
@@ -66,10 +66,10 @@ public class AdvancedGrid<T> extends Grid<T> {
     private Component createHeaderActions() {
         HorizontalLayout layout = new HorizontalLayout();
         if (addAction != null) {
-            layout.add(new GridButton<T>(GridButton.DisplayMode.ICON, "Add", VaadinIcon.PLUS_CIRCLE_O, (event, item) -> addAction.call(this), e -> true, e -> true).create(null));
+            layout.add(new GridButton<T>(GridButton.DisplayMode.ICON, "Add", VaadinIcon.PLUS_CIRCLE_O, (event, item) -> addAction.run(), e -> true, e -> true).create(null));
         }
         if (updateAction != null) {
-            layout.add(new GridButton<T>(GridButton.DisplayMode.ICON, "Refresh", VaadinIcon.REFRESH, (event, item) -> updateAction.call(this), e -> true, e -> true).create(null));
+            layout.add(new GridButton<T>(GridButton.DisplayMode.ICON, "Refresh", VaadinIcon.REFRESH, (event, item) -> updateAction.run(), e -> true, e -> true).create(null));
         }
         layout.add(new GridButton<T>(GridButton.DisplayMode.ICON, "Clear Filter", VaadinIcon.CLOSE_CIRCLE_O, this::clearFilter, e -> true, e -> true).create(null));
         return layout;
@@ -89,6 +89,7 @@ public class AdvancedGrid<T> extends Grid<T> {
         super.setDataProvider(dataProvider);
         this.dataProvider = (ListDataProvider<T>) dataProvider;
         filterTextFields.forEach(FilterTextField::updateList);
+        recalculateColumnWidths();
     }
 
     protected Component createGridButtons(T item) {
@@ -123,9 +124,5 @@ public class AdvancedGrid<T> extends Grid<T> {
         if (filterRow != null) {
             filterRow.getCell(buttonColumn).setComponent(createHeaderActions());
         }
-    }
-
-    public interface GridAction {
-        void call(AdvancedGrid<?> grid);
     }
 }
