@@ -2,11 +2,16 @@ package net.weichware.jbdao.ui.dialog;
 
 
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.Key;
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.datepicker.DatePicker;
+import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.NativeLabel;
+import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.component.textfield.TextArea;
@@ -18,7 +23,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-public abstract class EditDialog<T> extends BaseDialog {
+public abstract class EditDialog<T> extends Dialog {
     private final Map<String, Component> fieldMap = new HashMap<>();
     private final FormLayout formLayout;
     protected final EditDialogMode mode;
@@ -26,21 +31,39 @@ public abstract class EditDialog<T> extends BaseDialog {
     public EditDialog(EditDialogMode mode, String name, T item, Runnable update) {
         super(mode.text + " " + name);
         this.mode = mode;
+
+        setDraggable(true);
+        setCloseOnOutsideClick(false);
+
+        Button closeButton = new Button(new Icon("lumo", "cross"),(e) -> close());
+        getHeader().add(closeButton);
+
         formLayout = new FormLayout();
         formLayout.setAutoResponsive(true);
         formLayout.setLabelsAside(true);
         formLayout.setMaxWidth("800px");
-        addContent(formLayout);
+        add(formLayout);
         createFields(item);
-        addCancelButton("Cancel");
-        addFooterButton("Save", false, false, event -> {
+
+        Button cancel = new Button("Cancel", (e)->{
+            close();
+        });
+        cancel.setDisableOnClick(true);
+        getFooter().add(cancel);
+
+        Button ok = new Button("OK");
+        ok.addClickListener((e)->{
             if (save()) {
                 close();
                 update.run();
             } else {
-                enableButton("Save");
+                ok.setEnabled(true);
             }
         });
+        ok.setDisableOnClick(true);
+        ok.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        ok.addClickShortcut(Key.ENTER);
+        getFooter().add(ok);
     }
 
     protected abstract void createFields(T item);
