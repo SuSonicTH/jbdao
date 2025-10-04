@@ -4,9 +4,13 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public abstract class AbstractResultSetSpliterator<T> extends Spliterators.AbstractSpliterator<T> implements AutoCloseable {
     private final PreparedStatement preparedStatement;
@@ -19,14 +23,10 @@ public abstract class AbstractResultSetSpliterator<T> extends Spliterators.Abstr
         this.connection = connection;
         this.closeConnection = closeConnection;
         try {
-            preparedStatement = connection.prepareStatement(sql);
-            int i = 1;
-            for (Object arg : args) {
-                preparedStatement.setObject(i++, arg);
-            }
-
+            preparedStatement = prepareStatement(sql, args);
+            preparedStatement.setFetchSize(500);
+            setArguments(args);
             resultSet = preparedStatement.executeQuery();
-            resultSet.setFetchSize(1000);
         } catch (SQLException sqlException) {
             try {
                 close();
@@ -34,6 +34,54 @@ public abstract class AbstractResultSetSpliterator<T> extends Spliterators.Abstr
                 //intentionally left blank
             }
             throw new ResultSetSpliteratorException("Could not create ResultSetSpliterator", sqlException);
+        }
+    }
+
+    private PreparedStatement prepareStatement(String sql, Object[] args) throws SQLException {
+        String[] split = (sql + " ").split("\\?");
+        if (args.length != split.length - 1) {
+            throw new ValidationException("Got " + args.length + " arguments for " + (split.length - 1) + " question marks");
+        }
+
+        if (Arrays.stream(args).anyMatch(arg -> arg instanceof Collection)) {
+            return prepareStatementWithCollections(split, args);
+        } else {
+            return connection.prepareStatement(sql);
+        }
+    }
+
+    private PreparedStatement prepareStatementWithCollections(String[] sql, Object[] args) throws SQLException {
+        StringBuilder query = new StringBuilder();
+        query.append(sql[0]);
+        int i = 0;
+        for (Object arg : args) {
+            if (arg instanceof Collection) {
+                Collection col = (Collection) arg;
+                query.append(IntStream.range(0, col.size())
+                        .mapToObj(q -> "?")
+                        .collect(Collectors.joining(","))
+                );
+            } else {
+                query.append("?");
+            }
+            if (i < sql.length - 1) {
+                query.append(sql[++i]);
+            }
+        }
+        return connection.prepareStatement(query.toString());
+    }
+
+    private void setArguments(Object[] args) throws SQLException {
+        int i = 1;
+        for (Object arg : args) {
+            if (arg instanceof Collection) {
+                Collection col = (Collection) arg;
+                for (Object item : col) {
+                    preparedStatement.setObject(i++, item);
+                }
+            } else {
+                preparedStatement.setObject(i++, arg);
+            }
         }
     }
 
