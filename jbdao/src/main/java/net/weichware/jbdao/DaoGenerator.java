@@ -112,7 +112,7 @@ public class DaoGenerator extends ClassWriter {
             append(new EnumGenerator(specification));
         } else {
             if (specification.generateAbstract()) {
-                appendLine("public abstract class Abstract%s<T> {", specification.name());
+                appendLine("public abstract class Abstract%s<T extends %s> {", specification.name(), specification.name());
             } else {
                 appendLine("public class %s {", specification.name());
             }
