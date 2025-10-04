@@ -14,12 +14,13 @@ public class GetterSetterGenerator extends Generator {
     }
 
     private void appendGetterSetter(Member member) {
-        emptyLine();
-        appendLine("public %s %s() {", member.type(), member.getterName());
-        appendLine("return %s;", member.name());
-        appendLine("}");
-
-        if (!member.isImmutable()) {
+        if (member.generateGetter()) {
+            emptyLine();
+            appendLine("public %s %s() {", member.type(), member.getterName());
+            appendLine("return %s;", member.name());
+            appendLine("}");
+        }
+        if (!member.generateSetter()) {
             emptyLine();
             appendLine("public %s %s(%s %s) {",
                     specification.name(),

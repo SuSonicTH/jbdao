@@ -19,6 +19,7 @@ public class Member {
     private Boolean acceptEmpty;
     private Boolean with;
     private Boolean getter;
+    private Boolean setter;
     private Boolean toString;
     private Boolean hashEquals;
     private Boolean csv;
@@ -73,6 +74,13 @@ public class Member {
             getter = true;
         }
         return getter;
+    }
+
+    public Boolean generateSetter() {
+        if (setter == null) {
+            setter = !isImmutable();
+        }
+        return setter;
     }
 
     public Boolean isImmutable() {
