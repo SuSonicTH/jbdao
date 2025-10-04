@@ -34,7 +34,8 @@
       "nullable": true,
       "maskPattern": "^(.+)..",
       "maskReplace": "$1xx",
-      "csv": false
+      "csv": false,
+      "min": "1900/01/01"
     },
     {
       "name": "address",

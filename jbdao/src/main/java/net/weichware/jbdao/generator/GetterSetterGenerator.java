@@ -20,7 +20,7 @@ public class GetterSetterGenerator extends Generator {
             appendLine("return %s;", member.name());
             appendLine("}");
         }
-        if (!member.generateSetter()) {
+        if (member.generateSetter()) {
             emptyLine();
             appendLine("public %s %s(%s %s) {",
                     specification.name(),
