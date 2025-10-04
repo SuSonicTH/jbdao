@@ -43,18 +43,33 @@ public class ValidationGenerator extends Generator {
                 if (member.min() != null) lines.add(String.format("if (%s != null && %s.length() < %s) throw new ValidationException(\"%s is shorter than min %s\");", member.name(), member.name(), member.min(), member.name(), member.min()));
                 if (member.max() != null) lines.add(String.format("if (%s != null && %s.length() > %s) throw new ValidationException(\"%s is longer than max %s\");", member.name(), member.name(), member.max(), member.name(), member.max()));
             } else if (member.type().equals("LocalDate")) {
-                if (member.min() != null){
+                if (member.min() != null) {
                     if (member.min().matches("\\d\\d\\d\\d/\\d\\d/\\d\\d")) {
-                        lines.add(String.format("if (%s != null && %s.isBefore(LocalDate.parse(\"%s\"))) throw new ValidationException(\"%s is before %s\");", member.name(),member.name(), member.min(), member.name(), member.min()));
-                    }else {
-                        lines.add(String.format("if (%s != null && %s.isBefore(%s)) throw new ValidationException(\"%s is before %s\");", member.name(),member.name(), member.min(), member.name(), member.min()));
+                        lines.add(String.format("if (%s != null && %s.isBefore(LocalDate.parse(\"%s\"))) throw new ValidationException(\"%s is before %s\");", member.name(), member.name(), member.min(), member.name(), member.min()));
+                    } else {
+                        lines.add(String.format("if (%s != null && %s.isBefore(%s)) throw new ValidationException(\"%s is before %s\");", member.name(), member.name(), member.min(), member.name(), member.min()));
                     }
                 }
                 if (member.max() != null) {
                     if (member.max().matches("\\d\\d\\d\\d/\\d/\\d")) {
-                        lines.add(String.format("if (%s != null && %s.isAfter(LocalDate.parse(\"%s\")) throw new ValidationException(\"%s is after %s\");", member.name(),member.name(), member.max(), member.name(), member.max()));
+                        lines.add(String.format("if (%s != null && %s.isAfter(LocalDate.parse(\"%s\")) throw new ValidationException(\"%s is after %s\");", member.name(), member.name(), member.max(), member.name(), member.max()));
                     } else {
-                        lines.add(String.format("if (%s != null && %s.isAfter(%s)) throw new ValidationException(\"%s is after %s\");", member.name(),member.name(), member.max(), member.name(), member.max()));
+                        lines.add(String.format("if (%s != null && %s.isAfter(%s)) throw new ValidationException(\"%s is after %s\");", member.name(), member.name(), member.max(), member.name(), member.max()));
+                    }
+                }
+            } else if (member.type().equals("LocalDateTime")) {
+                if (member.min() != null) {
+                    if (member.min().matches("\\d\\d\\d\\d/\\d\\d/\\d\\d \\d\\d:\\d\\d:\\d\\d")) {
+                        lines.add(String.format("if (%s != null && %s.isBefore(LocalDateTime.parse(\"%s\"))) throw new ValidationException(\"%s is before %s\");", member.name(), member.name(), member.min(), member.name(), member.min()));
+                    } else {
+                        lines.add(String.format("if (%s != null && %s.isBefore(%s)) throw new ValidationException(\"%s is before %s\");", member.name(), member.name(), member.min(), member.name(), member.min()));
+                    }
+                }
+                if (member.max() != null) {
+                    if (member.max().matches("\\d\\d\\d\\d/\\d/\\d \\d\\d:\\d\\d:\\d\\d")) {
+                        lines.add(String.format("if (%s != null && %s.isAfter(LocalDateTime.parse(\"%s\")) throw new ValidationException(\"%s is after %s\");", member.name(), member.name(), member.max(), member.name(), member.max()));
+                    } else {
+                        lines.add(String.format("if (%s != null && %s.isAfter(%s)) throw new ValidationException(\"%s is after %s\");", member.name(), member.name(), member.max(), member.name(), member.max()));
                     }
                 }
             } else {
