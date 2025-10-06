@@ -5,7 +5,6 @@ a Java library to generate DAO classes at compile time
 
 ## todo
 
-* Enums as members (& enum generation)
 * automatic ID generation from sequence or trigger
 
 ## TBD
