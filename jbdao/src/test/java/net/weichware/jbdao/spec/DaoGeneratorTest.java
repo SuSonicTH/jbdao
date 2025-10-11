@@ -18,6 +18,7 @@ class DaoGeneratorTest {
     private static final Path OUTOUT_PACKAGE_PATH = Paths.get("./target/test/DaoWriterTest/net/weichware/myapp");
     private static final Path EXPECTED_PATH = Paths.get("./src/test/java/net/weichware/myapp/");
     private static final String CUSTOMER = "Customer.java";
+    private static final String CUSTOMER_SQL = "Customer.sql";
     private static final String USER = "User.java";
     private static final String ABSTRACT_USER = "AbstractUser.java";
     private static final String PRODUCT = "Product.java";
@@ -41,6 +42,11 @@ class DaoGeneratorTest {
         new DaoGenerator(Specification.readSpec(CUSTOMER_JSON), OUTOUT_PATH).generate();
         String actual = new String(Files.readAllBytes(OUTOUT_PACKAGE_PATH.resolve(CUSTOMER)));
         String expected = new String(Files.readAllBytes(EXPECTED_PATH.resolve(CUSTOMER)));
+
+        assertEquals(expected, actual);
+
+        actual = new String(Files.readAllBytes(OUTOUT_PATH.resolve(CUSTOMER_SQL)));
+        expected = new String(Files.readAllBytes(EXPECTED_PATH.resolve(CUSTOMER_SQL)));
 
         assertEquals(expected, actual);
     }

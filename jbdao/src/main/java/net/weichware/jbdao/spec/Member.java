@@ -40,6 +40,9 @@ public class Member {
     private String path;
 
     private List<Value> values;
+
+    private String databaseType;
+
     private Specification specification;
 
     public void setSpecification(Specification specification) {
@@ -217,7 +220,7 @@ public class Member {
     }
 
     public boolean hasMinMax() {
-        return min != null || max != null;
+        return min != null || max != null || type.equals("String");
     }
 
     public boolean hasMasking() {
@@ -265,5 +268,37 @@ public class Member {
                 .filter(v -> v.name().equals(name)).findFirst()
                 .orElseThrow(() -> new SpecificationException("Member " + name + " has no value of name '" + name + "'"));
         return value.value();
+    }
+
+    public String databaseType() {
+        if (databaseType != null && !databaseType.isEmpty()){
+            return databaseType;
+        }
+        switch (type()) {
+            case "String":
+                return "VARCHAR2(" + (max == null ? "255" : max()) + " CHAR)";
+            case "Char":
+            case "char":
+                return "CHAR";
+            case "Short":
+            case "short":
+                return "NUMBER(5)";
+            case "Integer":
+            case "int":
+                return "NUMBER(10)";
+            case "Long":
+            case "long":
+                return "NUMBER(19)";
+            case "Float":
+            case "float":
+                return "FLOAT(32)";
+            case "Double":
+            case "double":
+                return "FLOAT(64)";
+            case "LocalDate":
+            case "LocalDateTime":
+                return "DATE";
+        }
+        throw new SpecificationException("Unknown Datatype");
     }
 }

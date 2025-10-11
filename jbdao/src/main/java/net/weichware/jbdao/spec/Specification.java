@@ -31,6 +31,7 @@ public class Specification {
     private boolean json;
     private boolean csv;
     private boolean builder;
+    private boolean table;
 
     private Boolean toString;
     private Boolean hashEquals;
@@ -231,5 +232,9 @@ public class Specification {
 
     public List<ValueType> values() {
         return valueTypes;
+    }
+
+    public boolean generateTable() {
+        return table;
     }
 }
