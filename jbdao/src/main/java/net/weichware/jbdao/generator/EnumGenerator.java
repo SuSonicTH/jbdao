@@ -25,15 +25,32 @@ public class EnumGenerator extends Generator {
 
         emptyLine();
         appendGenerator(type -> appendLine("private final String %s;", type));
+        appendValues();
 
         appendConstructor();
+        appendValueGetter();
+        appendGenerator(this::appendGetterSub);
         appendGenerator(this::appendMapperSub);
         appendGenerator(this::appendOptionalMapperSub);
-        appendGenerator(this::appendGetterSub);
 
         if (specification.generateJson()) {
             append(new EnumGenerator.GsonAdapterGenerator(specification));
         }
+    }
+
+    private void appendValueGetter() {
+        specification.values().forEach(value->{
+            emptyLine();
+            appendLine("public %s %s() {", value.type(), NameUtil.firstCharacterLower(value.name()));
+            appendLine("return %s;", value.name());
+            appendLine("}");
+        });
+    }
+
+    private void appendValues() {
+        specification.values().forEach(value -> {
+            appendLine("private final %s %s;", value.type(), value.name());
+        });
     }
 
     private String constructorArguments() {
@@ -48,6 +65,10 @@ public class EnumGenerator extends Generator {
         if (specification.generateJson()) {
             joiner.add("String json");
         }
+        specification.values()
+                .forEach(value ->
+                        joiner.add(value.type() + " " + value.name())
+                );
         return joiner.toString();
     }
 
@@ -68,6 +89,16 @@ public class EnumGenerator extends Generator {
         if (specification.generateJson()) {
             joiner.add(quote(member.jsonName()));
         }
+        if (specification.hasValues()) {
+            specification.values().forEach(value -> {
+                String val = member.getValue(value.name());
+                if (value.type().equals("String")) {
+                    joiner.add(quote(val));
+                } else {
+                    joiner.add(val);
+                }
+            });
+        }
         return joiner.toString();
     }
 
@@ -86,6 +117,9 @@ public class EnumGenerator extends Generator {
     private void appendConstructor() {
         appendLine("%s(%s) {", specification.className(), constructorArguments());
         appendGenerator(type -> appendLine("this.%s = %s;", type, type));
+        specification.values().forEach(value ->
+                appendLine("this.%s = %s;", value.name(), value.name())
+        );
         appendLine("}");
     }
 

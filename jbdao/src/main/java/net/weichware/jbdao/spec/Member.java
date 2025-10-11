@@ -4,6 +4,8 @@ package net.weichware.jbdao.spec;
 import com.google.gson.annotations.SerializedName;
 import net.weichware.jbdao.util.NameUtil;
 
+import java.util.List;
+
 public class Member {
     private String name;
     private String type;
@@ -37,6 +39,7 @@ public class Member {
     private boolean isEnum;
     private String path;
 
+    private List<Value> values;
     private Specification specification;
 
     public void setSpecification(Specification specification) {
@@ -255,5 +258,12 @@ public class Member {
                 ", hashEquals=" + hashEquals +
                 ", defaultValue='" + defaultValue + '\'' +
                 '}';
+    }
+
+    public String getValue(String name) {
+        Value value = values.stream()
+                .filter(v -> v.name().equals(name)).findFirst()
+                .orElseThrow(() -> new SpecificationException("Member " + name + " has no value of name '" + name + "'"));
+        return value.value();
     }
 }

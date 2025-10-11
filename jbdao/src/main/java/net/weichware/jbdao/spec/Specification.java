@@ -13,6 +13,8 @@ public class Specification {
     private String name;
 
     private List<Member> members;
+    @SerializedName("values")
+    private List<ValueType> valueTypes;
 
     private String databaseName;
     private String displayName;
@@ -33,8 +35,8 @@ public class Specification {
     private Boolean toString;
     private Boolean hashEquals;
     @SerializedName("abstract")
-
     private boolean generateAbstract;
+
     private String className;
     private String returnThisType;
     private String returnThis;
@@ -221,5 +223,13 @@ public class Specification {
             constructorVisibility = generateAbstract ? "protected" : "public";
         }
         return constructorVisibility;
+    }
+
+    public boolean hasValues() {
+        return !valueTypes.isEmpty();
+    }
+
+    public List<ValueType> values() {
+        return valueTypes;
     }
 }
