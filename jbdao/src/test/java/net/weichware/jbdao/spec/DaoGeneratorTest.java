@@ -33,7 +33,7 @@ class DaoGeneratorTest {
         CUSTOMER_JSON = new String(Files.readAllBytes(TEST_PATH.resolve("Customer.json")));
         USER_JSON = new String(Files.readAllBytes(TEST_PATH.resolve("User.json")));
         PRODUCT_JSON = new String(Files.readAllBytes(TEST_PATH.resolve("Product.json")));
-        RECORD_JSON = new String(Files.readAllBytes(TEST_PATH.resolve("RECORD.json")));
+        RECORD_JSON = new String(Files.readAllBytes(TEST_PATH.resolve("Record.json")));
         Files.createDirectories(OUTOUT_PATH);
     }
 
