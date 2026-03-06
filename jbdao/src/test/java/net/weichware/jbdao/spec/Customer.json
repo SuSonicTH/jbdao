@@ -7,10 +7,10 @@
   "csv": true,
   "toString": true,
   "builder": true,
+  "table": true,
   "noArgsConstructor": true,
   "allArgsConstructor": true,
   "accessorPrefix": true,
-
   "members": [
     {
       "name": "id",
@@ -34,7 +34,8 @@
       "nullable": true,
       "maskPattern": "^(.+)..",
       "maskReplace": "$1xx",
-      "csv": false
+      "csv": false,
+      "min": "1900/01/01"
     },
     {
       "name": "address",
@@ -70,6 +71,7 @@
     {
       "name": "kids",
       "type": "int",
+      "databaseType": "NUMBER(2)",
       "nullable": true,
       "default": "0",
       "min": "0",

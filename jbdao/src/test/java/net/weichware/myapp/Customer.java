@@ -98,6 +98,7 @@ public class Customer {
         if (firstName.isEmpty()) throw new ValidationException("firstName may not be empty");
         if (lastName == null) throw new ValidationException("lastName may not be null");
         if (lastName.isEmpty()) throw new ValidationException("lastName may not be empty");
+        if (birthDate != null && birthDate.isBefore(LocalDate.parse("1900/01/01"))) throw new ValidationException("birthDate is before 1900/01/01");
         if (address != null && address.length() < 3) throw new ValidationException("address is shorter than min 3");
         if (address != null && address.length() > 50) throw new ValidationException("address is longer than max 50");
         if (phoneNumber != null && !phoneNumber.matches("\\+[1-9][0-9]+")) throw new ValidationException("phoneNumber does not match pattern '\\+[1-9][0-9]+'");

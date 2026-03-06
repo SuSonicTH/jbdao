@@ -30,7 +30,7 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import javax.sql.DataSource;
 
-public abstract class AbstractUser<T> {
+public abstract class AbstractUser<T extends User> {
     public static final Gson GSON = GsonUtil.GSON;
     private final long id;
     private final String name;

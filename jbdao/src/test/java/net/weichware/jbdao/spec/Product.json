@@ -5,22 +5,85 @@
   "database": true,
   "csv": true,
   "json": true,
+  "values": [
+    {
+      "name": "rate",
+      "type": "double"
+    },
+    {
+      "name": "isCS",
+      "type": "boolean"
+    }
+  ],
   "members": [
     {
       "name": "VCE",
       "jsonName": "voice",
-      "csvName": "VOICE"
+      "csvName": "VOICE",
+      "values": [
+        {
+          "name" : "rate",
+          "value": "0.1"
+        },
+        {
+          "name" : "isCS",
+          "value": "true"
+        }
+      ]
     },
     {
       "name": "VID",
       "jsonName": "video",
-      "csvName": "VIDEO"
+      "csvName": "VIDEO",
+      "values": [
+        {
+          "name" : "rate",
+          "value": "0.2"
+        },
+        {
+          "name" : "isCS",
+          "value": "true"
+        }
+      ]
     },
     {
-      "name": "SMS"
+      "name": "SMS",
+      "values": [
+        {
+          "name" : "rate",
+          "value": "0.1"
+        },
+        {
+          "name" : "isCS",
+          "value": "true"
+        }
+      ]
     },
     {
-      "name": "MMS"
+      "name": "MMS",
+      "values": [
+        {
+          "name" : "rate",
+          "value": "0.3"
+        },
+        {
+          "name" : "isCS",
+          "value": "true"
+        }
+      ]
+    },
+    {
+      "name": "PS",
+      "values": [
+        {
+          "name" : "rate",
+          "value": "1"
+        },
+        {
+          "name" : "isCS",
+          "value": "false"
+        }
+      ]
     }
   ]
 }

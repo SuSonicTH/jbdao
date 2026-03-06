@@ -18,6 +18,7 @@ import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -436,6 +437,22 @@ public class CustomerTest {
             customer2.insert(testDatabase.getConnection());
 
             List<Customer> actual = Customer.stream(testDatabase.getConnection()).collect(Collectors.toList());
+
+            List<Customer> expected = new ArrayList<>();
+            expected.add(customer);
+            expected.add(customer2);
+
+            assertEquals(expected, actual);
+        }
+    }
+
+    @Test
+    void streamWithInReturnsExpectedRowsFromDatabase(TestInfo testInfo) throws Exception {
+        try (TestDatabase testDatabase = setupTestDatabase(testInfo)) {
+            customer.insert(testDatabase.getConnection());
+            customer2.insert(testDatabase.getConnection());
+
+            List<Customer> actual = Customer.stream(testDatabase.getConnection(), "select * from customer where first_name in (?)", Arrays.asList(customer.getFirstName(), customer2.getFirstName())).collect(Collectors.toList());
 
             List<Customer> expected = new ArrayList<>();
             expected.add(customer);

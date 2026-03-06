@@ -12,10 +12,11 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 public enum Product {
-    VCE("VCE", "VOICE", "voice"),
-    VID("VID", "VIDEO", "video"),
-    SMS("SMS", "SMS", "SMS"),
-    MMS("MMS", "MMS", "MMS");
+    VCE("VCE", "VOICE", "voice", 0.1, true),
+    VID("VID", "VIDEO", "video", 0.2, true),
+    SMS("SMS", "SMS", "SMS", 0.1, true),
+    MMS("MMS", "MMS", "MMS", 0.3, true),
+    PS("PS", "PS", "PS", 1, false);
 
     private static final Map<String, Product> databaseMap = Arrays.stream(values()).collect(Collectors.toMap(k -> k.database, v -> v));
     private static final Map<String, Product> csvMap = Arrays.stream(values()).collect(Collectors.toMap(k -> k.csv, v -> v));
@@ -24,11 +25,35 @@ public enum Product {
     private final String database;
     private final String csv;
     private final String json;
+    private final double rate;
+    private final boolean isCS;
 
-    Product(String database, String csv, String json) {
+    Product(String database, String csv, String json, double rate, boolean isCS) {
         this.database = database;
         this.csv = csv;
         this.json = json;
+        this.rate = rate;
+        this.isCS = isCS;
+    }
+
+    public double rate() {
+        return rate;
+    }
+
+    public boolean isCS() {
+        return isCS;
+    }
+
+    public String toDatabase() {
+        return database;
+    }
+
+    public String toCsv() {
+        return csv;
+    }
+
+    public String toJson() {
+        return json;
     }
 
     public static Product fromDatabase(String value) {
@@ -53,18 +78,6 @@ public enum Product {
 
     public static Optional<Product> optionalFromJson(String value) {
         return Optional.ofNullable(jsonMap.get(value));
-    }
-
-    public String toDatabase() {
-        return database;
-    }
-
-    public String toCsv() {
-        return csv;
-    }
-
-    public String toJson() {
-        return json;
     }
 
     public static class GsonAdapter extends TypeAdapter<Product> {

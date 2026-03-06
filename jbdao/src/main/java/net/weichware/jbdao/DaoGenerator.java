@@ -23,6 +23,7 @@ import net.weichware.jbdao.writer.ClassWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -112,7 +113,7 @@ public class DaoGenerator extends ClassWriter {
             append(new EnumGenerator(specification));
         } else {
             if (specification.generateAbstract()) {
-                appendLine("public abstract class Abstract%s<T> {", specification.name());
+                appendLine("public abstract class Abstract%s<T extends %s> {", specification.name(), specification.name());
             } else {
                 appendLine("public class %s {", specification.name());
             }
@@ -120,6 +121,25 @@ public class DaoGenerator extends ClassWriter {
         }
         appendLine("}");
         writeSource(specification.className(), outputPath);
+        if (specification.generateTable()) {
+            generateTable(outputPath);
+        }
+    }
+
+    private void generateTable(Path outputPath) throws IOException {
+        StringBuilder sql = new StringBuilder();
+        sql.append("CREATE TABLE \"").append(specification.name().toUpperCase()).append("\" (\n");
+        members.forEach(member->{
+            sql.append("    \"").append(member.databaseName()).append("\" ")
+                    .append(member.databaseType())
+                    .append(member.isNotNullable()?" NOT NULL":"")
+                    .append(",\n");
+        });
+        sql.append("    PRIMARY KEY(\"").append(specification.primary().get().databaseName()).append("\")\n");
+        sql.append(");\n");
+        try (BufferedWriter writer = Files.newBufferedWriter(outputPath.resolve(specification.name()+".sql"))) {
+            writer.write(sql.toString());
+        }
     }
 
     private void generateDao() {
