@@ -32,6 +32,7 @@ public class Specification {
     private boolean csv;
     private boolean builder;
     private boolean table;
+    private boolean omniString;
 
     private Boolean toString;
     private Boolean hashEquals;
@@ -42,6 +43,7 @@ public class Specification {
     private String returnThisType;
     private String returnThis;
     private String constructorVisibility;
+
 
     private boolean isEnum;
 
@@ -236,5 +238,9 @@ public class Specification {
 
     public boolean generateTable() {
         return table;
+    }
+
+    public boolean generateOmiString() {
+        return omniString;
     }
 }

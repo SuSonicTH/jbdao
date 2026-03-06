@@ -18,7 +18,7 @@ public class MainView extends VerticalLayout {
                 e -> Notification.show("Hello " + textField.getValue()));
         button.addClickShortcut(Key.ENTER);
         Button customer = new Button("Customer",
-                e -> openPage(e, CustomerPage.Name));
+                e -> openPage(e, CustomerPage.NAME));
         add(textField, button, customer);
     }
 

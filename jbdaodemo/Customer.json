@@ -10,6 +10,7 @@
   "noArgsConstructor": true,
   "allArgsConstructor": true,
   "accessorPrefix": true,
+  "omniString": true,
   "members": [
     {
       "name": "index",

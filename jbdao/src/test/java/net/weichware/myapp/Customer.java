@@ -445,6 +445,20 @@ public class Customer {
         return phoneNumber.replaceAll("^(.+)....", "$1xxxx");
     }
 
+    public String toOmniString() {
+        return String.join(" ",
+                id + "",
+                firstName,
+                lastName,
+                birthDate + "",
+                address,
+                country,
+                postalCode + "",
+                phoneNumber,
+                kids + ""
+        ).toLowerCase();
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

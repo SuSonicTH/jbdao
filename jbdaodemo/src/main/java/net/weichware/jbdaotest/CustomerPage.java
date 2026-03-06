@@ -6,7 +6,6 @@ import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
-import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
@@ -22,24 +21,25 @@ import net.weichware.jbdao.ui.grid.GridButton;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import static net.weichware.jbdao.ui.dialog.EditDialogMode.*;
 
-@Route(CustomerPage.Name)
-@PageTitle(CustomerPage.Name)
+@Route(CustomerPage.NAME)
+@PageTitle(CustomerPage.NAME)
 public class CustomerPage extends VerticalLayout {
-    public static final String Name = "Customer";
+    public static final String NAME = "Customer";
     private static DataSource dataSource;
     private final AdvancedGrid<Customer> grid;
 
     public CustomerPage() {
         List<GridButton<Customer>> gridButtonList = List.of(
-                new GridButton<>(VaadinIcon.EDIT, "Edit", (e, item) -> new CustomerEditDialog(EDIT, Name, item, dataSource, this::update).open()),
-                new GridButton<>(VaadinIcon.COPY, "Copy", (e, item) -> new CustomerEditDialog(COPY, Name, item, dataSource,this::update).open()),
+                new GridButton<>(VaadinIcon.EDIT, "Edit", (e, item) -> new CustomerEditDialog(EDIT, NAME, item, dataSource, this::update).open()),
+                new GridButton<>(VaadinIcon.COPY, "Copy", (e, item) -> new CustomerEditDialog(COPY, NAME, item, dataSource,this::update).open()),
                 new GridButton<>(VaadinIcon.MINUS_CIRCLE_O, "Delete", (e, item) -> deleteItem(item))
         );
-        grid = new AdvancedGrid<>(Name, gridButtonList, this::addItem, this::update);
+        grid = new AdvancedGrid<>(NAME, gridButtonList, this::addItem, this::update);
         grid.addColumn("Index", Customer::getIndex).setSortable(true).setAutoWidth(true).setKey("index");
         grid.addColumn("Customer Id", Customer::getCustomerId).setSortable(true).setAutoWidth(true).setKey("customerId");
         grid.addColumn("First Name", Customer::getFirstName).setSortable(true).setAutoWidth(true);
@@ -75,24 +75,51 @@ public class CustomerPage extends VerticalLayout {
     }
 
     private void updateOmniFilter(AbstractField.ComponentValueChangeEvent<TextField, String> event) {
-        final String search = event.getValue().toLowerCase();
-        if (search.length()>1) {
-            grid.setOmniFilter((item) -> (item.getIndex() + "").toLowerCase().contains(search) ||
-                    item.getCustomerId().toLowerCase().contains(search) ||
-                    item.getFirstName().toLowerCase().contains(search) ||
-                    item.getLastName().toLowerCase().contains(search) ||
-                    item.getCompany().toLowerCase().contains(search) ||
-                    item.getCity().toLowerCase().contains(search) ||
-                    item.getCountry().toLowerCase().contains(search) ||
-                    item.getPhone1().toLowerCase().contains(search) ||
-                    item.getPhone2().toLowerCase().contains(search) ||
-                    item.getEmail().toLowerCase().contains(search) ||
-                    item.getSubscriptionDate().toLowerCase().contains(search) ||
-                    item.getWebsite().toLowerCase().contains(search));
+        final String searchString = event.getValue().toLowerCase().trim();
+
+        if (searchString.length()>1) {
+            List<String> search = getSearchString(searchString);
+            grid.setOmniFilter((item) -> omniMatches(item,search));
         } else {
             grid.setOmniFilter(null);
         }
         grid.updateFilters();
+    }
+
+    private static List<String> getSearchString(String searchString) {
+        List<String> search = new ArrayList<>();
+        int start = 0;
+        for (int i = 0; i< searchString.length(); i++) {
+            if (searchString.charAt(i) == ' ') {
+                search.add(searchString.substring(start,i));
+                while(i< searchString.length() && searchString.charAt(i) == ' ') i++;
+                start=i--;
+            } else if (searchString.charAt(i) == '"') {
+                start=++i;
+                while(i< searchString.length() && searchString.charAt(i) != '"') i++;
+                if (i< searchString.length()) {
+                    if (searchString.charAt(i) != '"') i++;
+                }
+                search.add(searchString.substring(start,i));
+                i++;
+                while(i< searchString.length() && searchString.charAt(i) == ' ') i++;
+                start=i--;
+            }
+        }
+        if (start <= searchString.length()) {
+            search.add(searchString.substring(start));
+        }
+        return search;
+    }
+
+    private boolean omniMatches(Customer item, List<String> searches) {
+        String omniString = item.toOmniString();
+        for (String search:searches) {
+            if (!omniString.contains(search)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private void update() {
@@ -104,7 +131,7 @@ public class CustomerPage extends VerticalLayout {
     }
 
     private void addItem() {
-        new CustomerEditDialog(ADD, Name, new Customer(), dataSource, this::update).open();
+        new CustomerEditDialog(ADD, NAME, new Customer(), dataSource, this::update).open();
     }
 
     private void deleteItem(Customer item) {

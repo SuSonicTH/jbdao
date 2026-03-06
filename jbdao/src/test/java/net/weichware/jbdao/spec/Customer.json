@@ -11,6 +11,7 @@
   "noArgsConstructor": true,
   "allArgsConstructor": true,
   "accessorPrefix": true,
+  "omniString": true,
   "members": [
     {
       "name": "id",
